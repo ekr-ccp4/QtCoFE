@@ -69,7 +69,7 @@ int     leh;
 
 QPushButton *qtCOFE::Page::makeDarkButton ( const QString & text )  {
 QPushButton *btn = new QPushButton ( text );
-int          leh = 2.25*btn->fontMetrics().height();
+int          leh = 2.5*preferences->getFontPixelSize();
 QString      ss  = QString(
   "QPushButton{color: rgb(250,250,250); border-radius:6px; "
   "border-width:0px; border-style:outset; border-color: rgb(75,75,75);"
@@ -91,7 +91,7 @@ QString      ss  = QString(
 
 QPushButton *qtCOFE::Page::makeLightButton ( const QString & text )  {
 QPushButton *btn = new QPushButton ( text );
-int          leh = 2.25*btn->fontMetrics().height();
+int          leh = 2.5*preferences->getFontPixelSize();
 QString      ss  = QString(
   "QPushButton{color: rgb(0,0,0); border-radius:6px; "
   "border-width:0px; border-style:outset; border-color: rgb(75,75,75);"

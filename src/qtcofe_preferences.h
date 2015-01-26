@@ -95,6 +95,7 @@ namespace qtCOFE  {
 
       QFont getScaledFont ( const QFont & font );
       int   getFontPointSize();
+      int   getFontPixelSize();
       bool  isFontChanged();
 
       QString getFontSizeStyleSheet ( qreal scale );
