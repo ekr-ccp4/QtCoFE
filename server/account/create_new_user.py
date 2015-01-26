@@ -61,7 +61,7 @@ def do ( inp ):
 
     outdata = utils.make_repo (
        utils.get_user_repo_path ( defs.master_path(),inp.data.login ),
-       defs.user_data_name,user_data.to_JSON()
+       defs.user_data_name(),user_data.to_JSON()
     )
 
     outdata.action = inp.action

@@ -78,7 +78,7 @@ def make_repo ( repo_dir,data_name,repo_data ):
     if rc != "OK":
         return make_return ( "make_repo","git_error_init",rc )
 
-    file = open ( repo_dir + "/" + data_name,"w" )
+    file = open ( os.path.join(repo_dir,data_name),"w" )
     file.write ( repo_data )
     file.close ()
 

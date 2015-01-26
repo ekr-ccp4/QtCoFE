@@ -24,7 +24,7 @@ def git ( repo_dir,params ):
             return "fail 'git " + str(params) + "' in '" + repo_dir + \
                    "' rc=" + str(p.returncode)
     except OSError,err:
-        return "exception on 'git " + str(params) + "' in '" + \
+        return "exception on 'git " + " ".join(params) + "' in '" + \
                repo_dir + "': " + err
 
 
