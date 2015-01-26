@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #  ------------------------------------------------------------------
-#   COFE processing gate (request dispatcher)
+#    COFE processing gate (request dispatcher)
 #  ------------------------------------------------------------------
 #
 #  Input is JSON string in sys.argv[1]:
