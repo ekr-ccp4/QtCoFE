@@ -126,19 +126,19 @@ QChar    dirsep = QDir::separator();
   cootPath   = "coot";
   ccp4mgPath = "ccp4mg";
 
-  if (!masterPath.isEmpty())  {
+  if (!masterDataPath.isEmpty())  {
     QStringList lst;
     if (QFileInfo(ccp4Path+"/restore").exists())
       cootPath = ccp4Path + "bin/coot";
     else  {
-      lst = QDir(masterPath).entryList ( QStringList() << "coot*" );
+      lst = QDir(masterDataPath).entryList ( QStringList() << "coot*" );
       if (lst.count()>0)
-        cootPath = masterPath + lst.at(lst.count()-1) + dirsep +
+        cootPath = masterDataPath + lst.at(lst.count()-1) + dirsep +
                                             "bin" + dirsep + "coot";
     }
-    lst = QDir(masterPath).entryList ( QStringList() << "ccp4mg*" );
+    lst = QDir(masterDataPath).entryList ( QStringList() << "ccp4mg*" );
     if (lst.count()>0)
-      ccp4mgPath = masterPath + lst.at(lst.count()-1) + dirsep +
+      ccp4mgPath = masterDataPath + lst.at(lst.count()-1) + dirsep +
                                           "bin" + dirsep + "ccp4mg";
   }
   if (!ccp4Path.isEmpty())
