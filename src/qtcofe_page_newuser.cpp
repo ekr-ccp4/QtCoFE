@@ -31,12 +31,10 @@
 #include "qtx/qtx_lineedit.h"
 
 
-qtCOFE::NewUserPage::NewUserPage ( Preferences    *prefs,
-                                   Session        *ssn,
-                                   DataModel      *dm,
+qtCOFE::NewUserPage::NewUserPage ( DataModel      *dm,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
-                   : Page(prefs,ssn,dm,parent,flags)  {
+                   : Page(dm,parent,flags)  {
   titleLbl       = NULL;
   gbox           = NULL;
   userNameEdt    = NULL;

@@ -23,20 +23,19 @@
 #include <stdio.h>
 
 #include "qtcofe_page.h"
+#include "qtcofe_datamodel.h"
 #include "qtcofe_preferences.h"
 #include "qtcofe_session.h"
 #include "qtx/qtx_lineedit.h"
 
 
-qtCOFE::Page::Page ( Preferences    *prefs,
-                     Session        *ssn,
-                     DataModel      *dm,
+qtCOFE::Page::Page ( DataModel      *dm,
                      QWidget        *parent,
                      Qt::WindowFlags flags )
             : QWidget(parent,flags)  {
-  preferences = prefs;
-  session     = ssn;
   dataModel   = dm;
+  preferences = dataModel->getPreferences();
+  session     = dataModel->getSession    ();
   setStyleSheet ( preferences->getFontSizeStyleSheet(1.0) );
 }
 

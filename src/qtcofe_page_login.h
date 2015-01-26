@@ -37,9 +37,7 @@ namespace qtCOFE  {
   Q_OBJECT
 
     public:
-      LoginPage ( Preferences    *prefs,
-                  Session        *ssn,
-                  DataModel      *dm,
+      LoginPage ( DataModel      *dm,
                   QWidget        *parent = 0,
                   Qt::WindowFlags flags  = 0 );
       virtual ~LoginPage();

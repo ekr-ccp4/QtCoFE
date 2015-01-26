@@ -24,18 +24,17 @@
 
 #include "qtcofe_page_project.h"
 #include "qtcofe_project_tree.h"
-#include "qtcofe_taskdialog.h"
+#include "qtcofe_dialog_task.h"
+#include "qtcofe_dialog_import.h"
 #include "qtcofe_session.h"
 #include "qtcofe_server.h"
 #include "qtcofe_srvdefs.h"
 
 
-qtCOFE::ProjectPage::ProjectPage ( Preferences    *prefs,
-                                   Session        *ssn,
-                                   DataModel      *dm,
+qtCOFE::ProjectPage::ProjectPage ( DataModel      *dm,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
-                   : Page(prefs,ssn,dm,parent,flags)  {
+                   : Page(dm,parent,flags)  {
 }
 
 qtCOFE::ProjectPage::~ProjectPage()  {
@@ -46,7 +45,7 @@ qtCOFE::ProjectPage::~ProjectPage()  {
 void qtCOFE::ProjectPage::makeLayout()  {
 QVBoxLayout *vbox = new QVBoxLayout();
 
-  jobTree   = new ProjectTree(preferences,session,dataModel);
+  jobTree   = new ProjectTree(dataModel);
   hsplitter = new QSplitter();
   hsplitter->addWidget ( jobTree );
   hsplitter->addWidget ( new QWidget() );
@@ -103,11 +102,15 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
 }
 
 void qtCOFE::ProjectPage::addJob ( int jobID )  {
-TaskDialog *tdlg = new TaskDialog ( this,dataModel,preferences );
+TaskDialog *tdlg = new TaskDialog ( this,dataModel );
 
   tdlg->show();
   tdlg->setFixedSize ( tdlg->size() );
   if (tdlg->exec()==QDialog::Accepted)  {
+    if (tdlg->getSelTaskType()=="task_import")  {
+      DataImportDialog *didlg = new DataImportDialog ( this,dataModel );
+      didlg->exec();
+    }
     QJsonObject *jsonData = jobTree->getTreeData();
     jsonData->insert ( "parent"   ,jobID );
     jsonData->insert ( "task_type",tdlg->getSelTaskType() );

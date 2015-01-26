@@ -39,9 +39,7 @@ namespace qtCOFE  {
   Q_OBJECT
 
     public:
-      ProjectListPage ( Preferences    *prefs,
-                        Session        *ssn,
-                        DataModel      *dm,
+      ProjectListPage ( DataModel      *dm,
                         QWidget        *parent = 0,
                         Qt::WindowFlags flags  = 0 );
       virtual ~ProjectListPage();

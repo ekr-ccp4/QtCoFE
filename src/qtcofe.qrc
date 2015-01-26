@@ -19,5 +19,6 @@
         <file>images/task_mr.png</file>
         <file>images/task_refinement.png</file>
         <file>images/task_root.png</file>
+        <file>images/close.png</file>
     </qresource>
 </RCC>

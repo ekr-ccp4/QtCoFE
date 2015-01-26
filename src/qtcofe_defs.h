@@ -44,6 +44,7 @@
 
 #define qtCOFE_Ok_icon               ":/images/ok.png"
 #define qtCOFE_Cancel_icon           ":/images/cancel.png"
+#define qtCOFE_Close_icon            ":/images/close.png"
 #define qtCOFE_Plus_icon             ":/images/plus.png"
 #define qtCOFE_Minus_icon            ":/images/minus.png"
 #define qtCOFE_Data_icon             ":/images/data.png"

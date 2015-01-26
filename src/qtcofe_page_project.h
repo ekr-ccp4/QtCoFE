@@ -40,9 +40,7 @@ namespace qtCOFE  {
   Q_OBJECT
 
     public:
-      ProjectPage ( Preferences    *prefs,
-                    Session        *ssn,
-                    DataModel      *dm,
+      ProjectPage ( DataModel      *dm,
                     QWidget        *parent = 0,
                     Qt::WindowFlags flags  = 0 );
       virtual ~ProjectPage();

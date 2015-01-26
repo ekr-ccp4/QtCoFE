@@ -98,6 +98,8 @@ namespace qtCOFE  {
       bool  isFontChanged();
 
       QString getFontSizeStyleSheet ( qreal scale );
+      int     getToolButtonSize ();
+      QString getToolButtonStyle();
 
     signals:
       void applyPreferences();

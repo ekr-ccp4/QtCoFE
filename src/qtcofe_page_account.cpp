@@ -32,12 +32,10 @@
 #include "qjson/QJsonObject.h"
 
 
-qtCOFE::AccountPage::AccountPage ( Preferences    *prefs,
-                                   Session        *ssn,
-                                   DataModel      *dm,
+qtCOFE::AccountPage::AccountPage ( DataModel      *dm,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
-                   : Page(prefs,ssn,dm,parent,flags)  {
+                   : Page(dm,parent,flags)  {
   prevPage     = NULL;
   userNameEdt  = NULL;
   emailEdt     = NULL;

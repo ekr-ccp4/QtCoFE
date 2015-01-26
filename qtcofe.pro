@@ -33,7 +33,9 @@ SOURCES += \
     qjson/QJsonValue.cpp \
     qjson/QJsonValueRef.cpp \
     qtx/qtx_lineedit.cpp \
+    qtx/qtx_table.cpp  \
     qtx/qtx_tree.cpp  \
+    qtx/qtx_utils.cpp  \
     src/qtcofe.cpp \
     src/qtcofe_mainwindow.cpp \
     src/qtcofe_base.cpp \
@@ -51,7 +53,8 @@ SOURCES += \
     src/qtcofe_job.cpp \
     src/qtcofe_project_tree.cpp \
     src/qtcofe_datamodel.cpp \
-    src/qtcofe_taskdialog.cpp
+    src/qtcofe_dialog_task.cpp \
+    src/qtcofe_dialog_import.cpp
 
 RESOURCES += \
     src/qtcofe.qrc
@@ -98,7 +101,9 @@ HEADERS += \
     qjson/QJsonValue.h \
     qjson/QJsonValueRef.h \
     qtx/qtx_lineedit.h \
+    qtx/qtx_table.h  \
     qtx/qtx_tree.h   \
+    qtx/qtx_utils.h   \
     src/qtcofe_defs.h \
     src/qtcofe_mainwindow.h \
     src/qtcofe_base.h \
@@ -117,5 +122,6 @@ HEADERS += \
     src/qtcofe_job.h \
     src/qtcofe_project_tree.h \
     src/qtcofe_datamodel.h \
-    src/qtcofe_taskdialog.h
+    src/qtcofe_dialog_task.h \
+    src/qtcofe_dialog_import.h
 

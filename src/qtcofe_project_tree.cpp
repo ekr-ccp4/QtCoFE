@@ -30,6 +30,7 @@
 
 #include "qtcofe_project_tree.h"
 #include "qtcofe_datamodel.h"
+#include "qtcofe_preferences.h"
 #include "qtcofe_job.h"
 #include "qtcofe_session.h"
 #include "qtcofe_dialogs.h"
@@ -38,15 +39,13 @@
 //#include "qtcofe_preferences.h"
 
 
-qtCOFE::ProjectTree::ProjectTree ( Preferences    *prefs,
-                                   Session        *ssn,
-                                   DataModel      *dm,
+qtCOFE::ProjectTree::ProjectTree ( DataModel      *dm,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
                    : QWidget(parent,flags)  {
-  preferences = prefs;
-  session     = ssn;
   dataModel   = dm;
+  preferences = dataModel->getPreferences();
+  session     = dataModel->getSession    ();
   makeLayout();
 }
 
@@ -57,8 +56,8 @@ qtCOFE::ProjectTree::~ProjectTree() {
 void qtCOFE::ProjectTree::makeLayout()  {
 QVBoxLayout *vbox = new QVBoxLayout();
 QHBoxLayout *hbox = new QHBoxLayout();
-int          btnSize  = 3*fontMetrics().height()/2;
-QString      btnStyle = "padding:0px;margin:0px;border:0px;";
+QString      btnStyle = preferences->getToolButtonStyle();
+int          btnSize  = preferences->getToolButtonSize ();
 
   jobTree = new qtx::Tree();
   jobTree->setColumnCount ( 1 );
@@ -70,21 +69,21 @@ QString      btnStyle = "padding:0px;margin:0px;border:0px;";
   vbox->addWidget ( jobTree,100 );
 
   add_btn = new QToolButton();
-  add_btn->setIcon ( QIcon(qtCOFE_Plus_icon) );
-  add_btn->setIconSize ( QSize(btnSize,btnSize) );
-  add_btn->setStyleSheet ( btnStyle );
-  hbox->addWidget ( add_btn,1 );
+  add_btn->setIcon        ( QIcon(qtCOFE_Plus_icon) );
+  add_btn->setIconSize    ( QSize(btnSize,btnSize) );
+  add_btn->setStyleSheet  ( btnStyle );
+  hbox->addWidget         ( add_btn,1 );
   del_btn = new QToolButton();
-  del_btn->setIcon ( QIcon(qtCOFE_Minus_icon) );
-  del_btn->setIconSize ( QSize(btnSize,btnSize) );
-  del_btn->setStyleSheet ( btnStyle );
-  hbox->addWidget ( del_btn,1 );
-  hbox->addStretch ( 100 );
+  del_btn->setIcon        ( QIcon(qtCOFE_Minus_icon) );
+  del_btn->setIconSize    ( QSize(btnSize,btnSize) );
+  del_btn->setStyleSheet  ( btnStyle );
+  hbox->addWidget         ( del_btn,1 );
+  hbox->addStretch        ( 100 );
   data_btn = new QToolButton();
-  data_btn->setIcon ( QIcon(qtCOFE_Data_icon) );
-  data_btn->setIconSize ( QSize(btnSize,btnSize) );
+  data_btn->setIcon       ( QIcon(qtCOFE_Data_icon) );
+  data_btn->setIconSize   ( QSize(btnSize,btnSize) );
   data_btn->setStyleSheet ( btnStyle );
-  hbox->addWidget ( data_btn,1 );
+  hbox->addWidget         ( data_btn,1 );
 
   hbox->setContentsMargins ( 0,0,0,0 );
   hbox->setSpacing ( 4 );

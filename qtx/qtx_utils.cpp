@@ -48,3 +48,10 @@ QString      itemPath;
   return dir.rmdir ( path );
 
 }
+
+/// If destination exists and is a directory, the file is copied
+/// into that directory. Otherwise, file "source" is copied with
+/// new name "dest".
+int qtx::copyFile ( const QString & source, const QString & dest )  {
+
+}

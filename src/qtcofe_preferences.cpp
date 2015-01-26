@@ -30,6 +30,7 @@
 #include <QSpinBox>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QFontMetrics>
 #include <QMessageBox>
 #include <QProcess>
 #include <QApplication>
@@ -950,4 +951,12 @@ bool qtCOFE::Preferences::isFontChanged()  {
 
 QString qtCOFE::Preferences::getFontSizeStyleSheet ( qreal scale )  {
   return QString("font-size: %1pt;").arg(int(scale*logFont.pointSize()));
+}
+
+int  qtCOFE::Preferences::getToolButtonSize()  {
+  return 3*fontMetrics().height()/2;
+}
+
+QString qtCOFE::Preferences::getToolButtonStyle()  {
+  return "padding:0px;margin:0px;border:0px;";
 }

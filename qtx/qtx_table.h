@@ -74,11 +74,13 @@ namespace qtx  {
       void alignCells   ( int flag, bool hideshow = true );
       void alignCells   ( int column, int flag, bool hideshow = true );
       void resizeCells  ( bool hideshow = true );
-      void setFullSize  ( bool limitWidthOnly  = false,
-                          bool limitHeightOnly = false );
 
       bool isEqual ( Table *t );
       void copy    ( Table *t );
+
+    public slots:
+      void setFullSize  ( bool limitWidthOnly  = false,
+                          bool limitHeightOnly = false );
 
     signals:
       void  selection_changed ( bool has_selection );

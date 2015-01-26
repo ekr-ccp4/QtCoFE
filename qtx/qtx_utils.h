@@ -36,6 +36,11 @@ namespace qtx {
   /// \return  true  if successfully removed
   bool removeDir ( const QString & path );
 
+  /// If destination exists and is a directory, the file is copied
+  /// into that directory. Otherwise, file "source" is copied with
+  /// new name "dest".
+  int copyFile ( const QString & source, const QString & dest );
+
 }
 
 #endif // qtx_UTILS_H

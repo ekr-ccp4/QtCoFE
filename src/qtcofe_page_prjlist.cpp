@@ -37,12 +37,10 @@
 #include "qjson/QJsonArray.h"
 
 
-qtCOFE::ProjectListPage::ProjectListPage ( Preferences    *prefs,
-                                           Session        *ssn,
-                                           DataModel      *dm,
+qtCOFE::ProjectListPage::ProjectListPage ( DataModel      *dm,
                                            QWidget        *parent,
                                            Qt::WindowFlags flags )
-                       : Page(prefs,ssn,dm,parent,flags)  {
+                       : Page(dm,parent,flags)  {
   projectTree  = NULL;
   openBtn      = NULL;
   addNewBtn    = NULL;

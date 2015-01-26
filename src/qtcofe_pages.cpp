@@ -56,7 +56,7 @@ qtCOFE::Pages::~Pages() {
 void qtCOFE::Pages::login()  {
 
   if (!loginPage)  {
-    loginPage = new LoginPage ( preferences,session,dataModel );
+    loginPage = new LoginPage ( dataModel );
     loginPage->makeLayout();
     pages->addWidget ( loginPage );
     connect ( loginPage,SIGNAL(new_account_requested()),
@@ -83,7 +83,7 @@ void qtCOFE::Pages::login()  {
 
 void qtCOFE::Pages::newAccount()  {
   if (!newUserPage)  {
-    newUserPage = new NewUserPage ( preferences,session,dataModel );
+    newUserPage = new NewUserPage ( dataModel );
     newUserPage->makeLayout();
     pages->addWidget ( newUserPage );
     connect ( newUserPage,SIGNAL(back_to_login()),
@@ -96,7 +96,7 @@ void qtCOFE::Pages::newAccount()  {
 
 void qtCOFE::Pages::account()  {
   if (!accountPage)  {
-    accountPage = new AccountPage ( preferences,session,dataModel );
+    accountPage = new AccountPage ( dataModel );
     accountPage->makeLayout();
     pages->addWidget ( accountPage );
     connect ( accountPage,SIGNAL(revert_page(QWidget*)),
@@ -109,8 +109,7 @@ void qtCOFE::Pages::account()  {
 
 void qtCOFE::Pages::projectList()  {
   if (!projectListPage)  {
-    projectListPage = new ProjectListPage ( preferences,session,
-                                            dataModel );
+    projectListPage = new ProjectListPage ( dataModel );
     projectListPage->makeLayout();
     pages->addWidget ( projectListPage );
     connect ( projectListPage,SIGNAL(open_project()),
@@ -127,7 +126,7 @@ void qtCOFE::Pages::project()  {
     setWindowTitle ( tr(qtCOFE_app_spec) + "  " +
                      projectListPage->getCrProjectPath() );
   if (!projectPage)  {
-    projectPage = new ProjectPage ( preferences,session,dataModel );
+    projectPage = new ProjectPage ( dataModel );
     projectPage->makeLayout();
     pages->addWidget ( projectPage );
   }
