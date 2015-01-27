@@ -52,6 +52,16 @@ QString      itemPath;
 /// If destination exists and is a directory, the file is copied
 /// into that directory. Otherwise, file "source" is copied with
 /// new name "dest".
-int qtx::copyFile ( const QString & source, const QString & dest )  {
+bool qtx::copyFile ( const QString & source, const QString & dest )  {
+
+  if (!QFileInfo(dest).exists())
+    return QFile::copy ( source,dest );
+  else if (QFileInfo(dest).isDir())  {
+    return QFile::copy ( source,
+                   QDir(dest).filePath(QFileInfo(source).fileName()) );
+  } else  {
+    QFile::remove ( dest );
+    return QFile::copy ( source,dest );
+  }
 
 }

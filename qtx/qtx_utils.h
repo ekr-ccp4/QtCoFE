@@ -39,7 +39,7 @@ namespace qtx {
   /// If destination exists and is a directory, the file is copied
   /// into that directory. Otherwise, file "source" is copied with
   /// new name "dest".
-  int copyFile ( const QString & source, const QString & dest );
+  bool copyFile ( const QString & source, const QString & dest );
 
 }
 
