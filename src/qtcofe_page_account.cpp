@@ -73,6 +73,7 @@ int          row = 0;
   makeFormLine ( gbox,row++,"Password"  ,passwordEdt ,10,
                  "password (leave blank to keep the current one)" );
   passwordEdt->setEchoMode ( QLineEdit::Password	);
+  loginNameEdt->setReadOnly ( true );
 
   gbox->addWidget ( new QLabel ( " " ),row++,0,1,3 );
 
