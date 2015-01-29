@@ -60,9 +60,10 @@ namespace qtCOFE  {
       void save_project_state();
 
     protected slots:
-      void addJob ( int jobID );
-      void delJob ( int jobID, int nextCrJobID );
+      void addJob    ( int jobID );
+      void delJob    ( int jobID, int nextCrJobID );
       void switchJob ( int jobID );
+      void dataInspector ( int jobID );
 
   };
 

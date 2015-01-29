@@ -54,9 +54,14 @@ QVBoxLayout *vbox = new QVBoxLayout();
   vbox->setContentsMargins ( 0,0,0,0 );
   setLayout ( vbox );
 
-  connect (jobTree,SIGNAL(add_new_job(int)),this,SLOT(addJob(int)));
-  connect (jobTree,SIGNAL(del_job(int,int)),this,SLOT(delJob(int,int)));
-  connect (jobTree,SIGNAL(crjob_changed(int)),this,SLOT(switchJob(int)));
+  connect ( jobTree,SIGNAL(add_new_job(int)),
+            this,SLOT(addJob(int)) );
+  connect ( jobTree,SIGNAL(del_job(int,int)),
+            this,SLOT(delJob(int,int)) );
+  connect ( jobTree,SIGNAL(crjob_changed(int)),
+            this,SLOT(switchJob(int)) );
+  connect ( jobTree,SIGNAL(view_job_data(int)),
+            this,SLOT(dataInspector(int)) );
 
 }
 
@@ -133,5 +138,11 @@ void qtCOFE::ProjectPage::switchJob ( int jobID )  {
 }
 
 void qtCOFE::ProjectPage::save_project_state()  {
+
+}
+
+void qtCOFE::ProjectPage::dataInspector ( int jobID )  {
+  QMessageBox::information(this,"Not implemented",
+                           "Data Inspector -- not implemented");
 
 }

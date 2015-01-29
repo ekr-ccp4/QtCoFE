@@ -59,7 +59,7 @@ int     leh;
 
   edt = new qtx::LineEdit ( "",size );
   edt->setStyleSheet ( ss + "font-style:italic;" );
-  leh = 2*edt->fontMetrics().height();
+  leh = 2.5*preferences->getFontPixelSize();
   edt->setMinimumHeight ( leh );
   edt->setMaximumHeight ( leh );
   edt->setPlaceholderText ( placeholder );
