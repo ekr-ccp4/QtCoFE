@@ -130,7 +130,9 @@ import os
 import subprocess
 import glob
 import hashlib
-from   varut import jsonut, gitut, utils, defs
+from   varut   import jsonut, gitut, utils, defs
+from   account import user
+
 
 def check ( inp ):
 
@@ -138,31 +140,28 @@ def check ( inp ):
         return utils.make_return ( inp.action,"wrong_action_code",
                                               "Wrong action code" )
 
-    repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.data.login )
-    if not os.path.isdir(repo_dir):
+    user_repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.data.login )
+    if not os.path.isdir(user_repo_dir):
         return utils.make_return ( inp.action,"rejected","Login rejected" )
 
-    result = gitut.lock ( repo_dir )
+    result = gitut.lock ( user_repo_dir )
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    result = gitut.checkout ( repo_dir,['--',defs.user_data_name()] )
-    result.action = inp.action
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
+    gitut.unlock ( user_repo_dir )
     if result.result != "OK":
-        gitut.unlock ( repo_dir )
-        return result
+        return utils.pass_return ( inp.action,result )
 
-    user_data = jsonut.jObject (
-                 open(repo_dir + "/" + defs.user_data_name()).read() )
-    gitut.unlock ( repo_dir )
     if (user_data.login != inp.data.login) or \
        (user_data.pwd.lower() != inp.data.pwd.lower()):
-           return utils.make_return ( inp.action,"rejected",
-                                                "Login rejected" )
+        return utils.make_return ( inp.action,"rejected",
+                                              "Login rejected" )
 
     result.result  = "OK"
     result.message = "Login approved"
-    return result
+    return utils.make_return ( inp.action,"OK","Login approved" )
 
 
 def get_data ( inp ):
@@ -171,32 +170,28 @@ def get_data ( inp ):
         return utils.make_return ( inp.action,"wrong_action_code",
                                              "Wrong action code" )
 
-    repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.login )
-    if not os.path.isdir(repo_dir):
+    user_repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.login )
+    if not os.path.isdir(user_repo_dir):
         return utils.make_return ( inp.action,"rejected",
-                                             "Login rejected (1)" )
+                                              "Login rejected (1)" )
 
-    result = gitut.lock ( repo_dir )
+    result = gitut.lock ( user_repo_dir )
     if result.result != "OK":
         return utils.make_return ( inp.action,result )
 
-    result = gitut.checkout ( repo_dir,['--',defs.user_data_name()] )
-    result.action = inp.action
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
+    gitut.unlock ( user_repo_dir )
     if result.result != "OK":
-        gitut.unlock ( repo_dir )
         result.data = ""
-        return result
+        return utils.pass_return ( inp.action,result )
 
-    user_data = jsonut.jObject (
-                 open(repo_dir + "/" + defs.user_data_name()).read() )
-    gitut.unlock ( repo_dir )
     if (user_data.login != inp.login) or \
        (user_data.pwd.lower() != inp.pwd.lower()):
-           return utils.make_return ( inp.action,"rejected",
-                                                 "Login rejected (2)" )
+        return utils.make_return ( inp.action,"rejected",
+                                              "Login rejected (2)" )
 
-    result.result         = "OK"
-    result.message        = "Login confirmed"
+    result = utils.make_return ( inp.action,"OK","Login confirmed" )
     result.data           = jsonut.jObject()
     result.data.user_name = user_data.user_name
     result.data.login     = user_data.login
@@ -210,29 +205,27 @@ def set_data ( inp ):
         return utils.make_return ( inp.action,"wrong_action_code",
                                               "Wrong action code" )
 
-    repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.login )
-    if not os.path.isdir(repo_dir):
+    user_repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.login )
+    if not os.path.isdir(user_repo_dir):
         return utils.make_return ( inp.action,"rejected",
                                               "Login rejected (1)" )
 
-    result = gitut.lock ( repo_dir )
+    result = gitut.lock ( user_repo_dir )
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    result = gitut.checkout ( repo_dir,['--',defs.user_data_name()] )
-    result.action = inp.action
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
     if result.result != "OK":
-        gitut.unlock ( repo_dir )
+        gitut.unlock ( user_repo_dir )
         result.data = ""
-        return result
+        return utils.pass_return ( inp.action,result )
 
-    user_data = jsonut.jObject (
-                 open(repo_dir + "/" + defs.user_data_name()).read() )
     if (user_data.login != inp.login) or \
         (user_data.pwd.lower() != inp.pwd.lower()):
         gitut.unlock ( repo_dir )
-        return utils.make_return ( inp.action,
-                                    "rejected","Login rejected (2)" )
+        return utils.make_return ( inp.action,"rejected",
+                                              "Login rejected (3)" )
 
     user_data.user_name = inp.data.user_name
     user_data.login     = inp.data.login
@@ -240,16 +233,16 @@ def set_data ( inp ):
     if inp.data.pwd:
         user_data.pwd = inp.data.pwd
 
-    utils.write_user_data ( repo_dir,user_data )
+    user_data.write ( user_repo_dir )
 
-    result = gitut.commit ( repo_dir,[defs.user_data_name()],
+    result = gitut.commit ( user_repo_dir,[defs.user_data_name()],
                             "update login data" )
-    gitut.unlock ( repo_dir )
+    gitut.unlock ( user_repo_dir )
 
     if result.result == "OK":
         result.message = "Login data changed"
 
-    return result
+    return utils.pass_return ( inp.action,result )
 
 
 def recover ( inp ):
@@ -258,27 +251,24 @@ def recover ( inp ):
         return utils.make_return ( inp.action,"wrong_action_code",
                                               "Wrong action code" )
 
-    repo_list    = glob.glob ( defs.master_path() + "*.user" )
-    recover_list = []
+    user_repo_list = glob.glob ( defs.master_path() + "*.user" )
+    recover_list   = []
 
-    for repo_dir in repo_list:
-        if os.path.isdir(repo_dir):
-            result = gitut.lock ( repo_dir )
+    for user_repo_dir in user_repo_list:
+        if os.path.isdir(user_repo_dir):
+            result = gitut.lock ( user_repo_dir )
             if result.result == "OK":
-                res = gitut.checkout ( repo_dir,['--',defs.user_data_name()] )
+                user_data = user.User()
+                res = user_data.read ( user_repo_dir )
                 if res.result == "OK":
-                    user_data = jsonut.jObject ( open (
-                           repo_dir + "/" + defs.user_data_name()).read() )
                     if user_data.email == inp.data.email:
                         pwd = utils.make_id()
                         recover_list += [[user_data.login,pwd]]
                         user_data.pwd = hashlib.md5(pwd).hexdigest()
-                        file = open ( repo_dir + "/" + defs.user_data_name(),"w" )
-                        file.write ( user_data.to_JSON() )
-                        file.close ()
-                        gitut.commit ( repo_dir,[defs.user_data_name()],
-                                                 "update login data" )
-                gitut.unlock ( repo_dir )
+                        user_data.write ( user_repo_dir )
+                        gitut.commit ( user_repo_dir,[defs.user_data_name()],
+                                                     "update login data" )
+                gitut.unlock ( user_repo_dir )
 
     if len(recover_list) ==0:
         return utils.make_return ( inp.action,"nothing_found",
@@ -306,11 +296,9 @@ def recover ( inp ):
                    "Recovery e-mail could not be sent, rc=" + \
                    str(p.returncode) )
 
-    result = jsonut.jObject()
-    result.action  = inp.action
-    result.result  = "OK"
-    result.message = "Recovery e-mail has been sent"
-    return result
+    return utils.make_return ( inp.action,"OK",
+                               "Recovery e-mail has been sent" )
+
 
 #
 #  ------------------------------------------------------------------

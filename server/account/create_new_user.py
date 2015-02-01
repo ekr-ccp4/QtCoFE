@@ -36,9 +36,10 @@
 
 import sys
 import os
-import hashlib
+#import hashlib
 import subprocess
-from  varut import jsonut, utils, defs
+from  account import user
+from  varut   import jsonut, utils, defs
 
 def do ( inp ):
 
@@ -51,18 +52,22 @@ def do ( inp ):
     default_project_data.desc     = "Default CCP4 project"
     default_project_data.projects = []
 
+    user_data = user.User()
     pwd = utils.make_id()
-    user_data = jsonut.jObject()
-    user_data.user_name = inp.data.user_name
-    user_data.email     = inp.data.email
-    user_data.login     = inp.data.login
-    user_data.projects  = [default_project_data]
-    user_data.pwd       = hashlib.md5(pwd).hexdigest()
+    user_data.set_user ( inp.data.user_name,inp.data.email,
+                         inp.data.login,[default_project_data],pwd )
+
+#    pwd = utils.make_id()
+#    user_data = jsonut.jObject()
+#    user_data.user_name = inp.data.user_name
+#    user_data.email     = inp.data.email
+#    user_data.login     = inp.data.login
+#    user_data.projects  = [default_project_data]
+#    user_data.pwd       = hashlib.md5(pwd).hexdigest()
 
     outdata = utils.make_repo (
        utils.get_user_repo_path ( defs.master_path(),inp.data.login ),
-       defs.user_data_name(),user_data.to_JSON()
-    )
+                            defs.user_data_name(),user_data.to_JSON() )
 
     outdata.action = inp.action
     if outdata.result == "repo_exists":

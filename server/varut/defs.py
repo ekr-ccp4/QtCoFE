@@ -23,8 +23,6 @@ def is_master_path():
 def set_master_path(mpath):
     global __master_path__
     __master_path__ = mpath
-    if not __master_path__.endswith("/"):
-        __master_path__ += "/"
     return
 
 def master_path():  return __master_path__

@@ -4,7 +4,7 @@
 #  Task class template
 #  ------------------------------------------------------------------
 
-from varut  import jsonut
+from varut  import jsonut, utils
 from dtypes import dummy, any
 
 #  constants for annotation in GUI dialogs/menus
@@ -89,6 +89,10 @@ class Task(jsonut.jObject):
         self.output_dtypes = [any  .DType().type]
 
         return
+
+    def run(self,inp):
+        return utils.make_return ( inp.action,"OK","OK" )
+
 
 
 #

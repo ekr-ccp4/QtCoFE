@@ -31,17 +31,22 @@
 //#include <QTimer>
 //#include <QTableWidgetItem>
 
+#include "qjson/QJsonObject.h"
 #include "qtx/qtx_table.h"
 
 #include "qtcofe_dialog_import.h"
+#include "qtcofe_server.h"
 #include "qtcofe_datamodel.h"
 #include "qtcofe_preferences.h"
+#include "qtcofe_srvdefs.h"
 #include "qtcofe_defs.h"
 
 qtCOFE::DataImportDialog::DataImportDialog ( QWidget        *parent,
+                                             int             jobID,
                                              DataModel      *dm,
                                              Qt::WindowFlags f )
                         : QDialog ( parent,f )  {
+  JobID       = jobID;
   dataModel   = dm;
   preferences = dataModel->getPreferences();
   session     = dataModel->getSession    ();
@@ -68,8 +73,8 @@ int          btnSize  = preferences->getToolButtonSize ();
           .arg(6*dataModel->getPreferences()->getFontPointSize()/5) );
   vbox->addWidget ( lbl,0 );
 
-  dataTable = new qtx::Table();
-  vbox->addWidget ( dataTable,100 );
+  importTable = new qtx::Table();
+  vbox->addWidget ( importTable,100 );
 
   gbox    = new QGridLayout();
   add_btn = new QToolButton();
@@ -113,37 +118,74 @@ int          btnSize  = preferences->getToolButtonSize ();
 
 void qtCOFE::DataImportDialog::makeEmptyTable()  {
 
-  dataTable->setColumnCount ( 3  );
-  dataTable->setRowCount    ( 10 );
-  dataTable->setAlternatingRowColors ( true );
+  importTable->setColumnCount ( 3  );
+  importTable->setRowCount    ( 10 );
+  importTable->setAlternatingRowColors ( true );
 
-  dataTable->setHorzHeader ( 0,"File"        );
-  dataTable->setHorzHeader ( 1,"Type"        );
-  dataTable->setHorzHeader ( 2,"Description" );
+  importTable->setHorzHeader ( 0,"File"        );
+  importTable->setHorzHeader ( 1,"Type"        );
+  importTable->setHorzHeader ( 2,"Description" );
 
-  dataTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
-  dataTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
-  for (int i=0;i<dataTable->rowCount();i++)  {
-    dataTable->setVertHeader ( i,"    " );
-    for (int j=0;j<dataTable->columnCount();j++)
-      dataTable->setTableItem  ( i,j," " );
+  importTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
+  importTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
+  for (int i=0;i<importTable->rowCount();i++)  {
+    importTable->setVertHeader ( i,"    " );
+    for (int j=0;j<importTable->columnCount();j++)
+      importTable->setTableItem  ( i,j," " );
   }
 
-  dataTable->setColumnWidth ( 0,dataTable->columnWidth(0)+50);
-  dataTable->setColumnWidth ( 1,dataTable->columnWidth(1)+30);
-  dataTable->setColumnWidth ( 2,dataTable->columnWidth(2)+150);
-  dataTable->setFullSize ( false,false );
-  dataTable->setRowCount ( 0 );
+  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+50);
+  importTable->setColumnWidth ( 1,importTable->columnWidth(1)+30);
+  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+150);
+  importTable->setFullSize ( false,false );
+  importTable->setRowCount ( 0 );
 
 }
+
+void qtCOFE::DataImportDialog::makeImportTable (
+                                     const QJsonObject & dataList )  {
+
+}
+
+void qtCOFE::DataImportDialog::importFile ( const QString & fpath )  {
+
+Server      server(preferences,session,this);
+QJsonObject jsonData;
+QJsonObject jsonReply;
+SERVER_RC   rc;
+
+  jsonData.insert ( "job_id"   ,JobID );
+  jsonData.insert ( "file_path",fpath );
+  rc = server.call ( qtCOFE_SERVER_ACT_ImportFile,jsonData,jsonReply );
+
+  if (rc!=SERVER_RC_Ok)  {
+    server.makeErrorMessage(this);
+  } else if (!jsonReply.keys().contains("result",Qt::CaseInsensitive))  {
+    QMessageBox::information ( this,"JSON Reply",
+      "Result key is missed. This is a program error, please "
+      "report to developers" );
+  } else  {
+    if (jsonReply.value("result").toString()!="OK")  {
+      QString message = "Operation failed, result code is <b>" +
+              jsonReply.value("result").toString() + "</b>:<p><i>" +
+              jsonReply.value("message").toString() + "</i>.";
+      if (!jsonReply.keys().contains("imports",Qt::CaseInsensitive))
+        message.append ( "<p>List of imports could not be obtained." );
+      QMessageBox::information ( this,"Error",message );
+    }
+    makeImportTable ( jsonReply );
+  }
+
+}
+
 
 void qtCOFE::DataImportDialog::addClicked()  {
 QStringList files = QFileDialog::getOpenFileNames ( this,
                                                    "Import File(s)" );
-//  if (!files.isEmpty())  {
-//    foreach (QString f,files)
-//      s += f + ";  ";
-//  }
+  if (!files.isEmpty())  {
+    foreach (QString f,files)
+      importFile ( f );
+  }
 
 }
 

@@ -112,15 +112,16 @@ TaskDialog *tdlg = new TaskDialog ( this,dataModel );
   tdlg->show();
   tdlg->setFixedSize ( tdlg->size() );
   if (tdlg->exec()==QDialog::Accepted)  {
-    if (tdlg->getSelTaskType()=="task_import")  {
-      DataImportDialog *didlg = new DataImportDialog ( this,dataModel );
-      didlg->exec();
-    }
     QJsonObject *jsonData = jobTree->getTreeData();
     jsonData->insert ( "parent"   ,jobID );
     jsonData->insert ( "task_type",tdlg->getSelTaskType() );
     project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
     delete jsonData;
+    if (tdlg->getSelTaskType()=="task_import")  {
+      DataImportDialog *didlg = new DataImportDialog ( this,
+                                   jobTree->currentJobId(),dataModel );
+      didlg->exec();
+    }
   }
 
 }

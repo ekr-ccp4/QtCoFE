@@ -64,12 +64,14 @@ OTHER_FILES += \
     server/account/login.py \
     server/account/create_new_user.py \
     server/account/projects.py \
+    server/account/user.py \
     server/cofe_proc_gate.py \
     server/varut/jsonut.py \
     server/varut/gitut.py \
     server/varut/utils.py \
     server/varut/defs.py \
     server/project/jobs.py \
+    server/project/job.py \
     server/project/task.py \
     server/project/dtype.py \
     server/tasks/root.py \

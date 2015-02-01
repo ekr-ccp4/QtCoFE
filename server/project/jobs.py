@@ -88,8 +88,8 @@
 
 import os
 import shutil
-from varut import jsonut, gitut, utils, defs
-
+from varut   import jsonut, gitut, utils, defs
+from project import job
 
 def get_list(inp):
 
@@ -168,8 +168,11 @@ def add(inp):
                                               "Wrong job id" )
 
     project_data.job_count  += 1
-    job_data = utils.minimum_job_data ( "","",
+    job_data = job.Job();
+    job_data.set_minimal_data ( "","",
                            inp.data.task_type,project_data.job_count )
+#    job_data = utils.minimum_job_data ( "","",
+#                           inp.data.task_type,project_data.job_count )
     j.j.jobs.append ( job_data );
 
     project_data.current_job = job_data.id

@@ -15,6 +15,7 @@ class DType(jsonut.jObject):
         self.name = "Template"
         self.desc = "Data type template"
         self.icon = "dtype_template.png"
+        self.file = ""
         return
 
 

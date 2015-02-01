@@ -28,6 +28,8 @@ class QToolButton;
 class QPushButton;
 QT_END_NAMESPACE
 
+class QJsonObject;
+
 namespace qtx  {
   class Table;
 }
@@ -43,7 +45,7 @@ namespace qtCOFE  {
 
     public:
 
-      DataImportDialog ( QWidget *parent, DataModel *dm,
+      DataImportDialog ( QWidget *parent, int jobID, DataModel *dm,
                          Qt::WindowFlags f = 0 );
       ~DataImportDialog();
 
@@ -52,13 +54,16 @@ namespace qtCOFE  {
     protected:
       Preferences  *preferences;
       Session      *session;
+      int           JobID;
       DataModel    *dataModel;
-      qtx::Table   *dataTable;
+      qtx::Table   *importTable;
       QToolButton  *add_btn;
       QToolButton  *del_btn;
       QPushButton  *close_btn;
 
-      void makeLayout();
+      void makeLayout      ();
+      void makeImportTable ( const QJsonObject & dataList );
+      void importFile      ( const QString     & fpath    );
 
     protected slots:
       void addClicked();

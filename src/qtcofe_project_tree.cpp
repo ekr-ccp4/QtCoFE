@@ -163,6 +163,7 @@ void qtCOFE::ProjectTree::makeTree ( QJsonObject & prjData )  {
     } else
       session->jobID = 0;
     del_btn->setEnabled ( session->jobID>0 );
+    add_btn->setEnabled ( true );
   } else  {
     session->jobID = 0;
     add_btn->setEnabled ( false );
