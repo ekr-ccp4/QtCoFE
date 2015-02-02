@@ -32,6 +32,7 @@
 //#include <QTableWidgetItem>
 
 #include "qjson/QJsonObject.h"
+#include "qjson/QJsonArray.h"
 #include "qtx/qtx_table.h"
 
 #include "qtcofe_dialog_import.h"
@@ -143,7 +144,22 @@ void qtCOFE::DataImportDialog::makeEmptyTable()  {
 }
 
 void qtCOFE::DataImportDialog::makeImportTable (
-                                     const QJsonObject & dataList )  {
+                                     const QJsonObject & jobData )  {
+QJsonArray data = jobData.value("data").toArray();
+
+  importTable->setRowCount ( qMax(data.count(),10) );
+  for (int i=0;i<data.count();i++)  {
+    QJsonObject jd = data[data.count()-i-1].toObject();
+    importTable->setVertHeader ( i,QString("%1").arg(i+1) );
+    importTable->setTableItem  ( i,0,jd.value("file").toString(),
+                                   Qt::AlignLeft  );
+    importTable->setTableItem  ( i,1,jd.value("name").toString(),
+                                   Qt::AlignLeft  );
+    importTable->setTableItem  ( i,2,jd.value("desc").toString(),
+                                   Qt::AlignLeft  );
+  }
+  importTable->setFullSize ( false,false  );
+  importTable->setRowCount ( data.count() );
 
 }
 
@@ -173,7 +189,7 @@ SERVER_RC   rc;
         message.append ( "<p>List of imports could not be obtained." );
       QMessageBox::information ( this,"Error",message );
     }
-    makeImportTable ( jsonReply );
+    makeImportTable ( jsonReply.value("job").toObject() );
   }
 
 }

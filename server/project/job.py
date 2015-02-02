@@ -33,9 +33,9 @@ class Job(jsonut.jObject):
         if result.result != "OK":
             return result
 
-        super(Job,self).read_json (
-            os.path.join ( project_repo_dir,"job." + str(job_data.id),
-                                                defs.job_data_name()) )
+        super(Job,self).read_json ( open (
+            os.path.join ( project_repo_dir,"job." + str(jobID),
+                                        defs.job_data_name())).read() )
 
         return utils.make_return ( "","OK","OK" )
 
@@ -43,7 +43,7 @@ class Job(jsonut.jObject):
     def write ( self,project_repo_dir ):
         file = open ( os.path.join(project_repo_dir,"job." + str(self.id),
                                defs.job_data_name()),"w" )
-        file.write ( to_JSON() )
+        file.write ( self.to_JSON() )
         file.close ()
         return
 

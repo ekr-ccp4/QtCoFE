@@ -142,28 +142,28 @@ def add(inp):
         return utils.make_return ( inp.action,
                              "wrong_action_code","Wrong action code" )
 
-    repo_dir = utils.get_project_repo_path ( defs.master_path(),inp.login,
-                                             inp.project )
+    project_repo_dir = utils.get_project_repo_path (
+                             defs.master_path(),inp.login,inp.project )
 
-    if not os.path.isdir(repo_dir):
+    if not os.path.isdir(project_repo_dir):
         return utils.make_return ( inp.action,"repo_does_not_exist",
                                  "Project repository '" + inp.project + \
                                  "' does not exist" )
 
-    result = gitut.lock ( repo_dir )
+    result = gitut.lock ( project_repo_dir )
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    project_data = utils.get_project_data ( repo_dir )
+    project_data = utils.get_project_data ( project_repo_dir )
 
     if hasattr(project_data,"result"):
-        gitut.unlock ( repo_dir )
+        gitut.unlock ( project_repo_dir )
         return pass_return ( inp.action,project_data )
 
     j = __find ( project_data.jobs,inp.data.parent )
 
     if not j:
-        gitut.unlock(repo_dir)
+        gitut.unlock(project_repo_dir)
         return utils.make_return ( inp.action,"wrong_job_specs",
                                               "Wrong job id" )
 
@@ -171,18 +171,20 @@ def add(inp):
     job_data = job.Job();
     job_data.set_minimal_data ( "","",
                            inp.data.task_type,project_data.job_count )
-#    job_data = utils.minimum_job_data ( "","",
-#                           inp.data.task_type,project_data.job_count )
     j.j.jobs.append ( job_data );
 
     project_data.current_job = job_data.id
-    utils.write_project_data ( repo_dir,project_data )
 
-    os.mkdir ( utils.get_job_dir_path ( defs.master_path(),inp.login,
-                                        inp.project,job_data.id ) )
-    utils.write_job_data  ( repo_dir,job_data )
+    try:
+        os.mkdir ( utils.get_job_dir_path ( defs.master_path(),inp.login,
+                                            inp.project,job_data.id ) )
+    except OSError,err:
+        pass
+    job_data.write ( project_repo_dir );
 
-    result = gitut.commit ( repo_dir,["."],
+    utils.write_project_data ( project_repo_dir,project_data )
+
+    result = gitut.commit ( project_repo_dir,["."],
         "add job " + str(job_data.id) + \
         " to job " + str(inp.data.parent) )
 

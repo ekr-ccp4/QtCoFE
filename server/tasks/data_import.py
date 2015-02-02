@@ -37,9 +37,9 @@
 
 import os
 import shutil
-from project import task
-from varut   import gitut, jsonut, utils
-from dtypes  import dummy, any
+from project import task,  job
+from varut   import gitut, jsonut, utils, defs
+from dtypes  import dummy, any   , sequence
 
 class Task(task.Task):
 
@@ -81,8 +81,8 @@ class Task(task.Task):
         if result.result != "OK":
             return utils.pass_return ( inp.action,result )
 
-        job_data = utils.get_job_data ( project_repo_dir,inp.data.job_id )
-
+        job_data = job.Job();
+        job_data.read ( project_repo_dir,inp.data.job_id )
         if hasattr(job_data,"result"):
             gitut.unlock ( project_repo_dir )
             return pass_return ( inp.action,job_data )
@@ -94,12 +94,27 @@ class Task(task.Task):
             shutil.copy ( inp.data.file_path,job_dir )
         except IOError,err:
             gitut.unlock ( project_repo_dir )
-            return utils.make_return ( inp.action,"file_copy_error",
-                                       "File copy error: " + err )
+            result = utils.make_return ( inp.action,"file_copy_error",
+                                             "File copy error: " + err )
+            result.job = job_data
+            return utils.pass_return ( inp.action,job_data )
 
-#        if file_ext == ".seq":
+        if file_ext == ".seq":
+            seq      = sequence.DType()
+            seq.file = os.path.basename ( inp.data.file_path )
+            job_data.data.append ( seq )
 
-        return utils.make_return ( inp.action,"OK","OK" )
+        job_data.write ( project_repo_dir )
+        gitut.unlock   ( project_repo_dir )
+
+        result     = utils.make_return ( inp.action,"OK","OK" )
+        result.job = job_data
+
+        return result
+
+def run(inp):
+    T = Task()
+    return T.run ( inp )
 
 #
 #  ------------------------------------------------------------------

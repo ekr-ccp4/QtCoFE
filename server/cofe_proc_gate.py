@@ -36,6 +36,7 @@ import sys
 from varut   import jsonut, defs, utils
 from account import create_new_user, login, projects
 from project import jobs, datamodel
+from tasks   import data_import
 
 #print sys.argv[0] + '  ' + sys.argv[1]
 
@@ -68,7 +69,8 @@ action = {
     "get_list_of_jobs"       : jobs.get_list,
     "add_job"                : jobs.add,
     "del_job"                : jobs.delete,
-    "get_data_model"         : datamodel.get_data_model
+    "get_data_model"         : datamodel.get_data_model,
+    "import_file"            : data_import.run
 }
 
 

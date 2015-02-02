@@ -62,8 +62,8 @@ namespace qtCOFE  {
       QPushButton  *close_btn;
 
       void makeLayout      ();
-      void makeImportTable ( const QJsonObject & dataList );
-      void importFile      ( const QString     & fpath    );
+      void makeImportTable ( const QJsonObject & jobData );
+      void importFile      ( const QString     & fpath   );
 
     protected slots:
       void addClicked();

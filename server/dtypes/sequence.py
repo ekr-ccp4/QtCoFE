@@ -17,7 +17,6 @@ class DType(dtype.DType):
         self.icon = "dtype_sequence.png"
         return
 
-
 #
 #  ------------------------------------------------------------------
 #   Tests
