@@ -163,6 +163,11 @@ QJsonArray data = jobData.value("data").toArray();
 
 }
 
+int qtCOFE::DataImportDialog::importCount()  {
+  if (importTable)  return importTable->rowCount();
+  return 0;
+}
+
 void qtCOFE::DataImportDialog::importFile ( const QString & fpath )  {
 
 Server      server(preferences,session,this);

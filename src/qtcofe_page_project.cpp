@@ -121,6 +121,8 @@ TaskDialog *tdlg = new TaskDialog ( this,dataModel );
       DataImportDialog *didlg = new DataImportDialog ( this,
                                    jobTree->currentJobId(),dataModel );
       didlg->exec();
+      if (didlg->importCount()<=0)
+        jobTree->deleteCurrentJob();
     }
   }
 

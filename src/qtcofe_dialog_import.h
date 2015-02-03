@@ -51,6 +51,8 @@ namespace qtCOFE  {
 
       void makeEmptyTable();
 
+      int importCount();
+
     protected:
       Preferences  *preferences;
       Session      *session;

@@ -58,6 +58,8 @@ namespace qtCOFE  {
       int  parentJobId ();
       int  siblingJobId();
 
+      void deleteCurrentJob();
+
     signals:
       void add_new_job   ( int parentId );
       void del_job       ( int jobId, int nextCrJobId );

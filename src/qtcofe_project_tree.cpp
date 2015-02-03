@@ -243,7 +243,6 @@ void qtCOFE::ProjectTree::delBtnClicked()  {
 qtCOFE::Text2Dialog *t2dlg;
 QTreeWidgetItem     *item = jobTree->currentItem();
 QString              prompt;
-int                  nextJobId;
 bool                 delete_job;
 
   if (!item)  {
@@ -271,16 +270,16 @@ bool                 delete_job;
   delete_job = (t2dlg->exec()==QDialog::Accepted);
   delete t2dlg;
 
-  if (delete_job)  {
+  if (delete_job)
+    deleteCurrentJob();
 
-    nextJobId = siblingJobId();
-    if (nextJobId<0)
-      nextJobId = parentJobId();
+}
 
-    emit del_job ( currentJobId(),nextJobId );
-
-  }
-
+void qtCOFE::ProjectTree::deleteCurrentJob()  {
+int  nextJobId = siblingJobId();
+  if (nextJobId<0)
+    nextJobId = parentJobId();
+  emit del_job ( currentJobId(),nextJobId );
 }
 
 void qtCOFE::ProjectTree::dataBtnClicked()  {

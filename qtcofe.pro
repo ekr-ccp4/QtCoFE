@@ -72,6 +72,7 @@ OTHER_FILES += \
     server/varut/defs.py \
     server/project/jobs.py \
     server/project/job.py \
+    server/project/tree.py \
     server/project/task.py \
     server/project/dtype.py \
     server/tasks/root.py \
