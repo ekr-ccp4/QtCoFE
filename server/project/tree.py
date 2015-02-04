@@ -19,10 +19,11 @@ class Tree(jsonut.jObject):
         self.job_count   = 0
         self.current_job = 0;
         job_data = job.Job();
-        job.data.set_minimal_data ( name,"Project root","task_root",
+        job_data.set_minimal_data ( name,"Project root","task_root",
                                     self.job_count )
         self.jobs        = [job_data]
         return;
+
 
     def read ( self,project_repo_dir ):
     #  Lock repository before calling this function
@@ -33,18 +34,20 @@ class Tree(jsonut.jObject):
 
         result = gitut.checkout ( project_repo_dir,[] )
         if result.result != "OK":
+            result.jobs = []
             return result
 
-        super(Job,self).read_json ( open (
-            os.path.join ( project_repo_dir,"job." + str(jobID),
-                                        defs.job_data_name())).read() )
+        super(Tree,self).read_json ( open (
+            os.path.join ( project_repo_dir,
+                           defs.project_data_name())).read() )
 
         return utils.make_return ( "","OK","OK" )
 
 
+
     def write ( self,project_repo_dir ):
-        file = open ( os.path.join(project_repo_dir,"job." + str(self.id),
-                               defs.job_data_name()),"w" )
+        file = open ( os.path.join(project_repo_dir,
+                      defs.project_data_name()),"w" )
         file.write ( self.to_JSON() )
         file.close ()
         return
@@ -59,8 +62,8 @@ class Tree(jsonut.jObject):
 if __name__ == "__main__":
     import sys
 
-    J = Job()
-    J.set_minimal_data ( "job-name","job-desc","job-type",1 )
-    print "\nJob:\n\n" + J.to_JSON()
+    T = Tree()
+    T.set_minimal_data ( "project-name","project-desc" )
+    print "\nTree:\n\n" + T.to_JSON()
 
     sys.exit(0)

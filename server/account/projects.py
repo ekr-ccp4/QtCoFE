@@ -86,7 +86,9 @@
 
 import os
 import shutil
-from varut import jsonut, gitut, utils, defs
+from account import user
+from project import tree
+from varut   import jsonut, gitut, utils, defs
 
 
 def get_list(inp):
@@ -101,15 +103,11 @@ def get_list(inp):
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    result = utils.get_user_data ( repo_dir )
+    user_data = user.User()
+    result    = user_data.read ( repo_dir )
     gitut.unlock(repo_dir)
-    result.action = inp.action
 
-    if not hasattr(result,"result"):
-        result.result  = "OK"
-        result.message = "OK"
-
-    return result
+    return utils.add_return ( inp.action,result,user_data )
 
 
 def __find ( projects,name ):
@@ -167,23 +165,23 @@ def add(inp):
         return utils.make_return ( inp.action,
                              "wrong_action_code","Wrong action code" )
 
-    repo_dir  = utils.get_user_repo_path ( defs.master_path(),inp.login )
+    user_repo_dir = utils.get_user_repo_path ( defs.master_path(),inp.login )
 
-    result = gitut.lock ( repo_dir )
+    result = gitut.lock ( user_repo_dir )
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    user_data = utils.get_user_data ( repo_dir )
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
 
-    if hasattr(user_data,"result"):
-        gitut.unlock ( repo_dir )
-        user_data.action = inp.action
-        return user_data
+    if result.result != "OK":
+        gitut.unlock ( user_repo_dir )
+        return utils.add_return ( inp.action,result,user_data )
 
     project_repo_dir = utils.get_project_repo_path (
                             defs.master_path(),inp.login,inp.data.name )
     if os.path.isdir(project_repo_dir):
-        gitut.unlock ( repo_dir )
+        gitut.unlock ( user_repo_dir )
         user_data.action  = inp.action
         user_data.result  = "duplicate_project_name"
         user_data.message = "Project name '" + inp.data.name + "' already exists"
@@ -192,7 +190,7 @@ def add(inp):
     p = __add ( user_data.projects,inp.data.parent,inp.data.sibling )
 
     if not p:
-        gitut.unlock(repo_dir)
+        gitut.unlock ( user_repo_dir )
         return utils.make_return ( inp.action,
             "wrong_project_specs",
             "Wrong parent or sibling project names" )
@@ -201,15 +199,15 @@ def add(inp):
     p.desc     = inp.data.desc
     p.projects = []
 
-    utils.write_user_data ( repo_dir,user_data )
+    user_data.write ( user_repo_dir )
 
-    result = gitut.commit ( repo_dir,[defs.user_data_name()],
+    result = gitut.commit ( user_repo_dir,[defs.user_data_name()],
                             "add project " + p.name )
     if result.result == "OK":
+        project_data = tree.Tree()
+        project_data.set_minimal_data ( inp.data.name,inp.data.desc )
         result = utils.make_repo ( project_repo_dir,
-                     defs.project_data_name(),
-                     utils.minimum_project_data (
-                         inp.data.name,inp.data.desc).to_JSON() )
+                     defs.project_data_name(),project_data.to_JSON() )
 
     user_data.action = inp.action
     user_data.result = result.result
@@ -219,9 +217,10 @@ def add(inp):
     else:
         user_data.message = result.message
 
-    gitut.unlock(repo_dir)
+    gitut.unlock ( user_repo_dir )
 
     return user_data
+
 
 
 def set_desc(inp):
@@ -236,12 +235,12 @@ def set_desc(inp):
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    user_data = utils.get_user_data ( user_repo_dir )
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
 
-    if hasattr(user_data,"result"):
-        gitut.unlock(user_repo_dir)
-        user_data.action = inp.action
-        return user_data
+    if result.result != "OK":
+        gitut.unlock ( user_repo_dir )
+        return utils.add_return ( inp.action,result,user_data )
 
     p = __find ( user_data.projects,inp.data.name )
     if not p:
@@ -256,24 +255,22 @@ def set_desc(inp):
 
     result = gitut.lock ( project_repo_dir )
     if result.result != "OK":
-        gitut.unlock(user_repo_dir)
+        gitut.unlock ( user_repo_dir )
         return utils.pass_return ( inp.action,result )
 
-    project_data = utils.get_project_data ( project_repo_dir )
+    project_data = tree.Tree()
+    result = project_data.read ( project_repo_dir )
 
-    if hasattr(project_data,"result"):
-        gitut.unlock(user_repo_dir)
-        gitut.unlock(project_repo_dir)
-        user_data.action  = inp.action
-        user_data.result  = project_data.result
-        user_data.message = project_data.message
-        return user_data
+    if result.result != "OK":
+        gitut.unlock ( user_repo_dir    )
+        gitut.unlock ( project_repo_dir )
+        return utils.add_return ( inp.action,result,user_data )
 
     p.p.desc          = inp.data.desc
     project_data.desc = inp.data.desc
 
-    utils.write_user_data    ( user_repo_dir   ,user_data    )
-    utils.write_project_data ( project_repo_dir,project_data )
+    user_data.write    ( user_repo_dir    )
+    project_data.write ( project_repo_dir )
 
     result_u = gitut.commit ( user_repo_dir,[defs.user_data_name()],
                          "change description for project " + p.p.name )
@@ -293,8 +290,8 @@ def set_desc(inp):
         user_data.result  = "OK"
         user_data.message = "Project description changed successfully"
 
-    gitut.unlock(user_repo_dir)
-    gitut.unlock(project_repo_dir)
+    gitut.unlock ( user_repo_dir    )
+    gitut.unlock ( project_repo_dir )
 
     return user_data
 
@@ -325,12 +322,12 @@ def delete(inp):
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    user_data = utils.get_user_data ( user_repo_dir )
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
 
-    if hasattr(user_data,"result"):
-        gitut.unlock(user_repo_dir)
-        user_data.action = inp.action
-        return user_data
+    if result.result != "OK":
+        gitut.unlock ( user_repo_dir )
+        return utils.add_return ( inp.action,result,user_data )
 
     p = __find ( user_data.projects,inp.data.name )
     if not p:
@@ -343,7 +340,7 @@ def delete(inp):
     __delete_project_dirs ( p.p,inp.login )
     p.v.remove ( p.p )
 
-    utils.write_user_data ( user_repo_dir,user_data )
+    user_data.write ( user_repo_dir )
     result = gitut.commit ( user_repo_dir,[defs.user_data_name()],
                             "delete project " + inp.data.name + \
                             " and its children" )

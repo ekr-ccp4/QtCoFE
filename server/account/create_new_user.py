@@ -39,6 +39,7 @@ import os
 #import hashlib
 import subprocess
 from  account import user
+from  project import tree
 from  varut   import jsonut, utils, defs
 
 def do ( inp ):
@@ -47,23 +48,14 @@ def do ( inp ):
         return utils.make_return ( inp.action,
                              "wrong_action_code","Wrong action code" )
 
-    default_project_data = jsonut.jObject()
-    default_project_data.name     = defs.default_project_name()
-    default_project_data.desc     = "Default CCP4 project"
-    default_project_data.projects = []
+    default_project_data = tree.Tree()
+    default_project_data.set_minimal_data ( defs.default_project_name(),
+                                            "Default CCP4 project" )
 
     user_data = user.User()
     pwd = utils.make_id()
     user_data.set_user ( inp.data.user_name,inp.data.email,
                          inp.data.login,[default_project_data],pwd )
-
-#    pwd = utils.make_id()
-#    user_data = jsonut.jObject()
-#    user_data.user_name = inp.data.user_name
-#    user_data.email     = inp.data.email
-#    user_data.login     = inp.data.login
-#    user_data.projects  = [default_project_data]
-#    user_data.pwd       = hashlib.md5(pwd).hexdigest()
 
     outdata = utils.make_repo (
        utils.get_user_repo_path ( defs.master_path(),inp.data.login ),
@@ -79,9 +71,8 @@ def do ( inp ):
     outdata1 = utils.make_repo (
         utils.get_project_repo_path ( defs.master_path(),
             inp.data.login,defs.default_project_name() ),
-                defs.project_data_name(), utils.minimum_project_data(
-                    defs.default_project_name(),
-                        default_project_data.desc).to_JSON() )
+                defs.project_data_name(),
+                    default_project_data.to_JSON() )
     if outdata1.result != "OK":
         return outdata1
 

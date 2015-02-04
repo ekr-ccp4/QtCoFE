@@ -25,7 +25,7 @@ def git ( repo_dir,params ):
                    "' rc=" + str(p.returncode)
     except OSError,err:
         return "exception on 'git " + " ".join(params) + "' in '" + \
-               repo_dir + "': " + err
+               repo_dir + "': " + str(err)
 
 
 def lock ( repo_dir ):
@@ -36,7 +36,7 @@ def lock ( repo_dir ):
     if rc.startswith("exception"):
         result.result  = "git_error"
         result.message = rc
-        return rc
+        return result
 
     n  = 0;
     while rc != "OK" and n < 2:

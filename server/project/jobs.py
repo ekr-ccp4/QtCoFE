@@ -89,7 +89,7 @@
 import os
 import shutil
 from varut   import jsonut, gitut, utils, defs
-from project import job
+from project import job, tree
 
 def get_list(inp):
 
@@ -109,15 +109,12 @@ def get_list(inp):
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    result = utils.get_project_data ( repo_dir )
+    project_data = tree.Tree()
+    result = project_data.read ( repo_dir )
     gitut.unlock(repo_dir)
-    result.action = inp.action
 
-    if not hasattr(result,"result"):
-        result.result  = "OK"
-        result.message = "OK"
+    return utils.add_return ( inp.action,result,project_data )
 
-    return result
 
 
 def __find ( jobs,id ):
@@ -154,16 +151,17 @@ def add(inp):
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    project_data = utils.get_project_data ( project_repo_dir )
+    project_data = tree.Tree()
+    result = project_data.read ( project_repo_dir )
 
-    if hasattr(project_data,"result"):
+    if result.result != "OK":
         gitut.unlock ( project_repo_dir )
-        return pass_return ( inp.action,project_data )
+        return utils.add_return ( inp.action,result,project_data )
 
     j = __find ( project_data.jobs,inp.data.parent )
 
     if not j:
-        gitut.unlock(project_repo_dir)
+        gitut.unlock ( project_repo_dir )
         return utils.make_return ( inp.action,"wrong_job_specs",
                                               "Wrong job id" )
 
@@ -182,7 +180,7 @@ def add(inp):
         pass
     job_data.write ( project_repo_dir );
 
-    utils.write_project_data ( project_repo_dir,project_data )
+    project_data.write ( project_repo_dir )
 
     result = gitut.commit ( project_repo_dir,["."],
         "add job " + str(job_data.id) + \
@@ -218,28 +216,29 @@ def delete(inp):
         return utils.make_return ( inp.action,
                              "wrong_action_code","Wrong action code" )
 
-    repo_dir = utils.get_project_repo_path ( defs.master_path(),inp.login,
-                                             inp.project )
+    project_repo_dir = utils.get_project_repo_path (
+                             defs.master_path(),inp.login,inp.project )
 
-    if not os.path.isdir(repo_dir):
+    if not os.path.isdir(project_repo_dir):
         return utils.make_return ( inp.action,"repo_does_not_exist",
                                  "Project repository '" + inp.project + \
                                  "' does not exist" )
 
-    result = gitut.lock ( repo_dir )
+    result = gitut.lock ( project_repo_dir )
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
-    project_data = utils.get_project_data ( repo_dir )
+    project_data = tree.Tree()
+    result = project_data.read ( project_repo_dir )
 
-    if hasattr(project_data,"result"):
-        gitut.unlock ( repo_dir )
-        return pass_return ( inp.action,project_data )
+    if result.result != "OK":
+        gitut.unlock ( project_repo_dir )
+        return utils.add_return ( inp.action,result,project_data )
 
     j = __find ( project_data.jobs,inp.data.job )
 
     if not j:
-        gitut.unlock(repo_dir)
+        gitut.unlock ( project_repo_dir )
         return utils.make_return ( inp.action,"wrong_job_specs",
                                               "Wrong job id" )
 
@@ -247,9 +246,9 @@ def delete(inp):
     j.v.remove ( j.j )
 
     project_data.current_job = inp.data.next
-    utils.write_project_data ( repo_dir,project_data )
+    project_data.write ( project_repo_dir )
 
-    result = gitut.commit ( repo_dir,["."],
+    result = gitut.commit ( project_repo_dir,["."],
                             "delete job " + str(inp.data.job)  )
 
     project_data.action = inp.action
