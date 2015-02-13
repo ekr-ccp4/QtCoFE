@@ -35,22 +35,23 @@
 #include "qtcofe_preferences.h"
 #include "qtcofe_defs.h"
 
-qtCOFE::TaskDialog::TaskDialog ( QWidget        *parent,
-                                 DataModel      *dm,
-                                 Qt::WindowFlags f )
+qtCOFE::TaskDialog::TaskDialog ( QWidget           * parent,
+                                 DataModel         * dm,
+                                 const QStringList & dtypes,
+                                 Qt::WindowFlags     f )
                    : QDialog ( parent,f )  {
   dataModel    = dm;
   setStyleSheet ( dataModel->getPreferences()->getFontSizeStyleSheet(1.0) );
   signalMapper = new QSignalMapper ( this );
   setWindowTitle ( "Tasks" );
-  makeLayout();
+  makeLayout ( dtypes );
 //  setFixedSize(size());
   fixSize();
 }
 
 qtCOFE::TaskDialog::~TaskDialog()  {}
 
-void qtCOFE::TaskDialog::makeLayout()  {
+void qtCOFE::TaskDialog::makeLayout ( const QStringList & dtypes )  {
 QVBoxLayout *vbox;
 QHBoxLayout *hbox;
 QGridLayout *gbox;
@@ -58,9 +59,12 @@ QWidget     *w;
 QLabel      *lbl;
 int          btnSize  = 3*dataModel->getPreferences()->getFontPointSize();
 //QString      btnStyle = "padding:0px;margin:0px;border:0px;";
+QString      btnStyle = "border:2px solid #FF0000;border-radius:6px;";
 QString      lblStyle = QString ( "font-size: %1pt;" )
              .arg(9*dataModel->getPreferences()->getFontPointSize()/10);
-int          r,nc,c;
+int          r,nc,c,dkey;
+
+  buttonMap.clear();
 
   gbox = new QGridLayout();
 
@@ -80,7 +84,10 @@ int          r,nc,c;
           QToolButton *btn = new QToolButton();
           btn->setIcon ( QIcon(QString(qtCOFE_icon_base)+task->icon) );
           btn->setIconSize   ( QSize(btnSize,btnSize) );
-//          btn->setStyleSheet ( btn->styleSheet() + btnStyle   );
+          dkey = task->hasInput ( dtypes );
+          if (!dkey)
+            btn->setStyleSheet ( btn->styleSheet() + btnStyle );
+          buttonMap[task->type] = dkey;
           btn->setToolTip    ( task->desc );
           lbl  = new QLabel  ( task->name );
           lbl->setStyleSheet ( lblStyle   );

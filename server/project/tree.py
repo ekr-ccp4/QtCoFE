@@ -20,7 +20,7 @@ class Tree(jsonut.jObject):
         self.current_job = 0;
         job_data = job.Job();
         job_data.set_minimal_data ( name,"Project root","task_root",
-                                    self.job_count )
+                                    -1,self.job_count )
         self.jobs        = [job_data]
         return;
 

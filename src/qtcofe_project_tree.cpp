@@ -301,3 +301,28 @@ int jid = currentJobId();
     emit crjob_changed ( jid );
 
 }
+
+void qtCOFE::ProjectTree::getProjectedData ( QStringList & dtypes,
+                                QList<QTreeWidgetItem *> & nodes )  {
+  dtypes.clear();
+  nodes .clear();
+  addProjectedData ( jobTree->currentItem(),dtypes,nodes );
+}
+
+void qtCOFE::ProjectTree::addProjectedData (
+                                  QTreeWidgetItem          * node,
+                                  QStringList              & dtypes,
+                                  QList<QTreeWidgetItem *> & nodes )  {
+  if (node)  {
+    Job *job = node->data ( 0,Qt::UserRole ).value<Job*>();
+    if (job)  {
+      foreach (QString d,job->dtypes)
+        if ((d!="dtype_any") && (d!="dtype_dummy") &&
+            (!dtypes.contains(d,Qt::CaseInsensitive))) {
+          dtypes.append ( d    );
+          nodes .append ( node );
+        }
+    }
+    addProjectedData ( node->parent(),dtypes,nodes );
+  }
+}

@@ -168,7 +168,9 @@ def add(inp):
     project_data.job_count  += 1
     job_data = job.Job();
     job_data.set_minimal_data ( "","",
-                           inp.data.task_type,project_data.job_count )
+                                inp.data.task_type,
+                                inp.data.parent,
+                                project_data.job_count )
     j.j.jobs.append ( job_data );
 
     project_data.current_job = job_data.id
@@ -208,6 +210,7 @@ def __delete_job_dirs ( job,login,project ):
         __delete_job_dirs ( j,login,project )
 
     return
+
 
 
 def delete(inp):
@@ -259,6 +262,27 @@ def delete(inp):
         project_data.message = result.message
 
     return project_data
+
+
+
+def set_job_data ( project_repo_dir,job_data ):
+
+    project_data = tree.Tree()
+    result = project_data.read ( project_repo_dir )
+
+    if result.result != "OK":
+        return utils.add_return ( "action",result,project_data )
+
+    j = __find ( project_data.jobs,job_data.id )
+
+    if not j:
+        return utils.make_return ( "action","wrong_job_specs",
+                                            "Wrong job id" )
+
+    j.v[j.v.index(j.j)] = job_data
+    project_data.write ( project_repo_dir )
+    return utils.make_return ( "action","OK","OK" )
+
 
 #
 #  ------------------------------------------------------------------

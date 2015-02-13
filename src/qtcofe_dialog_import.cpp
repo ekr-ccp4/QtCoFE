@@ -27,10 +27,13 @@
 #include <QHeaderView>
 #include <QFileDialog>
 #include <QMessageBox>
+//#include <QApplication>
 
 //#include <QTimer>
 //#include <QTableWidgetItem>
 
+//#include "qjson/QJsonDocument.h"
+//#include "qjson/QJsonParseError.h"
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"
 #include "qtx/qtx_table.h"
@@ -119,13 +122,14 @@ int          btnSize  = preferences->getToolButtonSize ();
 
 void qtCOFE::DataImportDialog::makeEmptyTable()  {
 
-  importTable->setColumnCount ( 3  );
+  importTable->setColumnCount ( 4  );
   importTable->setRowCount    ( 10 );
   importTable->setAlternatingRowColors ( true );
 
   importTable->setHorzHeader ( 0,"File"        );
   importTable->setHorzHeader ( 1,"Type"        );
-  importTable->setHorzHeader ( 2,"Description" );
+  importTable->setHorzHeader ( 2,"Metadata"    );
+  importTable->setHorzHeader ( 3,"Description" );
 
   importTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
   importTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
@@ -135,9 +139,13 @@ void qtCOFE::DataImportDialog::makeEmptyTable()  {
       importTable->setTableItem  ( i,j," " );
   }
 
-  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+50);
-  importTable->setColumnWidth ( 1,importTable->columnWidth(1)+30);
-  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+150);
+//  QApplication::flush();
+//  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+50);
+//  importTable->setColumnWidth ( 1,importTable->columnWidth(1)+20);
+//  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+40);
+//  importTable->setColumnWidth ( 3,importTable->columnWidth(3)+150);
+//  QApplication::flush();
+  importTable->resizeCells ();
   importTable->setFullSize ( false,false );
   importTable->setRowCount ( 0 );
 
@@ -145,21 +153,70 @@ void qtCOFE::DataImportDialog::makeEmptyTable()  {
 
 void qtCOFE::DataImportDialog::makeImportTable (
                                      const QJsonObject & jobData )  {
-QJsonArray data = jobData.value("data").toArray();
+QJsonArray        data = jobData.value("data").toArray();
+QTableWidgetItem *item;
+//QJsonParseError   e;
+QString           iconPath;
+QString           metadata;
+int               row  = 0;
+int               row0 = qMax(data.count(),10);
 
-  importTable->setRowCount ( qMax(data.count(),10) );
-  for (int i=0;i<data.count();i++)  {
-    QJsonObject jd = data[data.count()-i-1].toObject();
-    importTable->setVertHeader ( i,QString("%1").arg(i+1) );
-    importTable->setTableItem  ( i,0,jd.value("file").toString(),
-                                   Qt::AlignLeft  );
-    importTable->setTableItem  ( i,1,jd.value("name").toString(),
-                                   Qt::AlignLeft  );
-    importTable->setTableItem  ( i,2,jd.value("desc").toString(),
-                                   Qt::AlignLeft  );
+//  importTable->clear();
+//  importTable->setColumnCount ( 4  );
+  importTable->setRowCount ( row0 );
+  /*
+  importTable->setAlternatingRowColors ( true );
+
+  importTable->setHorzHeader ( 0,"File"        );
+  importTable->setHorzHeader ( 1,"Type"        );
+  importTable->setHorzHeader ( 2,"Metadata"    );
+  importTable->setHorzHeader ( 3,"Description" );
+
+  importTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
+  importTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
+  */
+  for (int i=0;i<importTable->rowCount();i++)  {
+    importTable->setVertHeader ( i,"    " );
+    for (int j=0;j<importTable->columnCount();j++)
+      importTable->setTableItem  ( i,j," " );
   }
-  importTable->setFullSize ( false,false  );
-  importTable->setRowCount ( data.count() );
+
+  for (int i=0;i<data.count();i++)  {
+    QJsonArray dlist = data[data.count()-i-1].toArray();
+    for (int j=0;j<dlist.count();j++)  {
+//      QJsonObject jd = QJsonDocument::fromJson (
+//                           dlist[j].toString().toAscii(),&e ).object();
+      QJsonObject jd = dlist[j].toObject();
+      if (row>=row0)  importTable->setRowCount ( row+1 );
+      importTable->setVertHeader ( row,QString("%1").arg(row+1) );
+      item = importTable->setTableItem  ( row,0,
+                    jd.value("file").toString(),
+                    Qt::AlignLeft | Qt::AlignVCenter );
+      iconPath = jd.value("icon").toString();
+      if (!iconPath.isEmpty())
+        item->setIcon ( QIcon(QString(qtCOFE_icon_base)+iconPath) );
+      importTable->setTableItem  ( row,1,jd.value("name").toString(),
+                                   Qt::AlignRight | Qt::AlignVCenter );
+      if (!jd.keys().contains("columns",Qt::CaseInsensitive))
+        metadata = " ";
+      else  {
+        metadata = "Columns:";
+        QJsonArray clist = jd.value("columns").toArray();
+        for (int k=0;k<clist.count();k++)
+          metadata.append ( " \n" + clist[k].toString() );
+      }
+//      QLabel *lbl = new QLabel ( metadata );
+//      importTable->setCellWidget ( row,2,lbl );
+      importTable->setTableItem  ( row,2,metadata,
+                                   Qt::AlignLeft | Qt::AlignVCenter );
+      importTable->setTableItem  ( row,3,jd.value("desc").toString(),
+                                   Qt::AlignLeft | Qt::AlignVCenter );
+      row++;
+    }
+  }
+  importTable->resizeCells ();
+  importTable->setFullSize ( false,false );
+  importTable->setRowCount ( row );
 
 }
 

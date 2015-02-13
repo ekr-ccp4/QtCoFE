@@ -10,11 +10,12 @@ from project import dtype
 
 class DType(dtype.DType):
 
-    def __init__(self):
+    def __init__(self,json_str=""):
+        super(DType,self).__init__(json_str)
         self.type = "dtype_sequence"
         self.name = "Sequence"
         self.desc = "Macromolecular sequence"
-        self.icon = "dtype_sequence.png"
+        self.icon = "data_sequence.png"
         return
 
 #

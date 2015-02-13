@@ -83,6 +83,8 @@ namespace qtCOFE  {
 
       int readData ( const QJsonObject & obj );
 
+      int hasInput ( const QStringList & dtypes );
+
   };
 
   class DataModel : public QObject  {

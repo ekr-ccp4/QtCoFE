@@ -20,6 +20,7 @@
 #include <QMessageBox>
 
 #include "qjson/QJsonObject.h"
+#include "qjson/QJsonArray.h"
 
 #include "qtcofe_job.h"
 #include "qtcofe_datamodel.h"
@@ -44,12 +45,22 @@ qtCOFE::Job::~Job() {
 
 void qtCOFE::Job::setJobData ( const QJsonObject & jobData,
                                DataModel * dataModel )  {
+QJsonArray  data = jobData.value("data").toArray();
 const Task *task = NULL;
+
+  dtypes.clear();
 
   type = jobData.value("type").toString();
   name = jobData.value("name").toString();
   desc = jobData.value("desc").toString();
   id   = jobData.value("id").toDouble();
+
+  for (int i=0;i<data.count();i++)  {
+    QJsonArray dlist = data[i].toArray();
+    if (dlist.count()>0)
+      dtypes.append ( dlist[0].toObject().value("type").toString() );
+  }
+
   if (jobData.keys().contains("expanded",Qt::CaseInsensitive))
     expanded = jobData.value("expanded").toBool(true);
 
@@ -59,5 +70,6 @@ const Task *task = NULL;
     if (desc.isEmpty())  desc = task->desc;
     icon = task->icon;
   }
+
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #  ------------------------------------------------------------------
-#  Task class template
+#  Task class template. Tasks and DTypes represent the data model.
 #  ------------------------------------------------------------------
 
 from varut  import jsonut, utils
@@ -85,6 +85,9 @@ class Task(jsonut.jObject):
         self.order   = 0  # position within section for GUI
         self.icon    = "task_template.png"
 
+        # input/output data lists contain data types which is
+        # required/produced by the given task. Full data lists
+        # are kept in the corresponding Job classes.
         self.input_dtypes  = [dummy.DType().type]
         self.output_dtypes = [any  .DType().type]
 

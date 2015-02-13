@@ -10,7 +10,8 @@ from varut import jsonut
 
 class DType(jsonut.jObject):
 
-    def __init__(self):
+    def __init__(self,json_str=""):
+        super(DType,self).__init__(json_str)
         self.type = "dtype_template"
         self.name = "Template"
         self.desc = "Data type template"

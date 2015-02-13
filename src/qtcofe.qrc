@@ -20,5 +20,7 @@
         <file>images/task_refinement.png</file>
         <file>images/task_root.png</file>
         <file>images/close.png</file>
+        <file>images/data_sequence.png</file>
+        <file>images/data_merged_mtz.png</file>
     </qresource>
 </RCC>

@@ -99,6 +99,21 @@ int        n;
 
 }
 
+int qtCOFE::Task::hasInput ( const QStringList & dtypes )  {
+bool included = true;
+
+  for (int i=0;(i<input_dtypes.count()) && included;i++)
+    included = dtypes.contains ( input_dtypes[i] );
+
+  if (!included)
+    included = input_dtypes.contains("dtype_dummy") ||
+               input_dtypes.contains("dtype_any");
+
+  if (included)  return 1;
+  return 0;
+
+}
+
 
 // =================================================================
 

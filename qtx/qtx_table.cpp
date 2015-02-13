@@ -78,9 +78,9 @@ QTableWidgetItem *qtx::Table::setTableItem ( int row, int col,
                                        Qt::Alignment alignment )  {
 QTableWidgetItem *item;
   item = new QTableWidgetItem ( text );
+  setItem ( row,col,item );
   item->setTextAlignment ( alignment );
   item->setFlags ( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-  setItem ( row,col,item );
   return item;
 }
 
@@ -91,9 +91,9 @@ QTableWidgetItem *item;
   if (alignment==Qt::AlignRight)
         item = new QTableWidgetItem ( tr("%1 ").arg(v) );
   else  item = new QTableWidgetItem ( tr("%1" ).arg(v) );
+  setItem ( row,col,item );
   item->setTextAlignment ( alignment );
   item->setFlags ( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-  setItem ( row,col,item );
   return item;
 }
 
@@ -104,9 +104,9 @@ QTableWidgetItem *item;
 char              S[100];
   sprintf ( S,format,q );
   item = new QTableWidgetItem ( S );
+  setItem ( row,col,item );
   item->setTextAlignment ( Qt::AlignRight );
   item->setFlags ( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-  setItem ( row,col,item );
   return item;
 }
 
@@ -125,11 +125,11 @@ QTableWidgetItem *qtx::Table::setTableItemCheck3 ( int row, int col,
                                       Qt::Alignment alignment )  {
 QTableWidgetItem *item;
   item = new QTableWidgetItem ( text );
+  setItem ( row,col,item );
   item->setTextAlignment ( alignment );
   item->setFlags ( Qt::ItemIsSelectable | Qt::ItemIsUserCheckable |
                                           Qt::ItemIsEnabled );
   item->setCheckState ( checkState );
-  setItem ( row,col,item );
   return item;
 }
 

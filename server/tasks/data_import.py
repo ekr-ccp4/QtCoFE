@@ -37,9 +37,9 @@
 
 import os
 import shutil
-from project import task,  job
+from project import task,  job, jobs
 from varut   import gitut, jsonut, utils, defs
-from dtypes  import dummy, any   , sequence
+from dtypes  import dummy, any, sequence, hkl
 
 class Task(task.Task):
 
@@ -102,15 +102,30 @@ class Task(task.Task):
         if file_ext == ".seq":
             seq      = sequence.DType()
             seq.file = os.path.basename ( inp.data.file_path )
-            job_data.data.append ( seq )
+            job_data.set_data ( [seq] )
+        elif file_ext == ".mtz":
+            hkl_data  = hkl.DType()
+            hkl_data.file = os.path.basename ( inp.data.file_path )
+            hkl_data.addColumn ( "F(+)" )
+            hkl_data.addColumn ( "F(-)" )
+            job_data.add_data ( hkl_data )
+            hkl_data  = hkl.DType()
+            hkl_data.file = os.path.basename ( inp.data.file_path )
+            hkl_data.addColumn ( "F_peak(+)" )
+            hkl_data.addColumn ( "F_peak(-)" )
+            job_data.add_data ( hkl_data )
 
         job_data.write ( project_repo_dir )
+
+        result = jobs.set_job_data ( project_repo_dir,job_data )
+
         gitut.unlock   ( project_repo_dir )
 
-        result     = utils.make_return ( inp.action,"OK","OK" )
-        result.job = job_data
+        result.action = inp.action
+        result.job    = job_data
 
         return result
+
 
 def run(inp):
     T = Task()

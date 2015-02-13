@@ -60,6 +60,14 @@ namespace qtCOFE  {
 
       void deleteCurrentJob();
 
+      // from current node
+      void getProjectedData ( QStringList              & dtypes,
+                              QList<QTreeWidgetItem *> & nodes );
+
+      void addProjectedData ( QTreeWidgetItem          * node,
+                              QStringList              & dtypes,
+                              QList<QTreeWidgetItem *> & nodes );
+
     signals:
       void add_new_job   ( int parentId );
       void del_job       ( int jobId, int nextCrJobId );
@@ -75,10 +83,10 @@ namespace qtCOFE  {
       QToolButton  *del_btn;
       QToolButton  *data_btn;
 
-      void addJob ( const QJsonObject   & obj,
-                    QTreeWidgetItem     *item,
-                    QTreeWidgetItem *& crItem,
-                    int              & maxID );
+      void addJob ( const QJsonObject & obj,
+                    QTreeWidgetItem   * item,
+                    QTreeWidgetItem  *& crItem,
+                    int               & maxID );
 
     protected slots:
       void addBtnClicked();

@@ -7,14 +7,19 @@
 
 from project import dtype
 
-
 class DType(dtype.DType):
 
-    def __init__(self):
+    def __init__(self,json_str=""):
+        super(DType,self).__init__(json_str)
         self.type = "dtype_hkl"
         self.name = "HKL"
         self.desc = "Reflections"
-        self.icon = "dtype_hkl.png"
+        self.icon = "data_merged_mtz.png"
+        self.columns = []
+        return
+
+    def addColumn ( self,colname ):
+        self.columns.append ( colname )
         return
 
 

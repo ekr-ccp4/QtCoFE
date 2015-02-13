@@ -20,6 +20,7 @@
 #ifndef QTCOFE_DIALOG_TASK_H
 #define QTCOFE_DIALOG_TASK_H
 
+#include <QMap>
 #include <QDialog>
 
 QT_BEGIN_NAMESPACE
@@ -39,6 +40,7 @@ namespace qtCOFE  {
     public:
 
       TaskDialog ( QWidget *parent, DataModel *dm,
+                   const QStringList & dtypes,
                    Qt::WindowFlags f = 0 );
       ~TaskDialog();
 
@@ -51,10 +53,10 @@ namespace qtCOFE  {
       QScrollArea   *scrollArea;
       QSignalMapper *signalMapper;
       QPushButton   *cancel_btn;
-
+      QMap<QString,int> buttonMap;
       QString       selTaskType;
 
-      void makeLayout();
+      void makeLayout ( const QStringList & dtypes );
 
     protected slots:
       void taskSelected ( const QString & type );

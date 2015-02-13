@@ -21,6 +21,7 @@
 #define QTCOFE_JOB_H
 
 #include <QObject>
+#include <QStringList>
 
 //QT_BEGIN_NAMESPACE
 //class QLabel;
@@ -42,12 +43,13 @@ namespace qtCOFE  {
   Q_OBJECT
 
     public:
-      QString type;
-      QString name;
-      QString desc;
-      QString icon;
-      int     id;
-      bool    expanded;
+      QString     type;
+      QString     name;
+      QString     desc;
+      QString     icon;
+      QStringList dtypes;
+      int         id;
+      bool        expanded;
 
       Job ( QObject * parent = 0 );
       Job ( const QJsonObject & jobData, DataModel * dataModel,
