@@ -48,13 +48,14 @@ SOURCES += \
     src/qtcofe_pages.cpp \
     src/qtcofe_page_prjlist.cpp \
     src/qtcofe_session.cpp \
-    src/qtcofe_dialogs.cpp \
     src/qtcofe_page_project.cpp \
     src/qtcofe_job.cpp \
     src/qtcofe_project_tree.cpp \
     src/qtcofe_datamodel.cpp \
+    src/qtcofe_dialog_data.cpp \
+    src/qtcofe_dialog_import.cpp \
     src/qtcofe_dialog_task.cpp \
-    src/qtcofe_dialog_import.cpp
+    src/qtcofe_dialogs.cpp
 
 RESOURCES += \
     src/qtcofe.qrc
@@ -120,11 +121,12 @@ HEADERS += \
     src/qtcofe_page_prjlist.h \
     src/qtcofe_session.h \
     src/qtcofe_srvdefs.h \
-    src/qtcofe_dialogs.h \
     src/qtcofe_page_project.h \
     src/qtcofe_job.h \
     src/qtcofe_project_tree.h \
     src/qtcofe_datamodel.h \
+    src/qtcofe_dialog_data.h \
+    src/qtcofe_dialog_import.h \
     src/qtcofe_dialog_task.h \
-    src/qtcofe_dialog_import.h
+    src/qtcofe_dialogs.h
 

@@ -102,7 +102,8 @@ namespace qtCOFE  {
 
       int readModel();  // read model definitions from server
 
-      const Task *getTask ( const QString & type );
+      const Task     *getTask     ( const QString & type );
+      const DataType *getDataType ( const QString & type );
 
       inline Preferences *getPreferences()  { return preferences; }
       inline Session     *getSession    ()  { return session;     }

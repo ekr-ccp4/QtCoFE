@@ -139,13 +139,10 @@ void qtCOFE::DataImportDialog::makeEmptyTable()  {
       importTable->setTableItem  ( i,j," " );
   }
 
-//  QApplication::flush();
-//  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+50);
-//  importTable->setColumnWidth ( 1,importTable->columnWidth(1)+20);
-//  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+40);
-//  importTable->setColumnWidth ( 3,importTable->columnWidth(3)+150);
-//  QApplication::flush();
-  importTable->resizeCells ();
+  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+30 );
+  importTable->setColumnWidth ( 1,importTable->columnWidth(1)+20 );
+  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+10 );
+  importTable->setColumnWidth ( 3,importTable->columnWidth(3)+80 );
   importTable->setFullSize ( false,false );
   importTable->setRowCount ( 0 );
 
@@ -161,20 +158,8 @@ QString           metadata;
 int               row  = 0;
 int               row0 = qMax(data.count(),10);
 
-//  importTable->clear();
-//  importTable->setColumnCount ( 4  );
   importTable->setRowCount ( row0 );
-  /*
-  importTable->setAlternatingRowColors ( true );
 
-  importTable->setHorzHeader ( 0,"File"        );
-  importTable->setHorzHeader ( 1,"Type"        );
-  importTable->setHorzHeader ( 2,"Metadata"    );
-  importTable->setHorzHeader ( 3,"Description" );
-
-  importTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
-  importTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
-  */
   for (int i=0;i<importTable->rowCount();i++)  {
     importTable->setVertHeader ( i,"    " );
     for (int j=0;j<importTable->columnCount();j++)
@@ -190,8 +175,8 @@ int               row0 = qMax(data.count(),10);
       if (row>=row0)  importTable->setRowCount ( row+1 );
       importTable->setVertHeader ( row,QString("%1").arg(row+1) );
       item = importTable->setTableItem  ( row,0,
-                    jd.value("file").toString(),
-                    Qt::AlignLeft | Qt::AlignVCenter );
+                                   jd.value("file").toString(),
+                                   Qt::AlignLeft | Qt::AlignVCenter );
       iconPath = jd.value("icon").toString();
       if (!iconPath.isEmpty())
         item->setIcon ( QIcon(QString(qtCOFE_icon_base)+iconPath) );
@@ -217,6 +202,8 @@ int               row0 = qMax(data.count(),10);
   importTable->resizeCells ();
   importTable->setFullSize ( false,false );
   importTable->setRowCount ( row );
+
+  adjustSize();
 
 }
 

@@ -234,6 +234,11 @@ int              n;
 
 }
 
+QTreeWidgetItem *qtCOFE::ProjectTree::currentNode()  {
+  if (jobTree)  return jobTree->currentItem();
+  return NULL;
+}
+
 
 void qtCOFE::ProjectTree::addBtnClicked()  {
   emit add_new_job ( currentJobId() );

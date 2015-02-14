@@ -1,15 +1,15 @@
-// $Id: qtcofe_dialog_import.h $
+// $Id: qtcofe_dialog_data.h $
 // =================================================================
 //
 //    06.11.14   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
-//  **** Module  :  qtcofe_dialog_import <interface>
+//  **** Module  :  qtcofe_dialog_data <interface>
 //       ~~~~~~~~~
 //  **** Project :  CCP4 CoFE Project
 //       ~~~~~~~~~
-//  **** Classes :  qtCOFE data import dialog
+//  **** Classes :  qtCOFE data dialog
 //       ~~~~~~~~~
 //
 //  (C) E. Krissinel 2014
@@ -17,14 +17,15 @@
 // =================================================================
 //
 
-#ifndef QTCOFE_DIALOG_IMPORT_H
-#define QTCOFE_DIALOG_IMPORT_H
+#ifndef QTCOFE_DIALOG_DATA_H
+#define QTCOFE_DIALOG_DATA_H
 
 #include <QDialog>
 
 QT_BEGIN_NAMESPACE
-class QToolButton;
+//class QToolButton;
 class QPushButton;
+class QTreeWidgetItem;
 QT_END_NAMESPACE
 
 class QJsonObject;
@@ -37,41 +38,40 @@ namespace qtCOFE  {
 
   class Preferences;
   class Session;
+  class ProjectTree;
   class DataModel;
 
-  class DataImportDialog : public QDialog  {
+  class DataDialog : public QDialog  {
   Q_OBJECT
 
     public:
 
-      DataImportDialog ( QWidget *parent, int jobID, DataModel *dm,
-                         Qt::WindowFlags f = 0 );
-      ~DataImportDialog();
-
-      void makeEmptyTable();
-
-      int importCount();
+      DataDialog ( QWidget         *parent,
+                   ProjectTree     *projectTree,
+                   QTreeWidgetItem *jobNode,
+                   DataModel       *dm,
+                   Qt::WindowFlags  f = 0 );
+      ~DataDialog();
 
     protected:
       Preferences  *preferences;
       Session      *session;
-      int           JobID;
       DataModel    *dataModel;
-      qtx::Table   *importTable;
-      QToolButton  *add_btn;
-      QToolButton  *del_btn;
+      qtx::Table   *dataTable;
       QPushButton  *close_btn;
 
-      void makeLayout      ();
-      void makeImportTable ( const QJsonObject & jobData );
-      void importFile      ( const QString     & fpath   );
+      void makeInspectorLayout();
+      void makeInspectorTable ( ProjectTree     *projectTree,
+                                QTreeWidgetItem *jobNode );
 
+      /*
     protected slots:
       void addClicked();
       void delClicked();
+      */
 
   };
 
 }
 
-#endif // QTCOFE_DIALOG_IMPORT_H
+#endif // QTCOFE_DIALOG_DATA_H

@@ -14,7 +14,7 @@ class DType(dtype.DType):
         self.type = "dtype_structure"
         self.name = "Structure"
         self.desc = "Crystal structure"
-        self.icon = "dtype_structure.png"
+        self.icon = "data_structure.png"
         return
 
 

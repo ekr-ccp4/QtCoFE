@@ -46,15 +46,16 @@ namespace qtCOFE  {
 
       void fixSize();
 
-      QString getSelTaskType()  { return selTaskType; }
+      QString getSelTaskType()  { return selTaskType;            }
+      int     getSelTaskKey ()  { return buttonMap[selTaskType]; }
 
     protected:
-      DataModel     *dataModel;
-      QScrollArea   *scrollArea;
-      QSignalMapper *signalMapper;
-      QPushButton   *cancel_btn;
+      DataModel        *dataModel;
+      QScrollArea      *scrollArea;
+      QSignalMapper    *signalMapper;
+      QPushButton      *cancel_btn;
       QMap<QString,int> buttonMap;
-      QString       selTaskType;
+      QString           selTaskType;
 
       void makeLayout ( const QStringList & dtypes );
 

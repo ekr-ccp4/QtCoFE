@@ -223,7 +223,8 @@ int         retcode = 0;
 
 }
 
-const qtCOFE::Task *qtCOFE::DataModel::getTask ( const QString & type ) {
+const qtCOFE::Task *qtCOFE::DataModel::getTask (
+                                              const QString & type )  {
 Task *task = NULL;
 
   for (int i=0;(i<tasks.count()) && (!task);i++)
@@ -231,5 +232,17 @@ Task *task = NULL;
       task = tasks.at(i);
 
   return task;
+
+}
+
+const qtCOFE::DataType *qtCOFE::DataModel::getDataType (
+                                              const QString & type )  {
+DataType *dtype = NULL;
+
+  for (int i=0;(i<data_types.count()) && (!dtype);i++)
+    if (data_types.at(i)->type==type)
+      dtype = data_types.at(i);
+
+  return dtype;
 
 }

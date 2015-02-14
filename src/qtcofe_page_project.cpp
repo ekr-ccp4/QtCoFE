@@ -24,8 +24,9 @@
 
 #include "qtcofe_page_project.h"
 #include "qtcofe_project_tree.h"
-#include "qtcofe_dialog_task.h"
+#include "qtcofe_dialog_data.h"
 #include "qtcofe_dialog_import.h"
+#include "qtcofe_dialog_task.h"
 #include "qtcofe_session.h"
 #include "qtcofe_server.h"
 #include "qtcofe_srvdefs.h"
@@ -128,6 +129,10 @@ QList<QTreeWidgetItem *> nodes;
       didlg->exec();
       if (didlg->importCount()<=0)
         jobTree->deleteCurrentJob();
+      else  {
+        QJsonObject jsd;
+        project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
+      }
     }
   }
 
@@ -150,7 +155,13 @@ void qtCOFE::ProjectPage::save_project_state()  {
 }
 
 void qtCOFE::ProjectPage::dataInspector ( int jobID )  {
-  QMessageBox::information(this,"Not implemented",
-                           "Data Inspector -- not implemented");
+DataDialog *ddlg;
+
+  ddlg = new DataDialog ( this,jobTree,jobTree->currentNode(),
+                          dataModel );
+  ddlg->exec();
+
+//  QMessageBox::information(this,"Not implemented",
+//                           "Data Inspector -- not implemented");
 
 }

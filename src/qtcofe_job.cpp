@@ -41,6 +41,17 @@ qtCOFE::Job::Job ( const QJsonObject & jobData,
 }
 
 qtCOFE::Job::~Job() {
+  clear();
+}
+
+void qtCOFE::Job::clear()  {
+  dtypes.clear();
+  foreach (QList<Metadata *> mlist,metadata)  {
+    foreach (Metadata *m,mlist)
+      if (m)  delete m;
+    mlist.clear();
+  }
+  metadata.clear();
 }
 
 void qtCOFE::Job::setJobData ( const QJsonObject & jobData,
@@ -48,7 +59,7 @@ void qtCOFE::Job::setJobData ( const QJsonObject & jobData,
 QJsonArray  data = jobData.value("data").toArray();
 const Task *task = NULL;
 
-  dtypes.clear();
+  clear();
 
   type = jobData.value("type").toString();
   name = jobData.value("name").toString();
@@ -57,8 +68,23 @@ const Task *task = NULL;
 
   for (int i=0;i<data.count();i++)  {
     QJsonArray dlist = data[i].toArray();
-    if (dlist.count()>0)
+    if (dlist.count()>0)  {
       dtypes.append ( dlist[0].toObject().value("type").toString() );
+      QList<Metadata *> mlist;
+      for (int j=0;j<dlist.count();j++)  {
+        Metadata *m = new Metadata();
+        QJsonObject jobj = dlist[j].toObject();
+        m->desc  = jobj.value("type").toString();
+        m->fname = jobj.value("file").toString();
+        if (jobj.keys().contains("columns",Qt::CaseInsensitive))  {
+          QJsonArray clist = jobj.value("columns").toArray();
+          for (int k=0;k<clist.count();k++)
+            m->columns.append ( clist[k].toString() );
+        }
+        mlist.append ( m );
+      }
+      metadata.append ( mlist );
+    }
   }
 
   if (jobData.keys().contains("expanded",Qt::CaseInsensitive))
@@ -69,6 +95,8 @@ const Task *task = NULL;
     if (name.isEmpty())  name = task->name;
     if (desc.isEmpty())  desc = task->desc;
     icon = task->icon;
+    if (dtypes.isEmpty())
+      dtypes = task->output_dtypes;
   }
 
 }

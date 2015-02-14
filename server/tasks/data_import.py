@@ -52,8 +52,10 @@ class Task(task.Task):
         self.order   = 0  # position within section for GUI
         self.icon    = "task_import.png"
 
-        self.input_dtypes  = [dummy.DType().type]
-        self.output_dtypes = [any  .DType().type]
+#        self.input_dtypes  = [dummy.DType().type]
+#        self.output_dtypes = [any  .DType().type]
+        self.input_dtypes  = []
+        self.output_dtypes = []
 
         return
 

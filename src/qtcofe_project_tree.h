@@ -58,6 +58,8 @@ namespace qtCOFE  {
       int  parentJobId ();
       int  siblingJobId();
 
+      QTreeWidgetItem *currentNode();
+
       void deleteCurrentJob();
 
       // from current node

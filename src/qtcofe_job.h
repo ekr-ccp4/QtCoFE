@@ -39,6 +39,15 @@ namespace qtCOFE  {
 
   class DataModel;
 
+  class Metadata {
+    public:
+      QString     desc;
+      QString     fname;
+      QStringList columns;
+      Metadata () {}
+      ~Metadata() {}
+  };
+
   class Job : public QObject  {
   Q_OBJECT
 
@@ -48,6 +57,7 @@ namespace qtCOFE  {
       QString     desc;
       QString     icon;
       QStringList dtypes;
+      QList<QList<Metadata *> > metadata;
       int         id;
       bool        expanded;
 
@@ -58,6 +68,9 @@ namespace qtCOFE  {
 
       void setJobData ( const QJsonObject & jobData,
                         DataModel * dataModel );
+
+    protected:
+      void clear();
 
   };
 
