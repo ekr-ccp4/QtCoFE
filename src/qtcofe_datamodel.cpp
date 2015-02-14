@@ -246,3 +246,9 @@ DataType *dtype = NULL;
   return dtype;
 
 }
+
+QString qtCOFE::DataModel::taskName ( const QString & type )  {
+const Task *task = getTask ( type );
+  if (task)  return task->name;
+  return "";
+}

@@ -105,6 +105,8 @@ namespace qtCOFE  {
       const Task     *getTask     ( const QString & type );
       const DataType *getDataType ( const QString & type );
 
+      QString taskName ( const QString & type );
+
       inline Preferences *getPreferences()  { return preferences; }
       inline Session     *getSession    ()  { return session;     }
 

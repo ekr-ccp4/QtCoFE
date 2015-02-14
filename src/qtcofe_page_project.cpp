@@ -23,6 +23,7 @@
 #include "qjson/QJsonObject.h"
 
 #include "qtcofe_page_project.h"
+#include "qtcofe_datamodel.h"
 #include "qtcofe_project_tree.h"
 #include "qtcofe_dialog_data.h"
 #include "qtcofe_dialog_import.h"
@@ -118,20 +119,30 @@ QList<QTreeWidgetItem *> nodes;
   tdlg->show();
   tdlg->setFixedSize ( tdlg->size() );
   if (tdlg->exec()==QDialog::Accepted)  {
-    QJsonObject *jsonData = jobTree->getTreeData();
-    jsonData->insert ( "parent"   ,jobID );
-    jsonData->insert ( "task_type",tdlg->getSelTaskType() );
-    project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
-    delete jsonData;
-    if (tdlg->getSelTaskType()=="task_import")  {
-      DataImportDialog *didlg = new DataImportDialog ( this,
+    if (tdlg->getSelTaskKey()==0)  {
+      DataDialog *ddlg = new DataDialog ( this,
+                    jobTree,jobTree->currentNode(),
+                    tdlg->getSelTaskType(),dataModel,"Data Summary",
+                    "Data Summary for task '" +
+                        dataModel->taskName(tdlg->getSelTaskType()) +
+                           "'" );
+      ddlg->exec();
+    } else  {
+      QJsonObject *jsonData = jobTree->getTreeData();
+      jsonData->insert ( "parent"   ,jobID );
+      jsonData->insert ( "task_type",tdlg->getSelTaskType() );
+      project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
+      delete jsonData;
+      if (tdlg->getSelTaskType()=="task_import")  {
+        DataImportDialog *didlg = new DataImportDialog ( this,
                                    jobTree->currentJobId(),dataModel );
-      didlg->exec();
-      if (didlg->importCount()<=0)
-        jobTree->deleteCurrentJob();
-      else  {
-        QJsonObject jsd;
-        project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
+        didlg->exec();
+        if (didlg->importCount()<=0)
+          jobTree->deleteCurrentJob();
+        else  {
+          QJsonObject jsd;
+          project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
+        }
       }
     }
   }
@@ -155,13 +166,8 @@ void qtCOFE::ProjectPage::save_project_state()  {
 }
 
 void qtCOFE::ProjectPage::dataInspector ( int jobID )  {
-DataDialog *ddlg;
-
-  ddlg = new DataDialog ( this,jobTree,jobTree->currentNode(),
-                          dataModel );
+DataDialog *ddlg = new DataDialog ( this,jobTree,jobTree->currentNode(),
+                                    "",dataModel,"Data Inspector",
+                                    "Data Inspector" );
   ddlg->exec();
-
-//  QMessageBox::information(this,"Not implemented",
-//                           "Data Inspector -- not implemented");
-
 }

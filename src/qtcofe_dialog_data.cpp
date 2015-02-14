@@ -36,32 +36,35 @@
 qtCOFE::DataDialog::DataDialog ( QWidget         *parent,
                                  ProjectTree     *projectTree,
                                  QTreeWidgetItem *jobNode,
+                                 QString          taskType,
                                  DataModel       *dm,
-                                 Qt::WindowFlags f )
+                                 QString          winTitle,
+                                 QString          prompt,
+                                 Qt::WindowFlags  f )
                   : QDialog ( parent,f )  {
   dataModel   = dm;
   preferences = dataModel->getPreferences();
   session     = dataModel->getSession    ();
   setStyleSheet  ( preferences->getFontSizeStyleSheet(1.0) );
-  setWindowTitle ( tr("Data Inspector") );
-  makeInspectorLayout ();
-  makeInspectorTable  ( projectTree,jobNode );
+  setWindowTitle ( winTitle );
+  makeLayout     ();
+  prompt_lbl->setText ( prompt + "<br>&nbsp;" );
+  makeDataTable  ( projectTree,jobNode,taskType );
 }
 
 qtCOFE::DataDialog::~DataDialog()  {}
 
-void qtCOFE::DataDialog::makeInspectorLayout()  {
+void qtCOFE::DataDialog::makeLayout()  {
 QVBoxLayout *vbox;
 QHBoxLayout *hbox;
-QLabel      *lbl;
 
   vbox = new QVBoxLayout();
 
-  lbl = new QLabel("Data Inspector<br>&nbsp;");
-  lbl->setStyleSheet (
+  prompt_lbl = new QLabel("Data Inspector<br>&nbsp;");
+  prompt_lbl->setStyleSheet (
       QString("font-weight: bold; font-style: italic; font-size: %1pt;")
             .arg(6*dataModel->getPreferences()->getFontPointSize()/5) );
-  vbox->addWidget ( lbl,0 );
+  vbox->addWidget ( prompt_lbl,0 );
 
   dataTable = new qtx::Table();
   vbox->addWidget ( dataTable,100 );
@@ -78,86 +81,122 @@ QLabel      *lbl;
 
 }
 
+#define  _align_left   (Qt::AlignLeft  | Qt::AlignVCenter)
+#define  _align_right  (Qt::AlignRight | Qt::AlignVCenter)
+
+void qtCOFE::DataDialog::makeRow ( int   & row,
+                                   QString dataIcon,
+                                   QString fileName,
+                                   QString dataName,
+                                   QString signIcon,
+                                   QString metadata,
+                                   QString desc,
+                                   QString jobName
+                                 )  {
+QTableWidgetItem *item;
+int               col = 0;
+
+  if (dataTable->rowCount()<=row)
+    dataTable->setRowCount ( row+1 );
+
+  dataTable->setVertHeader ( row,QString("%1").arg(row+1) );
+  item = dataTable->setTableItem  ( row,col++,fileName,_align_left );
+  item->setIcon ( QIcon(QString(qtCOFE_icon_base) + dataIcon) );
+  if (fileName.startsWith("<"))  {
+    QFont font = item->font();
+    font.setItalic ( true );
+    item->setFont ( font );
+  }
+  dataTable->setTableItem  ( row,col++,dataName,_align_right );
+  if (!signIcon.isEmpty())  {
+    item = dataTable->setTableItem ( row,col++," ",Qt::AlignCenter );
+    if (signIcon!="#")
+        item->setIcon ( QIcon(signIcon) );
+  }
+  dataTable->setTableItem ( row,col++,metadata,_align_left  );
+  dataTable->setTableItem ( row,col++,desc    ,_align_left  );
+  dataTable->setTableItem ( row,col  ,jobName ,_align_left  );
+
+  row++;
+
+}
 
 Q_DECLARE_METATYPE ( qtCOFE::Job* )
 
-void qtCOFE::DataDialog::makeInspectorTable (
-                                        ProjectTree     *projectTree,
-                                        QTreeWidgetItem *jobNode )  {
-QStringList              dtypes;
+void qtCOFE::DataDialog::makeDataTable ( ProjectTree     *projectTree,
+                                         QTreeWidgetItem *jobNode,
+                                         QString          taskType )  {
+QStringList              dtypes,dtypes0;
 QList<QTreeWidgetItem *> nodes;
 const DataType          *dataType;
 Job                     *job;
-QString                  metadata;
-int                      row,k;
+QString                  metadata,iconPath;
+int                      col,row,k;
+bool                     taskData;
 
-  dataTable->setColumnCount ( 5  );
+  if (!taskType.isEmpty())  {
+    const Task *task = dataModel->getTask ( taskType );
+    if (task)  dtypes0 = task->input_dtypes;
+  }
+  taskData = (dtypes0.count()>0);
+
+  if (taskData)  dataTable->setColumnCount ( 6 );
+           else  dataTable->setColumnCount ( 5 );
   dataTable->setRowCount    ( 10 );
   dataTable->setAlternatingRowColors ( true );
 
-  dataTable->setHorzHeader ( 0,"File"        );
-  dataTable->setHorzHeader ( 1,"Type"        );
-  dataTable->setHorzHeader ( 2,"Metadata"    );
-  dataTable->setHorzHeader ( 3,"Description" );
-  dataTable->setHorzHeader ( 4,"Job"         );
+  col = 0;
+  dataTable->setHorzHeader ( col++,"File"        );
+  dataTable->setHorzHeader ( col++,"Type"        );
+  if (taskData)
+    dataTable->setHorzHeader ( col++,"Status"    );
+  dataTable->setHorzHeader ( col++,"Metadata"    );
+  dataTable->setHorzHeader ( col++,"Description" );
+  dataTable->setHorzHeader ( col++,"Job"         );
 
   dataTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
   dataTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
 
   projectTree->addProjectedData ( jobNode,dtypes,nodes );
-
   row = 0;
-  for (int i=0;i<dtypes.count();i++)  {
-    job      = nodes[i]->data ( 0,Qt::UserRole ).value<Job*>();
-    dataType = dataModel->getDataType ( dtypes.at(i) );
-    if (job)  {
-      if (job->metadata.count()>0)  {
-        k = job->dtypes.indexOf ( dtypes.at(i) );
-        if (k>=0)  {
-          QList<Metadata *> mlist = job->metadata.at(k);
-          if (dataTable->rowCount()<=row+mlist.count())
-            dataTable->setRowCount ( row+1+mlist.count() );
-          foreach (Metadata *m,mlist)  {
-            dataTable->setVertHeader ( row,QString("%1").arg(row+1) );
-            dataTable->setTableItem  ( row,0,m->fname,
-               Qt::AlignLeft | Qt::AlignVCenter )->setIcon (
-                   QIcon(QString(qtCOFE_icon_base) + dataType->icon) );
-            dataTable->setTableItem  ( row,1,dataType->name,
-                                   Qt::AlignRight | Qt::AlignVCenter );
-            if (m->columns.count()>0)  {
-              metadata = "Columns:";
-              foreach (QString c,m->columns)
-                metadata.append ( "\n" + c );
-            } else
-              metadata = " ";
-            dataTable->setTableItem  ( row,2,metadata,
-                                        Qt::AlignLeft | Qt::AlignVCenter );
-            dataTable->setTableItem  ( row,3,m->desc,
-                                        Qt::AlignLeft | Qt::AlignVCenter );
-            dataTable->setTableItem  ( row,4,job->name,
-                                        Qt::AlignLeft | Qt::AlignVCenter );
-            row++;
+
+  job = jobNode->data ( 0,Qt::UserRole ).value<Job*>();
+  for (int i=0;i<dtypes0.count();i++)
+    if (!dtypes.contains(dtypes0.at(i)))  {
+      dataType = dataModel->getDataType ( dtypes0.at(i) );
+      makeRow ( row,dataType->icon,"<< not in promise >>",dataType->name,
+                qtCOFE_Cancel_icon," ",dataType->desc,job->name );
+    }
+
+  if (taskData)  iconPath = qtCOFE_Ok_icon;
+           else  iconPath = "";
+
+  for (int i=0;i<dtypes.count();i++)
+    if ((!taskData) || dtypes0.contains (dtypes.at(i)))  {
+      job      = nodes[i]->data ( 0,Qt::UserRole ).value<Job*>();
+      dataType = dataModel->getDataType ( dtypes.at(i) );
+      if (job)  {
+        if (job->metadata.count()>0)  {
+          k = job->dtypes.indexOf ( dtypes.at(i) );
+          if (k>=0)  {
+            QList<Metadata *> mlist = job->metadata.at(k);
+            foreach (Metadata *m,mlist)  {
+              if (m->columns.count()>0)  {
+                metadata = "Columns:";
+                foreach (QString c,m->columns)
+                  metadata.append ( "\n" + c );
+              } else
+                metadata = " ";
+              makeRow ( row,dataType->icon,m->fname,dataType->name,
+                        iconPath,metadata,m->desc,job->name );
+            }
           }
+        } else  {
+          makeRow ( row,dataType->icon,"<< in promise >>",dataType->name,
+                    iconPath," ",dataType->desc,job->name );
         }
-      } else  {
-        if (dataTable->rowCount()<=row)
-          dataTable->setRowCount ( row+1 );
-        dataTable->setVertHeader ( row,QString("%1").arg(row+1) );
-        dataTable->setTableItem  ( row,0,"promise",
-             Qt::AlignLeft | Qt::AlignVCenter )->setIcon (
-                   QIcon(QString(qtCOFE_icon_base) + dataType->icon) );
-        dataTable->setTableItem  ( row,1,dataType->name,
-                                    Qt::AlignRight | Qt::AlignVCenter );
-        dataTable->setTableItem  ( row,2," ",
-                                    Qt::AlignLeft | Qt::AlignVCenter );
-        dataTable->setTableItem  ( row,3,dataType->desc,
-                                    Qt::AlignLeft | Qt::AlignVCenter );
-        dataTable->setTableItem  ( row,4,job->name,
-                                    Qt::AlignLeft | Qt::AlignVCenter );
-        row++;
       }
     }
-  }
 
   for (int i=row;i<10;i++)  {
     dataTable->setVertHeader ( i,"    " );

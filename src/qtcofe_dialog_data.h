@@ -23,7 +23,7 @@
 #include <QDialog>
 
 QT_BEGIN_NAMESPACE
-//class QToolButton;
+class QLabel;
 class QPushButton;
 class QTreeWidgetItem;
 QT_END_NAMESPACE
@@ -49,7 +49,10 @@ namespace qtCOFE  {
       DataDialog ( QWidget         *parent,
                    ProjectTree     *projectTree,
                    QTreeWidgetItem *jobNode,
+                   QString          taskType,
                    DataModel       *dm,
+                   QString          winTitle,
+                   QString          prompt,
                    Qt::WindowFlags  f = 0 );
       ~DataDialog();
 
@@ -58,11 +61,22 @@ namespace qtCOFE  {
       Session      *session;
       DataModel    *dataModel;
       qtx::Table   *dataTable;
+      QLabel       *prompt_lbl;
       QPushButton  *close_btn;
 
-      void makeInspectorLayout();
-      void makeInspectorTable ( ProjectTree     *projectTree,
-                                QTreeWidgetItem *jobNode );
+      void makeLayout    ();
+      void makeRow       ( int   & row,
+                           QString dataIcon,
+                           QString fileName,
+                           QString dataName,
+                           QString signIcon,
+                           QString metadata,
+                           QString desc,
+                           QString jobName
+                         );
+      void makeDataTable ( ProjectTree     *projectTree,
+                           QTreeWidgetItem *jobNode,
+                           QString          taskType );
 
       /*
     protected slots:
