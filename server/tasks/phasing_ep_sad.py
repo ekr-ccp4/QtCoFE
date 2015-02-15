@@ -6,7 +6,7 @@
 #
 
 from project import task
-from dtypes  import structure, hkl
+from dtypes  import sequence, structure, hkl
 
 class Task(task.Task):
 
@@ -19,10 +19,13 @@ class Task(task.Task):
         self.order   = 1  # position within section for GUI
         self.icon    = "task_ep.png"
 
-        self.input_dtypes  = [hkl.DType().type]
-        self.input_dmodes  = ["E1"]
-        self.output_dtypes = [structure.DType().type]
-        self.output_dmodes = ["G0"]
+        self.inp_data = [
+                         [sequence.DType().type ,"E",1],
+                         [hkl.DType().type      ,"E",1]
+                        ]
+        self.out_data = [
+                         [structure.DType().type,"G",0]
+                        ]
 
         return
 

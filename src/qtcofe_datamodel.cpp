@@ -62,22 +62,57 @@ int qtCOFE::TaskSection::readData ( const QJsonObject & obj )  {
   return 0;
 }
 
+// =================================================================
+
+qtCOFE::TaskData::TaskData () {
+  mode = 'E';
+  n    = 1;
+}
+
+qtCOFE::TaskData::~TaskData() {}
+
+void qtCOFE::TaskData::copy ( const TaskData * taskData )  {
+// from taskData to "this"
+  if (taskData)  {
+    type = taskData->type;  // "dtype_xxx"
+    mode = taskData->mode;  // modificator of data entity number (A,E,U,G)
+    n    = taskData->n;     // data entity number
+  }
+}
+
+int qtCOFE::indexOf ( const QString & dtype,
+                      const QList<TaskData *> & taskData )  {
+int k = -1;
+  for (int i=0;(i<taskData.count()) && (k<0);i++)
+    if (taskData.at(i)->type==dtype)
+      k = i;
+  return k;
+}
+
 
 // =================================================================
 
 qtCOFE::Task::Task ( QObject *parent ) : QObject(parent)  {
 }
 
-qtCOFE::Task::~Task() {
+qtCOFE::Task::~Task()  {
+  clear();
+}
+
+void qtCOFE::Task::clear()  {
+  foreach (TaskData *td,inpData)
+    if (td)  delete td;
+  inpData.clear();
+  foreach (TaskData *td,outData)
+    if (td)  delete td;
+  outData.clear();
 }
 
 int qtCOFE::Task::readData ( const QJsonObject & obj )  {
-QJsonArray a;
+QJsonArray a,ai;
 QString    mode;
-int        n;
 
-  input_dtypes .clear();
-  output_dtypes.clear();
+  clear();
 
   type    = obj.value("type"   ).toString();
   name    = obj.value("name"   ).toString();
@@ -86,34 +121,24 @@ int        n;
   icon    = obj.value("icon"   ).toString();
   order   = obj.value("order"  ).toDouble();
 
-  a = obj.value("input_dtypes").toArray();
-  n = a.count();
-  for (int i=0;i<n;i++)
-    input_dtypes.append ( a[i].toString() );
-
-  a = obj.value("input_dmodes").toArray();
-  n = a.count();
-  for (int i=0;i<n;i++)  {
-    mode = a[i].toString();
-    input_dmodes.append ( mode.at(0) );
-    mode = mode.remove ( 0,1 );
-    if (!mode.isEmpty())  input_dnums.append ( mode.toInt() );
-                    else  input_dnums.append ( 0 );
+  a = obj.value("inp_data").toArray();
+  for (int i=0;i<a.count();i++)  {
+    ai = a[i].toArray();
+    TaskData *td = new TaskData();
+    td->type = ai[0].toString();
+    td->mode = ai[1].toString()[0];
+    td->n    = ai[2].toDouble();
+    inpData.append ( td );
   }
 
-  a = obj.value("output_dtypes").toArray();
-  n = a.count();
-  for (int i=0;i<n;i++)
-    output_dtypes.append ( a[i].toString() );
-
-  a = obj.value("output_dmodes").toArray();
-  n = a.count();
-  for (int i=0;i<n;i++)  {
-    mode = a[i].toString();
-    output_dmodes.append ( mode.at(0) );
-    mode = mode.remove ( 0,1 );
-    if (!mode.isEmpty())  output_dnums.append ( mode.toInt() );
-                    else  output_dnums.append ( 0 );
+  a = obj.value("out_data").toArray();
+  for (int i=0;i<a.count();i++)  {
+    ai = a[i].toArray();
+    TaskData *td = new TaskData();
+    td->type = ai[0].toString();
+    td->mode = ai[1].toString()[0];
+    td->n    = ai[2].toDouble();
+    outData.append ( td );
   }
 
   return 0;
@@ -123,16 +148,51 @@ int        n;
 int qtCOFE::Task::hasInput ( const QStringList & dtypes )  {
 bool included = true;
 
-  for (int i=0;(i<input_dtypes.count()) && included;i++)
-    included = dtypes.contains ( input_dtypes[i] );
+  for (int i=0;(i<inpData.count()) && included;i++)
+    included = dtypes.contains ( inpData.at(i)->type );
 
-  if (!included)
-    included = input_dtypes.contains("dtype_dummy") ||
-               input_dtypes.contains("dtype_any");
+  for (int i=0;(i<inpData.count()) && (!included);i++)  {
+    QString dtype = inpData.at(i)->type;
+    included = (inpData.at(i)->type=="dtype_dummy") ||
+               (inpData.at(i)->type=="dtype_any");
+  }
 
   if (included)  return 1;
   return 0;
 
+}
+
+
+bool qtCOFE::Task::hasInput ( const QString & dtype )  {
+bool b = false;
+
+  for (int i=0;(i<inpData.count()) && (!b);i++)
+    b = (inpData.at(i)->type==dtype);
+
+  return b;
+
+}
+
+
+void qtCOFE::Task::printTask()  {
+  printf ( "   Type   : '%s'\n",type.toAscii().data() );
+  printf ( "   Name   : '%s'\n",name.toAscii().data() );
+  printf ( "   Desc   : '%s'\n",desc.toAscii().data() );
+  printf ( "   Section: '%s'\n",section.toAscii().data() );
+  printf ( "   Icon   : '%s'\n",icon.toAscii().data() );
+  printf ( "   Order  : %i\n",order );
+  printf ( "\n   Input Data:\n" );
+  for (int i=0;i<inpData.count();i++)
+    printf ( "      %3i ['%s','%c',%i]\n",i+1,
+             inpData.at(i)->type.toAscii().data(),
+             inpData.at(i)->mode.toAscii(),
+             inpData.at(i)->n );
+  printf ( "\n   Output Data:\n" );
+  for (int i=0;i<outData.count();i++)
+    printf ( "      %3i ['%s','%c',%i]\n",i+1,
+             outData.at(i)->type.toAscii().data(),
+             outData.at(i)->mode.toAscii(),
+             outData.at(i)->n );
 }
 
 
@@ -256,6 +316,20 @@ Task *task = NULL;
 
 }
 
+const qtCOFE::TaskData *qtCOFE::DataModel::getTaskDataOut (
+                                          const QString & taskType,
+                                          const QString & dataType )  {
+const  Task *task = getTask ( taskType );
+TaskData *td = NULL;
+  if (task)  {
+    for (int i=0;(i<task->outData.count()) && (!td);i++)
+      if (task->outData.at(i)->type==dataType)
+        td = task->outData.at(i);
+  }
+  return td;
+}
+
+
 const qtCOFE::DataType *qtCOFE::DataModel::getDataType (
                                               const QString & type )  {
 DataType *dtype = NULL;
@@ -272,4 +346,14 @@ QString qtCOFE::DataModel::taskName ( const QString & type )  {
 const Task *task = getTask ( type );
   if (task)  return task->name;
   return "";
+}
+
+void qtCOFE::DataModel::printModel()  {
+  printf ( " ------------------------------------------------------\n");
+  printf ( "   TASKS\n" );
+  printf ( " ------------------------------------------------------\n");
+  for (int i=0;i<tasks.count();i++)  {
+    printf ( "\n TASK #%i\n",i+1 );
+    tasks.at(i)->printTask();
+  }
 }

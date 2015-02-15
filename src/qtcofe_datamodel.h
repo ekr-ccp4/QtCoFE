@@ -65,6 +65,19 @@ namespace qtCOFE  {
 
   };
 
+  class TaskData  {
+    public:
+      QString type;  // "dtype_xxx"
+      QChar   mode;  // modificator of data entity number (A,E,U,G)
+      int     n;     // data entity number
+      TaskData ();
+      ~TaskData();
+      void copy ( const TaskData * taskData ); // from taskData to "this"
+  };
+
+  extern int indexOf ( const QString & dtype,
+                       const QList<TaskData *> & taskData );
+
   /// Task description class
   class Task : public QObject  {
   Q_OBJECT
@@ -77,19 +90,21 @@ namespace qtCOFE  {
       QString  icon;
       int      order;
 
-      QStringList  input_dtypes;
-      QList<QChar> input_dmodes;
-      QList<int>   input_dnums;
-      QStringList  output_dtypes;
-      QList<QChar> output_dmodes;
-      QList<int>   output_dnums;
+      QList<TaskData *> inpData;
+      QList<TaskData *> outData;
 
       Task ( QObject * parent = 0 );
       virtual ~Task();
 
       int readData ( const QJsonObject & obj );
 
-      int hasInput ( const QStringList & dtypes );
+      int  hasInput ( const QStringList & dtypes );
+      bool hasInput ( const QString     & dtype  );
+
+      void printTask();
+
+    protected:
+      void clear();
 
   };
 
@@ -108,13 +123,17 @@ namespace qtCOFE  {
 
       int readModel();  // read model definitions from server
 
-      const Task     *getTask     ( const QString & type );
-      const DataType *getDataType ( const QString & type );
+      const Task     *getTask        ( const QString & type );
+      const TaskData *getTaskDataOut ( const QString & taskType,
+                                       const QString & dataType );
+      const DataType *getDataType    ( const QString & type );
 
       QString taskName ( const QString & type );
 
       inline Preferences *getPreferences()  { return preferences; }
       inline Session     *getSession    ()  { return session;     }
+
+      void printModel();
 
     protected:
       Preferences *preferences;

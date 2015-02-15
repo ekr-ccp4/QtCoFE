@@ -33,6 +33,7 @@ QT_END_NAMESPACE
 namespace qtCOFE  {
 
   class DataModel;
+  class JobData;
 
   class TaskDialog : public QDialog  {
   Q_OBJECT
@@ -40,7 +41,7 @@ namespace qtCOFE  {
     public:
 
       TaskDialog ( QWidget *parent, DataModel *dm,
-                   const QStringList & dtypes,
+                   const QList<JobData *> & projData,
                    Qt::WindowFlags f = 0 );
       ~TaskDialog();
 
@@ -57,7 +58,7 @@ namespace qtCOFE  {
       QMap<QString,int> buttonMap;
       QString           selTaskType;
 
-      void makeLayout ( const QStringList & dtypes );
+      void makeLayout ( const QList<JobData *> & projData );
 
     protected slots:
       void taskSelected ( const QString & type );

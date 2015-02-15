@@ -19,10 +19,13 @@ class Task(task.Task):
         self.order   = 0  # position within section for GUI
         self.icon    = "task_refinement.png"
 
-        self.input_dtypes  = [hkl.DType().type,structure.DType().type]
-        self.input_dmodes  = ["E1"            ,"E1"                  ]
-        self.output_dtypes = [structure.DType().type]
-        self.output_dmodes = ["E1"                  ]
+        self.inp_data = [
+                         [hkl.DType().type      ,"E",1],
+                         [structure.DType().type,"E",1]
+                        ]
+        self.out_data = [
+                         [structure.DType().type,"E",1]
+                        ]
 
         return
 

@@ -109,12 +109,12 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
 }
 
 void qtCOFE::ProjectPage::addJob ( int jobID )  {
-TaskDialog    *tdlg;
-QStringList    dtypes;
+TaskDialog       *tdlg;
+QList<JobData *>  jobData;
 QList<QTreeWidgetItem *> nodes;
 
-  jobTree->getProjectedData ( dtypes,nodes );
-  tdlg = new TaskDialog ( this,dataModel,dtypes );
+  jobTree->getProjectedData ( jobData,nodes );
+  tdlg = new TaskDialog ( this,dataModel,jobData );
 
   tdlg->show();
   tdlg->setFixedSize ( tdlg->size() );

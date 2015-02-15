@@ -23,15 +23,7 @@
 #include <QObject>
 #include <QStringList>
 
-//QT_BEGIN_NAMESPACE
-//class QLabel;
-//class QGridLayout;
-//class QPushButton;
-//QT_END_NAMESPACE
-
-//namespace qtx  {
-//  class LineEdit;
-//}
+#include "qtcofe_datamodel.h"
 
 class QJsonObject;
 
@@ -48,6 +40,18 @@ namespace qtCOFE  {
       ~Metadata() {}
   };
 
+  class JobData : public TaskData  {
+    public:
+      QList<Metadata *> metadata;
+      JobData ();
+      ~JobData();
+    protected:
+      void clear();
+  };
+
+  extern int indexOf ( const QString & dtype,
+                       const QList<JobData *> & jobData );
+
   class Job : public QObject  {
   Q_OBJECT
 
@@ -56,8 +60,7 @@ namespace qtCOFE  {
       QString     name;
       QString     desc;
       QString     icon;
-      QStringList dtypes;
-      QList<QList<Metadata *> > metadata;
+      QList<JobData *> outData;
       int         id;
       bool        expanded;
 
@@ -68,6 +71,9 @@ namespace qtCOFE  {
 
       void setJobData ( const QJsonObject & jobData,
                         DataModel * dataModel );
+
+      inline int indexOf ( const QString & dtype )
+                            { return qtCOFE::indexOf(dtype,outData); }
 
     protected:
       void clear();

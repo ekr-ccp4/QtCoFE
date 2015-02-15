@@ -126,29 +126,28 @@ Q_DECLARE_METATYPE ( qtCOFE::Job* )
 void qtCOFE::DataDialog::makeDataTable ( ProjectTree     *projectTree,
                                          QTreeWidgetItem *jobNode,
                                          QString          taskType )  {
-QStringList              dtypes,dtypes0;
+QList<JobData *>         projData;
+QList<TaskData *>        taskData;
 QList<QTreeWidgetItem *> nodes;
 const DataType          *dataType;
 Job                     *job;
 QString                  metadata,iconPath;
 int                      col,row,k;
-bool                     taskData;
 
   if (!taskType.isEmpty())  {
     const Task *task = dataModel->getTask ( taskType );
-    if (task)  dtypes0 = task->input_dtypes;
+    if (task)  taskData = task->inpData;
   }
-  taskData = (dtypes0.count()>0);
 
-  if (taskData)  dataTable->setColumnCount ( 6 );
-           else  dataTable->setColumnCount ( 5 );
+  if (!taskData.isEmpty())  dataTable->setColumnCount ( 6 );
+                      else  dataTable->setColumnCount ( 5 );
   dataTable->setRowCount    ( 10 );
   dataTable->setAlternatingRowColors ( true );
 
   col = 0;
   dataTable->setHorzHeader ( col++,"File"        );
   dataTable->setHorzHeader ( col++,"Type"        );
-  if (taskData)
+  if (!taskData.isEmpty())
     dataTable->setHorzHeader ( col++,"Status"    );
   dataTable->setHorzHeader ( col++,"Metadata"    );
   dataTable->setHorzHeader ( col++,"Description" );
@@ -157,30 +156,36 @@ bool                     taskData;
   dataTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
   dataTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
 
-  projectTree->addProjectedData ( jobNode,dtypes,nodes );
+  // dtypes  === projData
+  // dtypes0 === taskData
+  projectTree->addProjectedData ( jobNode,projData,nodes );
   row = 0;
 
   job = jobNode->data ( 0,Qt::UserRole ).value<Job*>();
-  for (int i=0;i<dtypes0.count();i++)
-    if (!dtypes.contains(dtypes0.at(i)))  {
-      dataType = dataModel->getDataType ( dtypes0.at(i) );
+  for (int i=0;i<taskData.count();i++)
+    if (indexOf(taskData.at(i)->type,projData)<0)  {
+      dataType = dataModel->getDataType ( taskData.at(i)->type );
       makeRow ( row,dataType->icon,"<< not in promise >>",dataType->name,
                 qtCOFE_Cancel_icon," ",dataType->desc,job->name );
     }
 
-  if (taskData)  iconPath = qtCOFE_Ok_icon;
-           else  iconPath = "";
+  if (!taskData.isEmpty())  iconPath = qtCOFE_Ok_icon;
+                      else  iconPath = "";
 
-  for (int i=0;i<dtypes.count();i++)
-    if ((!taskData) || dtypes0.contains (dtypes.at(i)))  {
+  for (int i=0;i<projData.count();i++)
+    if ((taskData.isEmpty()) ||
+        (indexOf(projData.at(i)->type,taskData)>=0))  {
       job      = nodes[i]->data ( 0,Qt::UserRole ).value<Job*>();
-      dataType = dataModel->getDataType ( dtypes.at(i) );
+      dataType = dataModel->getDataType ( projData.at(i)->type );
       if (job)  {
-        if (job->metadata.count()>0)  {
-          k = job->dtypes.indexOf ( dtypes.at(i) );
-          if (k>=0)  {
-            QList<Metadata *> mlist = job->metadata.at(k);
-            foreach (Metadata *m,mlist)  {
+        k = job->indexOf ( projData.at(i)->type );
+        if (k>=0)  {
+          if (job->outData.at(k)->metadata.isEmpty())  {
+            makeRow ( row,dataType->icon,"<< in promise >>",
+                      dataType->name,iconPath," ",dataType->desc,
+                      job->name );
+          } else  {
+            foreach (Metadata *m,job->outData[k]->metadata)  {
               if (m->columns.count()>0)  {
                 metadata = "Columns:";
                 foreach (QString c,m->columns)
@@ -191,9 +196,6 @@ bool                     taskData;
                         iconPath,metadata,m->desc,job->name );
             }
           }
-        } else  {
-          makeRow ( row,dataType->icon,"<< in promise >>",dataType->name,
-                    iconPath," ",dataType->desc,job->name );
         }
       }
     }

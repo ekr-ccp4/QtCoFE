@@ -25,6 +25,24 @@
 #include "qtcofe_job.h"
 #include "qtcofe_datamodel.h"
 
+qtCOFE::JobData::JobData() : TaskData()  {}
+qtCOFE::JobData::~JobData() { clear(); }
+
+void qtCOFE::JobData::clear()  {
+  foreach (Metadata *m,metadata)
+    if (m)  delete m;
+  metadata.clear();
+}
+
+int qtCOFE::indexOf ( const QString & dtype,
+                      const QList<JobData *> & jobData )  {
+int k = -1;
+  for (int i=0;(i<jobData.count()) && (k<0);i++)
+    if (jobData.at(i)->type==dtype)
+      k = i;
+  return k;
+}
+
 
 qtCOFE::Job::Job ( QObject *parent ) : QObject(parent)  {
   id       = 0;
@@ -45,13 +63,9 @@ qtCOFE::Job::~Job() {
 }
 
 void qtCOFE::Job::clear()  {
-  dtypes.clear();
-  foreach (QList<Metadata *> mlist,metadata)  {
-    foreach (Metadata *m,mlist)
-      if (m)  delete m;
-    mlist.clear();
-  }
-  metadata.clear();
+  foreach (JobData *jd,outData)
+    if (jd)  delete jd;
+  outData.clear();
 }
 
 void qtCOFE::Job::setJobData ( const QJsonObject & jobData,
@@ -69,21 +83,22 @@ const Task *task = NULL;
   for (int i=0;i<data.count();i++)  {
     QJsonArray dlist = data[i].toArray();
     if (dlist.count()>0)  {
-      dtypes.append ( dlist[0].toObject().value("type").toString() );
-      QList<Metadata *> mlist;
+      JobData *jd =new JobData();
+      jd->type = dlist[0].toObject().value("type").toString();
+      jd->copy ( dataModel->getTaskDataOut(type,jd->type) );
       for (int j=0;j<dlist.count();j++)  {
         Metadata *m = new Metadata();
         QJsonObject jobj = dlist[j].toObject();
-        m->desc  = jobj.value("type").toString();
+        m->desc  = jobj.value("desc").toString();
         m->fname = jobj.value("file").toString();
         if (jobj.keys().contains("columns",Qt::CaseInsensitive))  {
           QJsonArray clist = jobj.value("columns").toArray();
           for (int k=0;k<clist.count();k++)
             m->columns.append ( clist[k].toString() );
         }
-        mlist.append ( m );
+        jd->metadata.append ( m );
       }
-      metadata.append ( mlist );
+      outData.append ( jd );
     }
   }
 
@@ -95,9 +110,13 @@ const Task *task = NULL;
     if (name.isEmpty())  name = task->name;
     if (desc.isEmpty())  desc = task->desc;
     icon = task->icon;
-    if (dtypes.isEmpty())
-      dtypes = task->output_dtypes;
+    if (outData.isEmpty())  {
+      foreach (TaskData *td,task->outData)  {
+        JobData *jd = new JobData();
+        jd->copy ( td );
+        outData.append ( jd );
+      }
+    }
   }
 
 }
-

@@ -307,27 +307,28 @@ int jid = currentJobId();
 
 }
 
-void qtCOFE::ProjectTree::getProjectedData ( QStringList & dtypes,
+void qtCOFE::ProjectTree::getProjectedData (
+                                QList<JobData *>         & projData,
                                 QList<QTreeWidgetItem *> & nodes )  {
-  dtypes.clear();
-  nodes .clear();
-  addProjectedData ( jobTree->currentItem(),dtypes,nodes );
+  projData.clear();
+  nodes   .clear();
+  addProjectedData ( jobTree->currentItem(),projData,nodes );
 }
 
 void qtCOFE::ProjectTree::addProjectedData (
                                   QTreeWidgetItem          * node,
-                                  QStringList              & dtypes,
+                                  QList<JobData *>         & projData,
                                   QList<QTreeWidgetItem *> & nodes )  {
   if (node)  {
     Job *job = node->data ( 0,Qt::UserRole ).value<Job*>();
     if (job)  {
-      foreach (QString d,job->dtypes)
-        if ((d!="dtype_any") && (d!="dtype_dummy") &&
-            (!dtypes.contains(d,Qt::CaseInsensitive))) {
-          dtypes.append ( d    );
-          nodes .append ( node );
+      foreach (JobData *jd,job->outData)
+        if ((jd->type!="dtype_any") && (jd->type!="dtype_dummy") &&
+            (indexOf(jd->type,projData)<0))  {
+          projData.append ( jd       );
+          nodes   .append ( node     );
         }
     }
-    addProjectedData ( node->parent(),dtypes,nodes );
+    addProjectedData ( node->parent(),projData,nodes );
   }
 }

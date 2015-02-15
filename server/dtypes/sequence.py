@@ -11,7 +11,6 @@ from project import dtype
 class DType(dtype.DType):
 
     def __init__(self,json_str=""):
-        super(DType,self).__init__(json_str)
         self.type = "dtype_sequence"
         self.name = "Sequence"
         self.desc = "Macromolecular sequence"

@@ -38,6 +38,7 @@ namespace qtCOFE  {
   class Preferences;
   class Session;
   class DataModel;
+  class JobData;
 
   class ProjectTree : public QWidget  {
   Q_OBJECT
@@ -63,11 +64,11 @@ namespace qtCOFE  {
       void deleteCurrentJob();
 
       // from current node
-      void getProjectedData ( QStringList              & dtypes,
+      void getProjectedData ( QList<JobData *>         & projData,
                               QList<QTreeWidgetItem *> & nodes );
 
       void addProjectedData ( QTreeWidgetItem          * node,
-                              QStringList              & dtypes,
+                              QList<JobData *>         & projData,
                               QList<QTreeWidgetItem *> & nodes );
 
     signals:

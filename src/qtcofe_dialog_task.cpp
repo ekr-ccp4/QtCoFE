@@ -33,36 +33,42 @@
 #include "qtcofe_dialog_task.h"
 #include "qtcofe_datamodel.h"
 #include "qtcofe_preferences.h"
+#include "qtcofe_job.h"
 #include "qtcofe_defs.h"
 
 qtCOFE::TaskDialog::TaskDialog ( QWidget           * parent,
                                  DataModel         * dm,
-                                 const QStringList & dtypes,
+                                 const QList<JobData *> & projData,
                                  Qt::WindowFlags     f )
                    : QDialog ( parent,f )  {
   dataModel    = dm;
-  setStyleSheet ( dataModel->getPreferences()->getFontSizeStyleSheet(1.0) );
+  setStyleSheet ( dataModel->getPreferences()->
+                                          getFontSizeStyleSheet(1.0) );
   signalMapper = new QSignalMapper ( this );
   setWindowTitle ( "Tasks" );
-  makeLayout ( dtypes );
+  makeLayout ( projData );
 //  setFixedSize(size());
   fixSize();
 }
 
 qtCOFE::TaskDialog::~TaskDialog()  {}
 
-void qtCOFE::TaskDialog::makeLayout ( const QStringList & dtypes )  {
+void qtCOFE::TaskDialog::makeLayout (
+                                 const QList<JobData *> & projData )  {
+QStringList  dtypes;
 QVBoxLayout *vbox;
 QHBoxLayout *hbox;
 QGridLayout *gbox;
 QWidget     *w;
 QLabel      *lbl;
 int          btnSize  = 3*dataModel->getPreferences()->getFontPointSize();
-//QString      btnStyle = "padding:0px;margin:0px;border:0px;";
 QString      btnStyle = "border:2px solid #FF0000;border-radius:6px;";
 QString      lblStyle = QString ( "font-size: %1pt;" )
              .arg(9*dataModel->getPreferences()->getFontPointSize()/10);
 int          r,nc,c,dkey;
+
+  foreach (JobData *jd,projData)
+    dtypes.append ( jd->type );
 
   buttonMap.clear();
 

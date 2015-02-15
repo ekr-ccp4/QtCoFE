@@ -18,10 +18,10 @@ class Task(task.Task):
         self.order   = -1  # position within section for GUI
         self.icon    = "task_root.png"
 
-        self.input_dtypes  = []
-        self.input_dmodes  = []
-        self.output_dtypes = [dummy.DType().type]
-        self.output_dmodes = ["E0"              ]
+        self.inp_data = []
+        self.out_data = [
+                         [dummy.DType().type,"E",0]
+                        ]
 
         return
 
