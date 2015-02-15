@@ -19,7 +19,9 @@ class Task(task.Task):
         self.icon    = "task_hkl.png"
 
         self.input_dtypes  = [images.DType().type]
+        self.input_dmodes  = ["G0"               ]
         self.output_dtypes = [hkl   .DType().type]
+        self.output_dmodes = ["E1"               ]
 
         return
 

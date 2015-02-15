@@ -12,15 +12,17 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_ep"
-        self.name    = "EP"
-        self.desc    = "Experimental phasing"
+        self.type    = "task_ep_mad"
+        self.name    = "EP-MAD"
+        self.desc    = "MAD phasing"
         self.section = task.section_phasing().id
         self.order   = 1  # position within section for GUI
         self.icon    = "task_ep.png"
 
         self.input_dtypes  = [hkl.DType().type]
+        self.input_dmodes  = ["G2"]
         self.output_dtypes = [structure.DType().type]
+        self.output_dmodes = ["G0"]
 
         return
 

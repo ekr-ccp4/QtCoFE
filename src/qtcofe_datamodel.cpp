@@ -73,6 +73,7 @@ qtCOFE::Task::~Task() {
 
 int qtCOFE::Task::readData ( const QJsonObject & obj )  {
 QJsonArray a;
+QString    mode;
 int        n;
 
   input_dtypes .clear();
@@ -90,10 +91,30 @@ int        n;
   for (int i=0;i<n;i++)
     input_dtypes.append ( a[i].toString() );
 
+  a = obj.value("input_dmodes").toArray();
+  n = a.count();
+  for (int i=0;i<n;i++)  {
+    mode = a[i].toString();
+    input_dmodes.append ( mode.at(0) );
+    mode = mode.remove ( 0,1 );
+    if (!mode.isEmpty())  input_dnums.append ( mode.toInt() );
+                    else  input_dnums.append ( 0 );
+  }
+
   a = obj.value("output_dtypes").toArray();
   n = a.count();
   for (int i=0;i<n;i++)
     output_dtypes.append ( a[i].toString() );
+
+  a = obj.value("output_dmodes").toArray();
+  n = a.count();
+  for (int i=0;i<n;i++)  {
+    mode = a[i].toString();
+    output_dmodes.append ( mode.at(0) );
+    mode = mode.remove ( 0,1 );
+    if (!mode.isEmpty())  output_dnums.append ( mode.toInt() );
+                    else  output_dnums.append ( 0 );
+  }
 
   return 0;
 

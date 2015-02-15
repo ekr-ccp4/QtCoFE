@@ -80,7 +80,8 @@ OTHER_FILES += \
     server/tasks/data_import.py \
     server/tasks/data_processing.py \
     server/tasks/model_building.py \
-    server/tasks/phasing_ep.py \
+    server/tasks/phasing_ep_mad.py \
+    server/tasks/phasing_ep_sad.py \
     server/tasks/phasing_mr.py \
     server/tasks/refinement.py \
     server/dtypes/dummy.py \

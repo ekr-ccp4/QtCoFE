@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 #  ------------------------------------------------------------------
-#   Refinement task
+#   EP phasing task
 #  ------------------------------------------------------------------
 #
 
@@ -12,17 +12,17 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_refinement"
-        self.name    = "Refinement"
-        self.desc    = "Refinement"
-        self.section = task.section_refinement().id
-        self.order   = 0  # position within section for GUI
-        self.icon    = "task_refinement.png"
+        self.type    = "task_ep_sad"
+        self.name    = "EP-SAD"
+        self.desc    = "Experimental phasing"
+        self.section = task.section_phasing().id
+        self.order   = 1  # position within section for GUI
+        self.icon    = "task_ep.png"
 
-        self.input_dtypes  = [hkl.DType().type,structure.DType().type]
-        self.input_dmodes  = ["E1"            ,"E1"                  ]
+        self.input_dtypes  = [hkl.DType().type]
+        self.input_dmodes  = ["E1"]
         self.output_dtypes = [structure.DType().type]
-        self.output_dmodes = ["E1"                  ]
+        self.output_dmodes = ["G0"]
 
         return
 
@@ -40,3 +40,5 @@ if __name__ == "__main__":
     print "\nExperimental phasing task:\n\n" + T.to_JSON()
 
     sys.exit(0)
+
+

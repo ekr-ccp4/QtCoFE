@@ -19,7 +19,9 @@ class Task(task.Task):
         self.icon    = "task_root.png"
 
         self.input_dtypes  = []
+        self.input_dmodes  = []
         self.output_dtypes = [dummy.DType().type]
+        self.output_dmodes = ["E0"              ]
 
         return
 

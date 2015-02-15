@@ -32,6 +32,7 @@ namespace qtCOFE  {
   class Preferences;
   class Session;
 
+  /// Data Type description class
   class DataType : public QObject  {
   Q_OBJECT
 
@@ -64,19 +65,24 @@ namespace qtCOFE  {
 
   };
 
+  /// Task description class
   class Task : public QObject  {
   Q_OBJECT
 
     public:
-      QString type;
-      QString name;
-      QString desc;
-      QString section;
-      QString icon;
-      int     order;
+      QString  type;
+      QString  name;
+      QString  desc;
+      QString  section;
+      QString  icon;
+      int      order;
 
-      QStringList input_dtypes;
-      QStringList output_dtypes;
+      QStringList  input_dtypes;
+      QList<QChar> input_dmodes;
+      QList<int>   input_dnums;
+      QStringList  output_dtypes;
+      QList<QChar> output_dmodes;
+      QList<int>   output_dnums;
 
       Task ( QObject * parent = 0 );
       virtual ~Task();

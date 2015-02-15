@@ -20,7 +20,9 @@ class Task(task.Task):
         self.icon    = "task_modbuild.png"
 
         self.input_dtypes  = [hkl.DType().type,structure.DType().type]
+        self.input_dmodes  = ["E1"            ,"E1"                  ]
         self.output_dtypes = [structure.DType().type]
+        self.output_dmodes = ["E1"                  ]
 
         return
 

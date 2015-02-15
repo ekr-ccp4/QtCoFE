@@ -55,7 +55,9 @@ class Task(task.Task):
 #        self.input_dtypes  = [dummy.DType().type]
 #        self.output_dtypes = [any  .DType().type]
         self.input_dtypes  = []
+        self.input_dmodes  = []
         self.output_dtypes = []
+        self.output_dmodes = []
 
         return
 

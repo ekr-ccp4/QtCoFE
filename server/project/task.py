@@ -86,10 +86,26 @@ class Task(jsonut.jObject):
         self.icon    = "task_template.png"
 
         # input/output data lists contain data types which is
-        # required/produced by the given task. Full data lists
-        # are kept in the corresponding Job classes.
+        # required/produced by the given task. Each data type
+        # corresponds to a list (vector) of actual data. Full
+        # data lists are kept in 'data' field of the corresponding
+        # Job classes.
         self.input_dtypes  = [dummy.DType().type]
-        self.output_dtypes = [any  .DType().type]
+
+        # input/output data modes contain additional data on using
+        # the data types. Conventions:
+        #  A  : the corresponding data list may contain any number
+        #       of data entities, including 0
+        #  EN : the corresponding data list must contain exactly N
+        #       data entities
+        #  UN : the corresponding data list may contain up to N
+        #       data entities (inclusive of N)
+        #  GN : the corresponding data list must contain more than N
+        #       data entities (N exclusive)
+        self.input_dmodes  = ["A"]
+
+        self.output_dtypes = [any.DType().type]
+        self.output_dmodes = ["A"]
 
         return
 
