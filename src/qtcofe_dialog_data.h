@@ -72,7 +72,9 @@ namespace qtCOFE  {
                            QString signIcon,
                            QString metadata,
                            QString desc,
-                           QString jobName
+                           QString jobName,
+                           int     span,
+                           QBrush &brush
                          );
       void makeDataTable ( ProjectTree     *projectTree,
                            QTreeWidgetItem *jobNode,

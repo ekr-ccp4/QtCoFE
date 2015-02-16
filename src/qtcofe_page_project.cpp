@@ -114,35 +114,25 @@ QList<JobData *>  jobData;
 QList<QTreeWidgetItem *> nodes;
 
   jobTree->getProjectedData ( jobData,nodes );
-  tdlg = new TaskDialog ( this,dataModel,jobData );
+  tdlg = new TaskDialog ( this,dataModel,jobData,jobTree );
 
   tdlg->show();
   tdlg->setFixedSize ( tdlg->size() );
   if (tdlg->exec()==QDialog::Accepted)  {
-    if (tdlg->getSelTaskKey()==0)  {
-      DataDialog *ddlg = new DataDialog ( this,
-                    jobTree,jobTree->currentNode(),
-                    tdlg->getSelTaskType(),dataModel,"Data Summary",
-                    "Data Summary for task '" +
-                        dataModel->taskName(tdlg->getSelTaskType()) +
-                           "'" );
-      ddlg->exec();
-    } else  {
-      QJsonObject *jsonData = jobTree->getTreeData();
-      jsonData->insert ( "parent"   ,jobID );
-      jsonData->insert ( "task_type",tdlg->getSelTaskType() );
-      project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
-      delete jsonData;
-      if (tdlg->getSelTaskType()=="task_import")  {
-        DataImportDialog *didlg = new DataImportDialog ( this,
-                                   jobTree->currentJobId(),dataModel );
-        didlg->exec();
-        if (didlg->importCount()<=0)
-          jobTree->deleteCurrentJob();
-        else  {
-          QJsonObject jsd;
-          project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
-        }
+    QJsonObject *jsonData = jobTree->getTreeData();
+    jsonData->insert ( "parent"   ,jobID );
+    jsonData->insert ( "task_type",tdlg->getSelTaskType() );
+    project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
+    delete jsonData;
+    if (tdlg->getSelTaskType()=="task_import")  {
+      DataImportDialog *didlg = new DataImportDialog ( this,
+                                 jobTree->currentJobId(),dataModel );
+      didlg->exec();
+      if (didlg->importCount()<=0)
+        jobTree->deleteCurrentJob();
+      else  {
+        QJsonObject jsd;
+        project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
       }
     }
   }
@@ -153,7 +143,7 @@ void qtCOFE::ProjectPage::delJob ( int jobID, int nextCrJobID )  {
   QJsonObject *jsonData = jobTree->getTreeData();
   jsonData->insert ( "job" ,jobID );
   jsonData->insert ( "next",nextCrJobID );
-  project_query ( *jsonData,qtCOFE_SERVER_ACT_DelJob );
+  project_query    ( *jsonData,qtCOFE_SERVER_ACT_DelJob );
   delete jsonData;
 }
 

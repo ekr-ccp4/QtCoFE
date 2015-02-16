@@ -145,6 +145,7 @@ QString    mode;
 
 }
 
+/*
 int qtCOFE::Task::hasInput ( const QStringList & dtypes )  {
 bool included = true;
 
@@ -172,7 +173,7 @@ bool b = false;
   return b;
 
 }
-
+*/
 
 void qtCOFE::Task::printTask()  {
   printf ( "   Type   : '%s'\n",type.toAscii().data() );

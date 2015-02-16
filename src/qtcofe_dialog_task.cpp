@@ -31,6 +31,8 @@
 #include <QMessageBox>
 
 #include "qtcofe_dialog_task.h"
+#include "qtcofe_dialog_data.h"
+#include "qtcofe_project_tree.h"
 #include "qtcofe_datamodel.h"
 #include "qtcofe_preferences.h"
 #include "qtcofe_job.h"
@@ -39,9 +41,11 @@
 qtCOFE::TaskDialog::TaskDialog ( QWidget           * parent,
                                  DataModel         * dm,
                                  const QList<JobData *> & projData,
+                                 ProjectTree       * jTree,
                                  Qt::WindowFlags     f )
                    : QDialog ( parent,f )  {
   dataModel    = dm;
+  jobTree      = jTree;
   setStyleSheet ( dataModel->getPreferences()->
                                           getFontSizeStyleSheet(1.0) );
   signalMapper = new QSignalMapper ( this );
@@ -55,7 +59,7 @@ qtCOFE::TaskDialog::~TaskDialog()  {}
 
 void qtCOFE::TaskDialog::makeLayout (
                                  const QList<JobData *> & projData )  {
-QStringList  dtypes;
+Job          job;
 QVBoxLayout *vbox;
 QHBoxLayout *hbox;
 QGridLayout *gbox;
@@ -63,12 +67,9 @@ QWidget     *w;
 QLabel      *lbl;
 int          btnSize  = 3*dataModel->getPreferences()->getFontPointSize();
 QString      btnStyle = "border:2px solid #FF0000;border-radius:6px;";
-QString      lblStyle = QString ( "font-size: %1pt;" )
-             .arg(9*dataModel->getPreferences()->getFontPointSize()/10);
+QString      lblStyle = QString ( "font-size: %1pt;" ).arg (
+                 9*dataModel->getPreferences()->getFontPointSize()/10);
 int          r,nc,c,dkey;
-
-  foreach (JobData *jd,projData)
-    dtypes.append ( jd->type );
 
   buttonMap.clear();
 
@@ -85,17 +86,17 @@ int          r,nc,c,dkey;
       gbox->addWidget ( lbl,r++,0,1,nc );
       c = 0;
       for (int j=0;j<dataModel->tasks.count();j++)  {
-        Task *task = dataModel->tasks.at(j);
-        if (task->section==section->id)  {
+        job.copy ( dataModel->tasks.at(j) );
+        if (job.section==section->id)  {
           QToolButton *btn = new QToolButton();
-          btn->setIcon ( QIcon(QString(qtCOFE_icon_base)+task->icon) );
+          btn->setIcon ( QIcon(QString(qtCOFE_icon_base)+job.icon) );
           btn->setIconSize   ( QSize(btnSize,btnSize) );
-          dkey = task->hasInput ( dtypes );
+          dkey = job.hasInput ( projData );
           if (!dkey)
             btn->setStyleSheet ( btn->styleSheet() + btnStyle );
-          buttonMap[task->type] = dkey;
-          btn->setToolTip    ( task->desc );
-          lbl  = new QLabel  ( task->name );
+          buttonMap[job.type] = dkey;
+          btn->setToolTip    ( job.desc );
+          lbl  = new QLabel  ( job.name );
           lbl->setStyleSheet ( lblStyle        );
           lbl->setAlignment  ( Qt::AlignCenter );
           lbl->setWordWrap   ( true            );
@@ -107,7 +108,7 @@ int          r,nc,c,dkey;
           }
           gbox->addLayout ( vbox,r,c++,1,1 );
           connect ( btn,SIGNAL(clicked()), signalMapper,SLOT(map()) );
-          signalMapper->setMapping ( btn,task->type );
+          signalMapper->setMapping ( btn,job.type );
         }
       }
       while (c<nc)  {
@@ -170,6 +171,18 @@ void qtCOFE::TaskDialog::fixSize()  {
 
 
 void qtCOFE::TaskDialog::taskSelected ( const QString & type )  {
+
   selTaskType = type;
-  accept();
+
+  if (getSelTaskKey()==0)  {
+    DataDialog *ddlg = new DataDialog ( this,
+                jobTree,jobTree->currentNode(),
+                type,dataModel,"Data Summary",
+                "Data Summary for task '" +
+                    dataModel->taskName(type) +
+                       "'" );
+    ddlg->exec();
+  } else
+    accept();
+
 }

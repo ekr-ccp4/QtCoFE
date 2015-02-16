@@ -91,7 +91,9 @@ void qtCOFE::DataDialog::makeRow ( int   & row,
                                    QString signIcon,
                                    QString metadata,
                                    QString desc,
-                                   QString jobName
+                                   QString jobName,
+                                   int     span,
+                                   QBrush &brush
                                  )  {
 QTableWidgetItem *item;
 int               col = 0;
@@ -107,7 +109,9 @@ int               col = 0;
     font.setItalic ( true );
     item->setFont ( font );
   }
-  dataTable->setTableItem  ( row,col++,dataName,_align_right );
+  dataTable->setTableItem ( row,col++,dataName,_align_right );
+  if (span>1)
+    dataTable->setSpan ( row,col-1,span,1 );
   if (!signIcon.isEmpty())  {
     item = dataTable->setTableItem ( row,col++," ",Qt::AlignCenter );
     if (signIcon!="#")
@@ -116,6 +120,13 @@ int               col = 0;
   dataTable->setTableItem ( row,col++,metadata,_align_left  );
   dataTable->setTableItem ( row,col++,desc    ,_align_left  );
   dataTable->setTableItem ( row,col  ,jobName ,_align_left  );
+  if (span>1)  {
+    dataTable->setSpan ( row,col-1,span,1 );
+    dataTable->setSpan ( row,col  ,span,1 );
+  }
+
+  for (int i=0;i<dataTable->columnCount();i++)
+    dataTable->item ( row,i )->setBackground ( brush );
 
   row++;
 
@@ -132,7 +143,8 @@ QList<QTreeWidgetItem *> nodes;
 const DataType          *dataType;
 Job                     *job;
 QString                  metadata,iconPath;
-int                      col,row,k;
+QBrush                   brush[2];
+int                      col,row,k,span,brushNo;
 
   if (!taskType.isEmpty())  {
     const Task *task = dataModel->getTask ( taskType );
@@ -142,7 +154,9 @@ int                      col,row,k;
   if (!taskData.isEmpty())  dataTable->setColumnCount ( 6 );
                       else  dataTable->setColumnCount ( 5 );
   dataTable->setRowCount    ( 10 );
-  dataTable->setAlternatingRowColors ( true );
+//  dataTable->setAlternatingRowColors ( true );
+  brush[0] = QBrush(Qt::white);
+  brush[1] = QBrush(QColor(63,127,255,15));
 
   col = 0;
   dataTable->setHorzHeader ( col++,"File"        );
@@ -159,14 +173,16 @@ int                      col,row,k;
   // dtypes  === projData
   // dtypes0 === taskData
   projectTree->addProjectedData ( jobNode,projData,nodes );
-  row = 0;
+  row     = 0;
+  brushNo = 0;
 
   job = jobNode->data ( 0,Qt::UserRole ).value<Job*>();
   for (int i=0;i<taskData.count();i++)
     if (indexOf(taskData.at(i)->type,projData)<0)  {
       dataType = dataModel->getDataType ( taskData.at(i)->type );
       makeRow ( row,dataType->icon,"<< not in promise >>",dataType->name,
-                qtCOFE_Cancel_icon," ",dataType->desc,job->name );
+                qtCOFE_Cancel_icon," ",dataType->desc,job->name,1,
+                brush[(brushNo++) & 0x1]);
     }
 
   if (!taskData.isEmpty())  iconPath = qtCOFE_Ok_icon;
@@ -183,8 +199,9 @@ int                      col,row,k;
           if (job->outData.at(k)->metadata.isEmpty())  {
             makeRow ( row,dataType->icon,"<< in promise >>",
                       dataType->name,iconPath," ",dataType->desc,
-                      job->name );
+                      job->name,1,brush[(brushNo++) & 0x1] );
           } else  {
+            span = job->outData[k]->metadata.count();
             foreach (Metadata *m,job->outData[k]->metadata)  {
               if (m->columns.count()>0)  {
                 metadata = "Columns:";
@@ -193,8 +210,11 @@ int                      col,row,k;
               } else
                 metadata = " ";
               makeRow ( row,dataType->icon,m->fname,dataType->name,
-                        iconPath,metadata,m->desc,job->name );
+                        iconPath,metadata,m->desc,job->name,span,
+                        brush[brushNo & 0x1]);
+              span = 0;
             }
+            brushNo++;
           }
         }
       }

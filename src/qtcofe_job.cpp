@@ -26,6 +26,13 @@
 #include "qtcofe_datamodel.h"
 
 qtCOFE::JobData::JobData() : TaskData()  {}
+
+qtCOFE::JobData::JobData ( TaskData *taskData )  {
+  type = taskData->type;  // "dtype_xxx"
+  mode = taskData->mode;  // modificator of data entity number (E,U,G)
+  n    = taskData->n;     // data entity number
+}
+
 qtCOFE::JobData::~JobData() { clear(); }
 
 void qtCOFE::JobData::clear()  {
@@ -33,6 +40,17 @@ void qtCOFE::JobData::clear()  {
     if (m)  delete m;
   metadata.clear();
 }
+
+int qtCOFE::JobData::suitability ( const JobData * jobData )  {
+
+  if (type=="dtype_dummy")  return 1;
+  if (type=="dtype_any")    return 1;
+  if (type!=jobData->type)  return 0;
+
+  return 1;
+
+}
+
 
 int qtCOFE::indexOf ( const QString & dtype,
                       const QList<JobData *> & jobData )  {
@@ -49,11 +67,20 @@ qtCOFE::Job::Job ( QObject *parent ) : QObject(parent)  {
   expanded = true;
 }
 
+qtCOFE::Job::Job ( const Task * task, QObject *parent )
+           : QObject(parent)  {
+  id       = 0;
+  order    = 0;
+  expanded = true;
+  copy ( task );
+}
+
 qtCOFE::Job::Job ( const QJsonObject & jobData,
                    DataModel * dataModel,
                    QObject *parent )
            : QObject(parent)  {
   id       = 0;
+  order    = 0;
   expanded = true;
   setJobData ( jobData,dataModel );
 }
@@ -63,9 +90,31 @@ qtCOFE::Job::~Job() {
 }
 
 void qtCOFE::Job::clear()  {
+  foreach (JobData *jd,inpData)
+    if (jd)  delete jd;
+  inpData.clear();
   foreach (JobData *jd,outData)
     if (jd)  delete jd;
   outData.clear();
+}
+
+void qtCOFE::Job::copy ( const Task *task )  {
+
+  clear();
+
+  type    = task->type;
+  name    = task->name;
+  desc    = task->desc;
+  section = task->section;
+  icon    = task->icon;
+  order   = task->order;
+
+  foreach (TaskData *td,task->inpData)
+    inpData.append ( new JobData(td) );
+
+  foreach (TaskData *td,task->outData)
+    outData.append ( new JobData(td) );
+
 }
 
 void qtCOFE::Job::setJobData ( const QJsonObject & jobData,
@@ -118,5 +167,45 @@ const Task *task = NULL;
       }
     }
   }
+
+}
+
+
+int qtCOFE::Job::hasInput ( const QList<JobData *> & jobData )  {
+int suitable = 1;
+
+  for (int i=0;(i<inpData.count()) && (suitable!=0);i++)  {
+    suitable = 0;
+    for (int j=0;(j<jobData.count()) && (suitable==0);j++)
+      suitable = inpData.at(i)->suitability ( jobData.at(j) );
+  }
+
+  return suitable;
+
+/*
+bool included = true;
+
+  for (int i=0;(i<inpData.count()) && included;i++)
+    included = (qtCOFE::indexOf(inpData.at(i)->type,jobData)>=0);
+
+  for (int i=0;(i<inpData.count()) && (!included);i++)  {
+//    QString dtype = inpData.at(i)->type;
+    included = (inpData.at(i)->type=="dtype_dummy") ||
+               (inpData.at(i)->type=="dtype_any");
+  }
+
+  if (included)  return 1;
+  return 0;
+*/
+
+}
+
+bool qtCOFE::Job::hasInput ( const JobData * jobData )  {
+bool b = false;
+
+  for (int i=0;(i<inpData.count()) && (!b);i++)
+    b = (inpData.at(i)->type==jobData->type);
+
+  return b;
 
 }

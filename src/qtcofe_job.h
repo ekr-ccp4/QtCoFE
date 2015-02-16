@@ -30,6 +30,7 @@ class QJsonObject;
 namespace qtCOFE  {
 
   class DataModel;
+  class Task;
 
   class Metadata {
     public:
@@ -41,16 +42,25 @@ namespace qtCOFE  {
   };
 
   class JobData : public TaskData  {
+
     public:
       QList<Metadata *> metadata;
+
       JobData ();
+      JobData ( TaskData *taskData );
       ~JobData();
+
+      int suitability ( const JobData * jobData );
+
     protected:
       void clear();
+
   };
 
   extern int indexOf ( const QString & dtype,
                        const QList<JobData *> & jobData );
+
+
 
   class Job : public QObject  {
   Q_OBJECT
@@ -59,12 +69,16 @@ namespace qtCOFE  {
       QString     type;
       QString     name;
       QString     desc;
+      QString     section;
       QString     icon;
+      QList<JobData *> inpData;
       QList<JobData *> outData;
       int         id;
+      int         order;
       bool        expanded;
 
       Job ( QObject * parent = 0 );
+      Job ( const Task * task, QObject * parent = 0 );
       Job ( const QJsonObject & jobData, DataModel * dataModel,
             QObject * parent = 0 );
       virtual ~Job();
@@ -74,6 +88,11 @@ namespace qtCOFE  {
 
       inline int indexOf ( const QString & dtype )
                             { return qtCOFE::indexOf(dtype,outData); }
+
+      int  hasInput ( const QList<JobData *> & jobData );
+      bool hasInput ( const JobData * jobData );
+
+      void copy ( const Task *task );
 
     protected:
       void clear();

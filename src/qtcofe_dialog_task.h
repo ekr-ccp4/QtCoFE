@@ -34,6 +34,7 @@ namespace qtCOFE  {
 
   class DataModel;
   class JobData;
+  class ProjectTree;
 
   class TaskDialog : public QDialog  {
   Q_OBJECT
@@ -42,6 +43,7 @@ namespace qtCOFE  {
 
       TaskDialog ( QWidget *parent, DataModel *dm,
                    const QList<JobData *> & projData,
+                   ProjectTree *jTree,
                    Qt::WindowFlags f = 0 );
       ~TaskDialog();
 
@@ -52,6 +54,7 @@ namespace qtCOFE  {
 
     protected:
       DataModel        *dataModel;
+      ProjectTree      *jobTree;
       QScrollArea      *scrollArea;
       QSignalMapper    *signalMapper;
       QPushButton      *cancel_btn;

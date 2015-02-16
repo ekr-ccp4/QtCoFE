@@ -98,8 +98,8 @@ namespace qtCOFE  {
 
       int readData ( const QJsonObject & obj );
 
-      int  hasInput ( const QStringList & dtypes );
-      bool hasInput ( const QString     & dtype  );
+//      int  hasInput ( const QStringList & dtypes );
+//      bool hasInput ( const QString     & dtype  );
 
       void printTask();
 
