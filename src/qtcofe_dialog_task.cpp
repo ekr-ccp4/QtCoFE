@@ -38,19 +38,23 @@
 #include "qtcofe_job.h"
 #include "qtcofe_defs.h"
 
-qtCOFE::TaskDialog::TaskDialog ( QWidget           * parent,
-                                 DataModel         * dm,
-                                 const QList<JobData *> & projData,
-                                 ProjectTree       * jTree,
-                                 Qt::WindowFlags     f )
+qtCOFE::TaskDialog::TaskDialog (
+                           QWidget                        * parent,
+                           DataModel                      * dm,
+                           const QList<QList<JobData *> > & projData,
+                           ProjectTree                    * jTree,
+                           Qt::WindowFlags                  f )
                    : QDialog ( parent,f )  {
+QList<JobData *> prjData;
   dataModel    = dm;
   jobTree      = jTree;
   setStyleSheet ( dataModel->getPreferences()->
                                           getFontSizeStyleSheet(1.0) );
   signalMapper = new QSignalMapper ( this );
   setWindowTitle ( "Tasks" );
-  makeLayout ( projData );
+  for (int i=0;i<projData.count();i++)
+    prjData.append ( projData[i][0] );
+  makeLayout ( prjData );
 //  setFixedSize(size());
   fixSize();
 }
@@ -181,6 +185,7 @@ void qtCOFE::TaskDialog::taskSelected ( const QString & type )  {
                 "Data Summary for task '" +
                     dataModel->taskName(type) +
                        "'" );
+    ddlg->resizeToData();
     ddlg->exec();
   } else
     accept();

@@ -41,10 +41,11 @@ namespace qtCOFE  {
 
     public:
 
-      TaskDialog ( QWidget *parent, DataModel *dm,
-                   const QList<JobData *> & projData,
-                   ProjectTree *jTree,
-                   Qt::WindowFlags f = 0 );
+      TaskDialog ( QWidget                        * parent,
+                   DataModel                      * dm,
+                   const QList<QList<JobData *> > & projData,
+                   ProjectTree                    * jTree,
+                   Qt::WindowFlags                f = 0 );
       ~TaskDialog();
 
       void fixSize();

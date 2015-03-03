@@ -308,25 +308,42 @@ int jid = currentJobId();
 }
 
 void qtCOFE::ProjectTree::getProjectedData (
-                                QList<JobData *>         & projData,
-                                QList<QTreeWidgetItem *> & nodes )  {
+                          QList<QList<JobData *> >         & projData,
+                          QList<QList<QTreeWidgetItem *> > & nodes )  {
+// projData[i][*] corresponds to a particular data type, to be found by
+// querying projData[i][0]->type. 2nd index counts up the tree branch
+// from current node. nodes[i][j] stores QTreeWidgetItem corresponding
+// to projData[i][j].
   projData.clear();
   nodes   .clear();
   addProjectedData ( jobTree->currentItem(),projData,nodes );
 }
 
 void qtCOFE::ProjectTree::addProjectedData (
-                                  QTreeWidgetItem          * node,
-                                  QList<JobData *>         & projData,
-                                  QList<QTreeWidgetItem *> & nodes )  {
+                          QTreeWidgetItem                  * node,
+                          QList<QList<JobData *> >         & projData,
+                          QList<QList<QTreeWidgetItem *> > & nodes )  {
+// projData[i][*] corresponds to a particular data type, to be found by
+// querying projData[i][0]->type. 2nd index counts up the tree branch
+// from 'node'. nodes[i][j] stores QTreeWidgetItem corresponding to
+// projData[i][j].
+int i,k;
   if (node)  {
     Job *job = node->data ( 0,Qt::UserRole ).value<Job*>();
     if (job)  {
       foreach (JobData *jd,job->outData)
-        if ((jd->type!="dtype_any") && (jd->type!="dtype_dummy") &&
-            (indexOf(jd->type,projData)<0))  {
-          projData.append ( jd       );
-          nodes   .append ( node     );
+        if ((jd->type!="dtype_any") && (jd->type!="dtype_dummy"))  {
+          k = -1;
+          for (i=0;(i<projData.count()) && (k<0);i++)
+            if (projData[i][0]->type==jd->type)  {
+              k = i;
+              projData[i].append ( jd   );
+              nodes   [i].append ( node );
+            }
+          if (k<0)  {
+            projData.append ( QList<JobData *>()         << jd   );
+            nodes   .append ( QList<QTreeWidgetItem *>() << node );
+          }
         }
     }
     addProjectedData ( node->parent(),projData,nodes );

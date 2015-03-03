@@ -31,7 +31,7 @@ QT_END_NAMESPACE
 class QJsonObject;
 
 namespace qtx  {
-  class Table;
+  class Tree;
 }
 
 namespace qtCOFE  {
@@ -56,29 +56,31 @@ namespace qtCOFE  {
                    Qt::WindowFlags  f = 0 );
       ~DataDialog();
 
+      void resizeToData();
+
     protected:
       Preferences  *preferences;
       Session      *session;
       DataModel    *dataModel;
-      qtx::Table   *dataTable;
+      qtx::Tree    *dataTree;
       QLabel       *prompt_lbl;
       QPushButton  *close_btn;
 
-      void makeLayout    ();
-      void makeRow       ( int   & row,
-                           QString dataIcon,
-                           QString fileName,
-                           QString dataName,
-                           QString signIcon,
-                           QString metadata,
-                           QString desc,
-                           QString jobName,
-                           int     span,
-                           QBrush &brush
-                         );
-      void makeDataTable ( ProjectTree     *projectTree,
-                           QTreeWidgetItem *jobNode,
-                           QString          taskType );
+      void makeLayout   ();
+      QTreeWidgetItem * makeSection ( const QString name,
+                                      const QString icon,
+                                      const QString statusIcon
+                                    );
+      QTreeWidgetItem * makeRow     ( QTreeWidgetItem * item,
+                                      QStringList     & fields,
+                                      QString           jobType,
+                                      bool              checked,
+                                      bool              checkbox,
+                                      int               nData
+                                    );
+      void makeDataTree ( ProjectTree     * projectTree,
+                          QTreeWidgetItem * jobNode,
+                          QString           taskType );
 
       /*
     protected slots:

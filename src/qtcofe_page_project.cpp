@@ -39,10 +39,12 @@ qtCOFE::ProjectPage::ProjectPage ( DataModel      *dm,
                    : Page(dm,parent,flags)  {
 }
 
+
 qtCOFE::ProjectPage::~ProjectPage()  {
   if (!currentProject.isEmpty())
     save_project_state();
 }
+
 
 void qtCOFE::ProjectPage::makeLayout()  {
 QVBoxLayout *vbox = new QVBoxLayout();
@@ -66,6 +68,7 @@ QVBoxLayout *vbox = new QVBoxLayout();
             this,SLOT(dataInspector(int)) );
 
 }
+
 
 void qtCOFE::ProjectPage::loadProject()  {
 QJsonObject jsonData;
@@ -104,14 +107,13 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
     jobTree->makeTree ( jsonReply );
   }
 
-//  jobTree->setFullWidth();
-
 }
 
+
 void qtCOFE::ProjectPage::addJob ( int jobID )  {
-TaskDialog       *tdlg;
-QList<JobData *>  jobData;
-QList<QTreeWidgetItem *> nodes;
+TaskDialog                      *tdlg;
+QList<QList<JobData *> >         jobData;
+QList<QList<QTreeWidgetItem *> > nodes;
 
   jobTree->getProjectedData ( jobData,nodes );
   tdlg = new TaskDialog ( this,dataModel,jobData,jobTree );
@@ -148,16 +150,15 @@ void qtCOFE::ProjectPage::delJob ( int jobID, int nextCrJobID )  {
 }
 
 void qtCOFE::ProjectPage::switchJob ( int jobID )  {
-
 }
 
 void qtCOFE::ProjectPage::save_project_state()  {
-
 }
 
 void qtCOFE::ProjectPage::dataInspector ( int jobID )  {
 DataDialog *ddlg = new DataDialog ( this,jobTree,jobTree->currentNode(),
                                     "",dataModel,"Data Inspector",
                                     "Data Inspector" );
+  ddlg->resizeToData();
   ddlg->exec();
 }

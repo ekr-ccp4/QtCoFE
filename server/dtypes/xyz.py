@@ -14,7 +14,7 @@ class DType(dtype.DType):
         self.type = "dtype_xyz"
         self.name = "XYZ"
         self.desc = "XYZ Coordinates"
-        self.icon = "dtype_xyz.png"
+        self.icon = "data_xyz.png"
         return
 
 

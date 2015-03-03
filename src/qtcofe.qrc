@@ -23,5 +23,6 @@
         <file>images/data_sequence.png</file>
         <file>images/data_merged_mtz.png</file>
         <file>images/data_structure.png</file>
+        <file>images/data_xyz.png</file>
     </qresource>
 </RCC>

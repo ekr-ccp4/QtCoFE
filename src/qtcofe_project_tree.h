@@ -64,12 +64,12 @@ namespace qtCOFE  {
       void deleteCurrentJob();
 
       // from current node
-      void getProjectedData ( QList<JobData *>         & projData,
-                              QList<QTreeWidgetItem *> & nodes );
+      void getProjectedData ( QList<QList<JobData *> >         & projData,
+                              QList<QList<QTreeWidgetItem *> > & nodes );
 
-      void addProjectedData ( QTreeWidgetItem          * node,
-                              QList<JobData *>         & projData,
-                              QList<QTreeWidgetItem *> & nodes );
+      void addProjectedData ( QTreeWidgetItem                  * node,
+                              QList<QList<JobData *> >         & projData,
+                              QList<QList<QTreeWidgetItem *> > & nodes );
 
     signals:
       void add_new_job   ( int parentId );

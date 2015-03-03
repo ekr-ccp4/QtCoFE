@@ -62,6 +62,7 @@ namespace qtx  {
       QString clipboardText();  //!< produces clipboard text
       void  copyToClipboard();  //!< copies selection to Clipboard
 
+    public slots:
       void setFullWidth();
 
     signals:

@@ -23,8 +23,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QCheckBox>
 
-#include "qtx/qtx_table.h"
+#include "qtx/qtx_tree.h"
 
 #include "qtcofe_dialog_data.h"
 #include "qtcofe_datamodel.h"
@@ -49,7 +50,7 @@ qtCOFE::DataDialog::DataDialog ( QWidget         *parent,
   setWindowTitle ( winTitle );
   makeLayout     ();
   prompt_lbl->setText ( prompt + "<br>&nbsp;" );
-  makeDataTable  ( projectTree,jobNode,taskType );
+  makeDataTree   ( projectTree,jobNode,taskType );
 }
 
 qtCOFE::DataDialog::~DataDialog()  {}
@@ -66,8 +67,8 @@ QHBoxLayout *hbox;
             .arg(6*dataModel->getPreferences()->getFontPointSize()/5) );
   vbox->addWidget ( prompt_lbl,0 );
 
-  dataTable = new qtx::Table();
-  vbox->addWidget ( dataTable,100 );
+  dataTree = new qtx::Tree();
+  vbox->addWidget ( dataTree,100 );
 
   hbox = new QHBoxLayout();
   close_btn = new QPushButton ( "Close" );
@@ -84,152 +85,202 @@ QHBoxLayout *hbox;
 #define  _align_left   (Qt::AlignLeft  | Qt::AlignVCenter)
 #define  _align_right  (Qt::AlignRight | Qt::AlignVCenter)
 
-void qtCOFE::DataDialog::makeRow ( int   & row,
-                                   QString dataIcon,
-                                   QString fileName,
-                                   QString dataName,
-                                   QString signIcon,
-                                   QString metadata,
-                                   QString desc,
-                                   QString jobName,
-                                   int     span,
-                                   QBrush &brush
-                                 )  {
-QTableWidgetItem *item;
-int               col = 0;
+QTreeWidgetItem * qtCOFE::DataDialog::makeSection (
+                                          const QString name,
+                                          const QString icon,
+                                          const QString statusIcon )  {
+QTreeWidgetItem *item = dataTree->addTreeItem ( "" );
+  item->setFirstColumnSpanned ( true );
+  item = dataTree->addTreeItem ( name );
+  if (!icon.isEmpty())
+    item->setIcon ( 0,QIcon(QString(qtCOFE_icon_base) + icon) );
+  item->setText ( 1," " );
+  if (!statusIcon.isEmpty())
+    item->setIcon ( 1,QIcon(statusIcon) );
+  item->setExpanded ( true );
+  return item;
+}
 
-  if (dataTable->rowCount()<=row)
-    dataTable->setRowCount ( row+1 );
 
-  dataTable->setVertHeader ( row,QString("%1").arg(row+1) );
-  item = dataTable->setTableItem  ( row,col++,fileName,_align_left );
-  item->setIcon ( QIcon(QString(qtCOFE_icon_base) + dataIcon) );
-  if (fileName.startsWith("<"))  {
-    QFont font = item->font();
+QTreeWidgetItem * qtCOFE::DataDialog::makeRow (
+                                           QTreeWidgetItem * item,
+                                           QStringList     & fields,
+                                           QString           jobType,
+                                           bool              checked,
+                                           bool              checkbox,
+                                           int               nData
+                                              )  {
+QTreeWidgetItem *item1;
+QVBoxLayout     *vbox;
+QCheckBox       *cbx;
+QWidget         *w;
+const Task      *task;
+int              fsize = preferences->getFontPixelSize();
+
+  fields.removeAll ( "" );
+  item1 = new QTreeWidgetItem ( item,fields );
+
+  if (fields[0].startsWith("<"))  {
+    QFont font = item1->font(0);
     font.setItalic ( true );
-    item->setFont ( font );
-  }
-  dataTable->setTableItem ( row,col++,dataName,_align_right );
-  if (span>1)
-    dataTable->setSpan ( row,col-1,span,1 );
-  if (!signIcon.isEmpty())  {
-    item = dataTable->setTableItem ( row,col++," ",Qt::AlignCenter );
-    if (signIcon!="#")
-        item->setIcon ( QIcon(signIcon) );
-  }
-  dataTable->setTableItem ( row,col++,metadata,_align_left  );
-  dataTable->setTableItem ( row,col++,desc    ,_align_left  );
-  dataTable->setTableItem ( row,col  ,jobName ,_align_left  );
-  if (span>1)  {
-    dataTable->setSpan ( row,col-1,span,1 );
-    dataTable->setSpan ( row,col  ,span,1 );
+    item1->setFont ( 0,font );
   }
 
-  for (int i=0;i<dataTable->columnCount();i++)
-    dataTable->item ( row,i )->setBackground ( brush );
+  if (checkbox)  {
+    vbox = new QVBoxLayout();
+    for (int i=0;i<nData;i++)  {
+      cbx = new QCheckBox();
+      vbox->addWidget  ( cbx,0    );
+      cbx->setChecked  ( checked  );
+//      cbx->setDisabled ( disabled );
+    }
+    vbox->setContentsMargins ( fsize/2,0,0,0 );
+    vbox->setSpacing         ( fsize/3 );
+    w = new QWidget();
+    w->setLayout ( vbox );
+    dataTree->setItemWidget ( item1,1,w );
+  } else if (checked)  {
+      item1->setIcon ( 1,QIcon(qtCOFE_Ok_icon) );
+    item1->parent()->setExpanded ( true );
+  }
 
-  row++;
+  for (int i=0;i<item1->columnCount();i++)
+    item1->setTextAlignment ( i,_align_left );
+
+  task = dataModel->getTask ( jobType );
+  item1->setIcon ( item1->columnCount()-1,
+                   QIcon(QString(qtCOFE_icon_base) + task->icon) );
+
+  return item1;
 
 }
 
 Q_DECLARE_METATYPE ( qtCOFE::Job* )
 
-void qtCOFE::DataDialog::makeDataTable ( ProjectTree     *projectTree,
-                                         QTreeWidgetItem *jobNode,
-                                         QString          taskType )  {
-QList<JobData *>         projData;
-QList<TaskData *>        taskData;
-QList<QTreeWidgetItem *> nodes;
-const DataType          *dataType;
-Job                     *job;
-QString                  metadata,iconPath;
-QBrush                   brush[2];
-int                      col,row,k,span,brushNo;
+void qtCOFE::DataDialog::makeDataTree ( ProjectTree     *projectTree,
+                                        QTreeWidgetItem *jobNode,
+                                        QString          taskType )  {
+QList<QList<JobData *> >         projData;
+QList<QList<QTreeWidgetItem *> > nodes;
+QList<TaskData *>                taskData;
+QList<JobData *>                 prjData;
+QTreeWidgetItem                 *item;
+const DataType                  *dataType;
+Job                             *job;
+QString                          fname,desc,jname; //,iconPath;
+int                              k,brushNo;
 
   if (!taskType.isEmpty())  {
     const Task *task = dataModel->getTask ( taskType );
     if (task)  taskData = task->inpData;
   }
 
-  if (!taskData.isEmpty())  dataTable->setColumnCount ( 6 );
-                      else  dataTable->setColumnCount ( 5 );
-  dataTable->setRowCount    ( 10 );
-//  dataTable->setAlternatingRowColors ( true );
-  brush[0] = QBrush(Qt::white);
-  brush[1] = QBrush(QColor(63,127,255,15));
-
-  col = 0;
-  dataTable->setHorzHeader ( col++,"File"        );
-  dataTable->setHorzHeader ( col++,"Type"        );
-  if (!taskData.isEmpty())
-    dataTable->setHorzHeader ( col++,"Status"    );
-  dataTable->setHorzHeader ( col++,"Metadata"    );
-  dataTable->setHorzHeader ( col++,"Description" );
-  dataTable->setHorzHeader ( col++,"Job"         );
-
-  dataTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
-  dataTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
+  dataTree->setHeaderLabels ( QStringList()  <<
+                              "File"         <<
+                              "Status"       <<
+                              "Description"  <<
+                              "Job"
+                            );
+  dataTree->setSelectionBehavior ( QAbstractItemView::SelectRows      );
+  dataTree->setSelectionMode     ( QAbstractItemView::SingleSelection );
+  dataTree->setAlternatingRowColors ( true );
 
   // dtypes  === projData
   // dtypes0 === taskData
   projectTree->addProjectedData ( jobNode,projData,nodes );
-  row     = 0;
+  for (int i=0;i<projData.count();i++)
+    prjData.append ( projData[i][0] );
+
   brushNo = 0;
 
   job = jobNode->data ( 0,Qt::UserRole ).value<Job*>();
   for (int i=0;i<taskData.count();i++)
-    if (indexOf(taskData.at(i)->type,projData)<0)  {
+    if (indexOf(taskData.at(i)->type,prjData)<0)  {
       dataType = dataModel->getDataType ( taskData.at(i)->type );
-      makeRow ( row,dataType->icon,"<< not in promise >>",dataType->name,
-                qtCOFE_Cancel_icon," ",dataType->desc,job->name,1,
-                brush[(brushNo++) & 0x1]);
+      item = makeSection ( dataType->name,dataType->icon,
+                           qtCOFE_Cancel_icon );
+      item->setText ( 2,dataType->desc );
+      /*
+      makeRow ( item,
+                QStringList() <<
+                  "<< not in promise >>" <<
+                  " "                    <<
+                  dataType->desc         <<
+                  job->name,
+                job->type,
+                false,
+                false,
+                1
+              );
+      */
     }
 
-  if (!taskData.isEmpty())  iconPath = qtCOFE_Ok_icon;
-                      else  iconPath = "";
+//  if (!taskData.isEmpty())  iconPath = qtCOFE_Ok_icon;
+//                      else  iconPath = "";
 
   for (int i=0;i<projData.count();i++)
     if ((taskData.isEmpty()) ||
-        (indexOf(projData.at(i)->type,taskData)>=0))  {
-      job      = nodes[i]->data ( 0,Qt::UserRole ).value<Job*>();
-      dataType = dataModel->getDataType ( projData.at(i)->type );
-      if (job)  {
-        k = job->indexOf ( projData.at(i)->type );
-        if (k>=0)  {
-          if (job->outData.at(k)->metadata.isEmpty())  {
-            makeRow ( row,dataType->icon,"<< in promise >>",
-                      dataType->name,iconPath," ",dataType->desc,
-                      job->name,1,brush[(brushNo++) & 0x1] );
-          } else  {
-            span = job->outData[k]->metadata.count();
-            foreach (Metadata *m,job->outData[k]->metadata)  {
-              if (m->columns.count()>0)  {
-                metadata = "Columns:";
-                foreach (QString c,m->columns)
-                  metadata.append ( "\n" + c );
-              } else
-                metadata = " ";
-              makeRow ( row,dataType->icon,m->fname,dataType->name,
-                        iconPath,metadata,m->desc,job->name,span,
-                        brush[brushNo & 0x1]);
-              span = 0;
+        (indexOf(prjData.at(i)->type,taskData)>=0))  {
+      dataType = dataModel->getDataType ( projData[i][0]->type );
+      item     = makeSection ( dataType->name,dataType->icon,"" );
+      for (int j=0;j<projData[i].count();j++)  {
+        job = nodes[i][j]->data ( 0,Qt::UserRole ).value<Job*>();
+        if (job)  {
+          k = job->indexOf ( prjData.at(i)->type );
+          if (k>=0)  {
+            if (job->outData.at(k)->metadata.isEmpty())  {
+              item = makeRow ( item,
+                               QStringList() <<
+                                 "<< in promise >>" <<
+                                 " "                <<
+                                 dataType->desc     <<
+                                 job->name,
+                               job->type,
+                               (j==0),
+                               false,
+                               1
+                             );
+            } else  {
+              jname = job->name;
+              fname.clear();
+              desc .clear();
+              foreach (Metadata *m,job->outData[k]->metadata)  {
+                if (!fname.isEmpty())  {
+                  fname.append ( "\n" );
+                  desc .append ( "\n" );
+                }
+                fname.append ( m->fname );
+                desc .append ( m->desc  );
+                if (m->columns.count()>0)  {
+                  fname.append ( "/" );
+                  foreach (QString c,m->columns)
+                    fname.append ( c + ":" );
+                  fname.resize ( fname.size()-1 );
+                }
+              }
+              item = makeRow ( item,
+                               QStringList() <<
+                                 fname       <<
+                                 " "         <<
+                                 desc        <<
+                                 jname,
+                               job->type,
+                               (j==0),
+                               false,
+                               job->outData[k]->metadata.count()
+                             );
             }
-            brushNo++;
           }
         }
       }
     }
 
-  for (int i=row;i<10;i++)  {
-    dataTable->setVertHeader ( i,"    " );
-    for (int j=0;j<dataTable->columnCount();j++)
-      dataTable->setTableItem  ( i,j," " );
-  }
-
-  dataTable->resizeCells ();
-  dataTable->setFullSize ( false,false );
-  dataTable->setRowCount ( row );
-  dataTable->setRowCount ( row );
-
 }
 
+void qtCOFE::DataDialog::resizeToData()  {
+  dataTree->setFullWidth();
+  QSize s = dataTree->size();
+  s.setWidth  ( qMin(s.width (),700) );
+  s.setHeight ( qMin(s.height(),400) );
+  resize ( s );
+}
