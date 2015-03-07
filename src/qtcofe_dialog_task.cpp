@@ -45,16 +45,13 @@ qtCOFE::TaskDialog::TaskDialog (
                            ProjectTree                    * jTree,
                            Qt::WindowFlags                  f )
                    : QDialog ( parent,f )  {
-QList<JobData *> prjData;
   dataModel    = dm;
   jobTree      = jTree;
+  signalMapper = new QSignalMapper ( this );
   setStyleSheet ( dataModel->getPreferences()->
                                           getFontSizeStyleSheet(1.0) );
-  signalMapper = new QSignalMapper ( this );
   setWindowTitle ( "Tasks" );
-  for (int i=0;i<projData.count();i++)
-    prjData.append ( projData[i][0] );
-  makeLayout ( prjData );
+  makeLayout ( projData );
 //  setFixedSize(size());
   fixSize();
 }
@@ -62,7 +59,7 @@ QList<JobData *> prjData;
 qtCOFE::TaskDialog::~TaskDialog()  {}
 
 void qtCOFE::TaskDialog::makeLayout (
-                                 const QList<JobData *> & projData )  {
+                         const QList<QList<JobData *> > & projData )  {
 Job          job;
 QVBoxLayout *vbox;
 QHBoxLayout *hbox;
@@ -70,10 +67,13 @@ QGridLayout *gbox;
 QWidget     *w;
 QLabel      *lbl;
 int          btnSize  = 3*dataModel->getPreferences()->getFontPointSize();
-QString      btnStyle = "border:2px solid #FF0000;border-radius:6px;";
+QString      btnUnsuitable = "border:2px solid #FF0000;border-radius:6px;";
+QString      btnAmbiguous  = "border:2px solid #FFAA00;border-radius:6px;";
+//QString      btnSuitable   = "border:2px solid #00AA00;border-radius:6px;";
 QString      lblStyle = QString ( "font-size: %1pt;" ).arg (
                  9*dataModel->getPreferences()->getFontPointSize()/10);
-int          r,nc,c,dkey;
+JobData::SUITABILITY dataKey;
+int          r,nc,c;
 
   buttonMap.clear();
 
@@ -94,11 +94,19 @@ int          r,nc,c,dkey;
         if (job.section==section->id)  {
           QToolButton *btn = new QToolButton();
           btn->setIcon ( QIcon(QString(qtCOFE_icon_base)+job.icon) );
-          btn->setIconSize   ( QSize(btnSize,btnSize) );
-          dkey = job.hasInput ( projData );
-          if (!dkey)
-            btn->setStyleSheet ( btn->styleSheet() + btnStyle );
-          buttonMap[job.type] = dkey;
+          btn->setIconSize ( QSize(btnSize,btnSize) );
+          dataKey = job.isSuitable ( projData );
+          switch (dataKey)  {
+            case JobData::Unsuitable:
+               btn->setStyleSheet ( btn->styleSheet() + btnUnsuitable );
+               break;
+            case JobData::Ambiguous:
+               btn->setStyleSheet ( btn->styleSheet() + btnAmbiguous );
+               break;
+            default: ;
+//               btn->setStyleSheet ( btn->styleSheet() + btnSuitable );
+          }
+          buttonMap[job.type] = dataKey;
           btn->setToolTip    ( job.desc );
           lbl  = new QLabel  ( job.name );
           lbl->setStyleSheet ( lblStyle        );

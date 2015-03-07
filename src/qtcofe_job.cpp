@@ -28,9 +28,9 @@
 qtCOFE::JobData::JobData() : TaskData()  {}
 
 qtCOFE::JobData::JobData ( TaskData *taskData )  {
-  type = taskData->type;  // "dtype_xxx"
-  mode = taskData->mode;  // modificator of data entity number (E,U,G)
-  n    = taskData->n;     // data entity number
+  type  = taskData->type;  // "dtype_xxx"
+  mode  = taskData->mode;  // modificator of data entity number (E,U,G)
+  nmode = taskData->nmode; // data entity number
 }
 
 qtCOFE::JobData::~JobData() { clear(); }
@@ -41,6 +41,62 @@ void qtCOFE::JobData::clear()  {
   metadata.clear();
 }
 
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::E_Suitable (
+                                    const QList<JobData *> jobData )  {
+int nm;
+
+  if (nmode==jobData[0]->metadata.count())
+    return Suitable;
+
+  nm = 0;
+  for (int i=0;i<jobData.count();i++)
+    nm += jobData[i]->metadata.count();
+  if (nmode<=nm)  return Ambiguous;
+
+  return Unsuitable;
+
+}
+
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::G_Suitable (
+                                    const QList<JobData *> jobData )  {
+int nm;
+
+  if (jobData[0]->metadata.count()==nmode+1)
+    return Suitable;
+
+  nm = 0;
+  for (int i=0;i<jobData.count();i++)
+    nm += jobData[i]->metadata.count();
+  if (nm>nmode)  return Ambiguous;
+
+  return Unsuitable;
+
+}
+
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::U_Suitable (
+                                    const QList<JobData *> jobData )  {
+
+}
+
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::isSuitable (
+                                    const QList<JobData *> jobData )  {
+
+  if (type=="dtype_dummy")     return Suitable;
+  if (type=="dtype_any")       return Suitable;
+  if (type!=jobData[0]->type)  return Unsuitable;
+
+  switch (mode.toAscii())  {
+    default  :
+    case 'E' : return E_Suitable ( jobData );
+    case 'G' : return G_Suitable ( jobData );
+    case 'U' : return U_Suitable ( jobData );
+  }
+
+  return Unsuitable;
+
+}
+
+/*
 int qtCOFE::JobData::suitability ( const JobData * jobData )  {
 
   if (type=="dtype_dummy")  return 1;
@@ -50,7 +106,7 @@ int qtCOFE::JobData::suitability ( const JobData * jobData )  {
   return 1;
 
 }
-
+*/
 
 int qtCOFE::indexOf ( const QString & dtype,
                       const QList<JobData *> & jobData )  {
@@ -138,8 +194,9 @@ const Task *task = NULL;
       for (int j=0;j<dlist.count();j++)  {
         Metadata *m = new Metadata();
         QJsonObject jobj = dlist[j].toObject();
-        m->desc  = jobj.value("desc").toString();
-        m->fname = jobj.value("file").toString();
+        m->jobId = jobj.value("jobId").toDouble();
+        m->desc  = jobj.value("desc" ).toString();
+        m->fname = jobj.value("file" ).toString();
         if (jobj.keys().contains("columns",Qt::CaseInsensitive))  {
           QJsonArray clist = jobj.value("columns").toArray();
           for (int k=0;k<clist.count();k++)
@@ -170,7 +227,28 @@ const Task *task = NULL;
 
 }
 
+qtCOFE::JobData::SUITABILITY qtCOFE::Job::isSuitable (
+                          const QList<QList<JobData *> > & jobData )  {
+JobData::SUITABILITY suitable  = JobData::Suitable;
+bool                 ambiguous = false;
 
+  for (int i=0;(i<inpData.count()) &&
+               (suitable!=JobData::Unsuitable);i++)  {
+    suitable = JobData::Unsuitable;
+    for (int j=0;(j<jobData.count()) &&
+                 (suitable==JobData::Unsuitable);j++)
+      suitable = inpData.at(i)->isSuitable ( jobData[j] );
+    if (suitable==JobData::Ambiguous)
+      ambiguous = true;
+  }
+
+  if (suitable==JobData::Unsuitable)  return JobData::Unsuitable;
+  if (ambiguous)                      return JobData::Ambiguous;
+  return JobData::Suitable;
+
+}
+
+/*
 int qtCOFE::Job::hasInput ( const QList<JobData *> & jobData )  {
 int suitable = 1;
 
@@ -182,7 +260,7 @@ int suitable = 1;
 
   return suitable;
 
-/*
+/--
 bool included = true;
 
   for (int i=0;(i<inpData.count()) && included;i++)
@@ -196,7 +274,7 @@ bool included = true;
 
   if (included)  return 1;
   return 0;
-*/
+--/
 
 }
 
@@ -209,3 +287,4 @@ bool b = false;
   return b;
 
 }
+*/

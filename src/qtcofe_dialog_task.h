@@ -23,6 +23,8 @@
 #include <QMap>
 #include <QDialog>
 
+#include "qtcofe_job.h"
+
 QT_BEGIN_NAMESPACE
 class QScrollArea;
 class QPushButton;
@@ -59,10 +61,10 @@ namespace qtCOFE  {
       QScrollArea      *scrollArea;
       QSignalMapper    *signalMapper;
       QPushButton      *cancel_btn;
-      QMap<QString,int> buttonMap;
+      QMap<QString,JobData::SUITABILITY> buttonMap;
       QString           selTaskType;
 
-      void makeLayout ( const QList<JobData *> & projData );
+      void makeLayout ( const QList<QList<JobData *> > & projData );
 
     protected slots:
       void taskSelected ( const QString & type );

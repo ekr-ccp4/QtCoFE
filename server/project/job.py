@@ -37,6 +37,7 @@ class Job(jsonut.jObject):
         #         [data21,data22,...],
         #         ....................
         #        ]
+        # each enclosed list corresponds to a particular data type.
 
         self.expanded = True
         return

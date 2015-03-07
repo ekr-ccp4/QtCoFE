@@ -34,9 +34,11 @@ namespace qtCOFE  {
 
   class Metadata {
     public:
+      int         jobId;  // job where file is kept
       QString     desc;
       QString     fname;
       QStringList columns;
+
       Metadata () {}
       ~Metadata() {}
   };
@@ -44,16 +46,28 @@ namespace qtCOFE  {
   class JobData : public TaskData  {
 
     public:
+
+      enum SUITABILITY  {
+        Unsuitable,
+        Suitable,
+        Ambiguous
+      };
+
       QList<Metadata *> metadata;
 
       JobData ();
       JobData ( TaskData *taskData );
       ~JobData();
 
-      int suitability ( const JobData * jobData );
+      SUITABILITY isSuitable ( const QList<JobData *> jobData );
+//      int suitability ( const JobData * jobData );
 
     protected:
       void clear();
+
+      SUITABILITY E_Suitable ( const QList<JobData *> jobData );
+      SUITABILITY G_Suitable ( const QList<JobData *> jobData );
+      SUITABILITY U_Suitable ( const QList<JobData *> jobData );
 
   };
 
@@ -89,8 +103,10 @@ namespace qtCOFE  {
       inline int indexOf ( const QString & dtype )
                             { return qtCOFE::indexOf(dtype,outData); }
 
-      int  hasInput ( const QList<JobData *> & jobData );
-      bool hasInput ( const JobData * jobData );
+      JobData::SUITABILITY isSuitable (
+                            const QList<QList<JobData *> > & jobData );
+//      int  hasInput ( const QList<JobData *> & jobData );
+//      bool hasInput ( const JobData * jobData );
 
       void copy ( const Task *task );
 

@@ -105,7 +105,7 @@ def get_data_model(inp):
 
     for dt in dtlist:
         dtype = __import__("dtypes."+dt)
-        data_model.dtypes.append ( getattr(dtype,dt).DType() )
+        data_model.dtypes.append ( getattr(dtype,dt).DType(-1) )
 
     data_model.sections = \
      [getattr(task,f)() for f in dir(task) if f.startswith("section_")]

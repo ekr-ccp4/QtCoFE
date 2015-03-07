@@ -100,16 +100,16 @@ class Task(task.Task):
             return utils.pass_return ( inp.action,job_data )
 
         if file_ext == ".seq":
-            seq      = sequence.DType()
+            seq      = sequence.DType(inp.data.job_id)
             seq.file = os.path.basename ( inp.data.file_path )
             job_data.set_data ( [seq] )
         elif file_ext == ".mtz":
-            hkl_data  = hkl.DType()
+            hkl_data      = hkl.DType(inp.data.job_id)
             hkl_data.file = os.path.basename ( inp.data.file_path )
             hkl_data.addColumn ( "F(+)" )
             hkl_data.addColumn ( "F(-)" )
             job_data.add_data ( hkl_data )
-            hkl_data  = hkl.DType()
+            hkl_data      = hkl.DType(inp.data.job_id)
             hkl_data.file = os.path.basename ( inp.data.file_path )
             hkl_data.addColumn ( "F_peak(+)" )
             hkl_data.addColumn ( "F_peak(-)" )

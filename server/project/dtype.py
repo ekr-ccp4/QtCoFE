@@ -10,13 +10,14 @@ from varut import jsonut
 
 class DType(jsonut.jObject):
 
-    def __init__(self,json_str=""):
+    def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(json_str)
-        self.type = "dtype_template"
-        self.name = "Template"
-        self.desc = "Data type template"
-        self.icon = "dtype_template.png"
-        self.file = ""
+        self.type  = "dtype_template"
+        self.name  = "Template"
+        self.desc  = "Data type template"
+        self.icon  = "dtype_template.png"
+        self.jobId = job_id;
+        self.file  = ""
         return
 
 

@@ -20,12 +20,12 @@ class Task(task.Task):
         self.icon    = "task_mr.png"
 
         self.inp_data = [
-                         [sequence.DType().type ,"E",1],
-                         [hkl.DType().type      ,"E",1],
-                         [xyz.DType().type      ,"E",1]
+                         [sequence.DType(-1).type ,"E",1],
+                         [hkl.DType(-1).type      ,"E",1],
+                         [xyz.DType(-1).type      ,"E",1]
                         ]
         self.out_data = [
-                         [structure.DType().type,"G",0]
+                         [structure.DType(-1).type,"G",0]
                         ]
 
         return

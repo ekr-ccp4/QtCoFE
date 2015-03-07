@@ -20,7 +20,7 @@ class Task(task.Task):
 
         self.inp_data = []
         self.out_data = [
-                         [dummy.DType().type,"E",0]
+                         [dummy.DType(-1).type,"E",0]
                         ]
 
         return

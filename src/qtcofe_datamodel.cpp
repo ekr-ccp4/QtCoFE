@@ -65,8 +65,8 @@ int qtCOFE::TaskSection::readData ( const QJsonObject & obj )  {
 // =================================================================
 
 qtCOFE::TaskData::TaskData () {
-  mode = 'E';
-  n    = 1;
+  mode  = 'E';
+  nmode = 1;
 }
 
 qtCOFE::TaskData::~TaskData() {}
@@ -74,9 +74,9 @@ qtCOFE::TaskData::~TaskData() {}
 void qtCOFE::TaskData::copy ( const TaskData * taskData )  {
 // from taskData to "this"
   if (taskData)  {
-    type = taskData->type;  // "dtype_xxx"
-    mode = taskData->mode;  // modificator of data entity number (A,E,U,G)
-    n    = taskData->n;     // data entity number
+    type  = taskData->type;  // "dtype_xxx"
+    mode  = taskData->mode;  // modificator of data entity number (A,E,U,G)
+    nmode = taskData->nmode; // data entity number
   }
 }
 
@@ -125,9 +125,9 @@ QString    mode;
   for (int i=0;i<a.count();i++)  {
     ai = a[i].toArray();
     TaskData *td = new TaskData();
-    td->type = ai[0].toString();
-    td->mode = ai[1].toString()[0];
-    td->n    = ai[2].toDouble();
+    td->type  = ai[0].toString();
+    td->mode  = ai[1].toString()[0];
+    td->nmode = ai[2].toDouble();
     inpData.append ( td );
   }
 
@@ -135,9 +135,9 @@ QString    mode;
   for (int i=0;i<a.count();i++)  {
     ai = a[i].toArray();
     TaskData *td = new TaskData();
-    td->type = ai[0].toString();
-    td->mode = ai[1].toString()[0];
-    td->n    = ai[2].toDouble();
+    td->type  = ai[0].toString();
+    td->mode  = ai[1].toString()[0];
+    td->nmode = ai[2].toDouble();
     outData.append ( td );
   }
 
@@ -187,13 +187,13 @@ void qtCOFE::Task::printTask()  {
     printf ( "      %3i ['%s','%c',%i]\n",i+1,
              inpData.at(i)->type.toAscii().data(),
              inpData.at(i)->mode.toAscii(),
-             inpData.at(i)->n );
+             inpData.at(i)->nmode );
   printf ( "\n   Output Data:\n" );
   for (int i=0;i<outData.count();i++)
     printf ( "      %3i ['%s','%c',%i]\n",i+1,
              outData.at(i)->type.toAscii().data(),
              outData.at(i)->mode.toAscii(),
-             outData.at(i)->n );
+             outData.at(i)->nmode );
 }
 
 

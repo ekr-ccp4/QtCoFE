@@ -68,8 +68,8 @@ namespace qtCOFE  {
   class TaskData  {
     public:
       QString type;  // "dtype_xxx"
-      QChar   mode;  // modificator of data entity number (A,E,U,G)
-      int     n;     // data entity number
+      QChar   mode;  // modificator of data entity number (E,G,U)
+      int     nmode; // data entity number
       TaskData ();
       ~TaskData();
       void copy ( const TaskData * taskData ); // from taskData to "this"

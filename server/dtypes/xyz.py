@@ -10,7 +10,8 @@ from project import dtype
 
 class DType(dtype.DType):
 
-    def __init__(self):
+    def __init__(self,job_id,json_str=""):
+        super(DType,self).__init__(job_id,json_str)
         self.type = "dtype_xyz"
         self.name = "XYZ"
         self.desc = "XYZ Coordinates"
