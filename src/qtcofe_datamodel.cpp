@@ -20,6 +20,7 @@
 //
 
 #include <QMessageBox>
+#include <stdio.h>
 
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"

@@ -167,8 +167,8 @@ QList<JobData *>                 prjData;
 QTreeWidgetItem                 *item;
 const DataType                  *dataType;
 Job                             *job;
-QString                          fname,desc,jname; //,iconPath;
-int                              k,brushNo;
+QString                          fname,desc,jname;
+int                              k;
 
   if (!taskType.isEmpty())  {
     const Task *task = dataModel->getTask ( taskType );
@@ -190,8 +190,6 @@ int                              k,brushNo;
   projectTree->addProjectedData ( jobNode,projData,nodes );
   for (int i=0;i<projData.count();i++)
     prjData.append ( projData[i][0] );
-
-  brushNo = 0;
 
   job = jobNode->data ( 0,Qt::UserRole ).value<Job*>();
   for (int i=0;i<taskData.count();i++)
