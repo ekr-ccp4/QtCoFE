@@ -954,8 +954,10 @@ bool qtCOFE::Preferences::isFontChanged()  {
 }
 
 QString qtCOFE::Preferences::getFontSizeStyleSheet ( qreal scale )  {
-  return QString("font-size: %1pt;")
-                  .arg(int(scale*QFontInfo(logFont).pointSize()));
+  return QString("font-family: %1; font-style: %2; font-size: %3pt;")
+          .arg(QFontInfo(logFont).family())
+          .arg(QFontInfo(logFont).style())
+          .arg(int(scale*QFontInfo(logFont).pointSize()));
 }
 
 int  qtCOFE::Preferences::getToolButtonSize()  {

@@ -77,8 +77,9 @@ qtCOFE::Base::Base ( QWidget *parent, Qt::WindowFlags flags )
 
   readSettings();
 
-  setStyleSheet ( QString ( "font-size: %1pt;")
-                      .arg(6+preferences->getFontPointSize()/2) );
+//  setStyleSheet ( QString ( "font-size: %1pt;")
+//                      .arg(6+preferences->getFontPointSize()/2) );
+  setStyleSheet ( preferences->getFontSizeStyleSheet(1.0) );
 
   createActions  ();
   createMenus    ();
@@ -358,8 +359,10 @@ void qtCOFE::Base::logout()  {
 void qtCOFE::Base::preferencesChanged()  {
 
   if (preferences->isFontChanged())  {
-    setStyleSheet ( QString ( "font-size: %1pt;" )
-                        .arg(6+preferences->getFontPointSize()/2) );
+    setStyleSheet ( preferences->getFontSizeStyleSheet(1.0) );
+
+//    setStyleSheet ( QString ( "font-size: %1pt;" )
+//                        .arg(6+preferences->getFontPointSize()/2) );
 //    refresh_strong();
   }
 

@@ -36,7 +36,7 @@ qtCOFE::Page::Page ( DataModel      *dm,
   dataModel   = dm;
   preferences = dataModel->getPreferences();
   session     = dataModel->getSession    ();
-  setStyleSheet ( preferences->getFontSizeStyleSheet(1.0) );
+//  setStyleSheet ( preferences->getFontSizeStyleSheet(1.0) );
 }
 
 qtCOFE::Page::~Page() {
