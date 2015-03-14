@@ -75,6 +75,17 @@ int nm;
 
 qtCOFE::JobData::SUITABILITY qtCOFE::JobData::U_Suitable (
                                     const QList<JobData *> jobData )  {
+int nm;
+
+  if (jobData[0]->metadata.count()==nmode)
+    return Suitable;
+
+  nm = 0;
+  for (int i=0;i<jobData.count();i++)
+    nm += jobData[i]->metadata.count();
+  if (nm<nmode)  return Ambiguous;
+
+  return Unsuitable;
 
 }
 

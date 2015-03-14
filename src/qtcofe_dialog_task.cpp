@@ -58,6 +58,10 @@ qtCOFE::TaskDialog::TaskDialog (
 
 qtCOFE::TaskDialog::~TaskDialog()  {}
 
+
+#define _common_btn_style "border-radius:6px; color: black; border:2px "
+
+
 void qtCOFE::TaskDialog::makeLayout (
                          const QList<QList<JobData *> > & projData )  {
 Job          job;
@@ -66,10 +70,11 @@ QHBoxLayout *hbox;
 QGridLayout *gbox;
 QWidget     *w;
 QLabel      *lbl;
-int          btnSize  = 3*dataModel->getPreferences()->getFontPointSize();
-QString      btnUnsuitable = "border:2px solid #FF0000;border-radius:6px;";
-QString      btnAmbiguous  = "border:2px solid #FFAA00;border-radius:6px;";
-//QString      btnSuitable   = "border:2px solid #00AA00;border-radius:6px;";
+int          btnSize   = 4*dataModel->getPreferences()->getFontPixelSize();
+int          rowHeight = 7*dataModel->getPreferences()->getFontPixelSize();
+QString      btnUnsuitable = _common_btn_style" solid #FF0000;";
+QString      btnAmbiguous  = _common_btn_style" solid #FFAA00;";
+QString      btnSuitable   = "color: black;";
 QString      lblStyle = QString ( "font-size: %1pt;" ).arg (
                  9*dataModel->getPreferences()->getFontPointSize()/10);
 JobData::SUITABILITY dataKey;
@@ -93,8 +98,9 @@ int          r,nc,c;
         job.copy ( dataModel->tasks.at(j) );
         if (job.section==section->id)  {
           QToolButton *btn = new QToolButton();
-          btn->setIcon ( QIcon(QString(qtCOFE_icon_base)+job.icon) );
-          btn->setIconSize ( QSize(btnSize,btnSize) );
+          btn->setToolTip ( job.desc );
+          btn->setIcon    ( QIcon(QString(qtCOFE_icon_base)+job.icon) );
+          btn->setIconSize ( QSize(btnSize-6,btnSize-6) );
           dataKey = job.isSuitable ( projData );
           switch (dataKey)  {
             case JobData::Unsuitable:
@@ -104,18 +110,20 @@ int          r,nc,c;
                btn->setStyleSheet ( btn->styleSheet() + btnAmbiguous );
                break;
             default: ;
-//               btn->setStyleSheet ( btn->styleSheet() + btnSuitable );
+               btn->setStyleSheet ( btn->styleSheet() + btnSuitable );
           }
+          btn->setMinimumSize ( QSize(btnSize,btnSize) );
+          btn->setMaximumSize ( QSize(btnSize,btnSize) );
           buttonMap[job.type] = dataKey;
-          btn->setToolTip    ( job.desc );
           lbl  = new QLabel  ( job.name );
-          lbl->setStyleSheet ( lblStyle        );
-          lbl->setAlignment  ( Qt::AlignCenter );
+          lbl->setStyleSheet ( lbl->styleSheet() + lblStyle );
+          lbl->setAlignment  ( Qt::AlignHCenter );
           lbl->setWordWrap   ( true            );
           vbox = new QVBoxLayout();
           vbox->addWidget ( btn,0,Qt::AlignHCenter );
           vbox->addWidget ( lbl,0,Qt::AlignHCenter );
           if (c>=nc)  {
+            gbox->setRowMinimumHeight ( r,rowHeight );
             r++; c = 0;
           }
           gbox->addLayout ( vbox,r,c++,1,1 );
@@ -131,6 +139,7 @@ int          r,nc,c;
         vbox->addWidget ( w );
         gbox->addLayout ( vbox,r,c++,1,1 );
       }
+      gbox->setRowMinimumHeight ( r,rowHeight );
       r++;
     }
   }
@@ -139,6 +148,7 @@ int          r,nc,c;
   w->setLayout ( gbox );
   w->setContentsMargins ( 0,0,0,0 );
   gbox->setContentsMargins ( 0,0,0,0 );
+  w->adjustSize();
 
   scrollArea = new QScrollArea();
   scrollArea->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
