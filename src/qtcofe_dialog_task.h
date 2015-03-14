@@ -52,8 +52,10 @@ namespace qtCOFE  {
 
       void fixSize();
 
-      QString getSelTaskType()  { return selTaskType;            }
-      int     getSelTaskKey ()  { return buttonMap[selTaskType]; }
+      inline QString getSelTaskType()
+                                   { return selTaskType;            }
+      inline JobData::SUITABILITY getSelTaskKey()
+                                   { return buttonMap[selTaskType]; }
 
     protected:
       DataModel        *dataModel;

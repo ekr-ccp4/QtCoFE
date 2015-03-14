@@ -94,7 +94,8 @@ OTHER_FILES += \
     server/dtypes/abcd.py \
     server/project/datamodel.py \
     server/dtypes/__init__.py \
-    server/tasks/__init__.py
+    server/tasks/__init__.py \
+    server/tasks/data_disambiguator.py
 
 HEADERS += \
     qjson/QJsonArray.h \
