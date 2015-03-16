@@ -76,7 +76,8 @@ namespace qtCOFE  {
                                       QString           jobType,
                                       bool              checked,
                                       bool              checkbox,
-                                      int               nData
+                                      int               nData,
+                                      int               nChecked
                                     );
       void makeDataTree ( ProjectTree     * projectTree,
                           QTreeWidgetItem * jobNode,

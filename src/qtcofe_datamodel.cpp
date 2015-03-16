@@ -76,10 +76,23 @@ void qtCOFE::TaskData::copy ( const TaskData * taskData )  {
 // from taskData to "this"
   if (taskData)  {
     type  = taskData->type;  // "dtype_xxx"
-    mode  = taskData->mode;  // modificator of data entity number (A,E,U,G)
+    mode  = taskData->mode;  // modificator of data entity number (E,G,U)
     nmode = taskData->nmode; // data entity number
   }
 }
+
+int qtCOFE::TaskData::guessNData ( int nData )  {
+  switch (mode.toAscii())  {
+    default:
+    case 'E' : if (nmode<=nData)  return nmode;
+               return -1;
+    case 'G' : if (nmode<nData)   return nData;
+               return -1;
+    case 'U' : if (nmode>=nData)  return nData;
+               return -1;
+  }
+}
+
 
 int qtCOFE::indexOf ( const QString & dtype,
                       const QList<TaskData *> & taskData )  {

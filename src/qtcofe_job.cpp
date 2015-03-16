@@ -25,6 +25,7 @@
 #include "qtcofe_job.h"
 #include "qtcofe_datamodel.h"
 
+
 qtCOFE::JobData::JobData() : TaskData()  {}
 
 qtCOFE::JobData::JobData ( TaskData *taskData )  {
@@ -128,6 +129,15 @@ int k = -1;
   return k;
 }
 
+int qtCOFE::indexOf ( const QString & dtype,
+                      const QList<QList<JobData *> > & jobData )  {
+int k = -1;
+  for (int i=0;(i<jobData.count()) && (k<0);i++)
+    if (jobData[i][0]->type==dtype)
+      k = i;
+  return k;
+}
+
 
 qtCOFE::Job::Job ( QObject *parent ) : QObject(parent)  {
   id       = 0;
@@ -169,18 +179,22 @@ void qtCOFE::Job::copy ( const Task *task )  {
 
   clear();
 
-  type    = task->type;
-  name    = task->name;
-  desc    = task->desc;
-  section = task->section;
-  icon    = task->icon;
-  order   = task->order;
+  if (task)  {
 
-  foreach (TaskData *td,task->inpData)
-    inpData.append ( new JobData(td) );
+    type    = task->type;
+    name    = task->name;
+    desc    = task->desc;
+    section = task->section;
+    icon    = task->icon;
+    order   = task->order;
 
-  foreach (TaskData *td,task->outData)
-    outData.append ( new JobData(td) );
+    foreach (TaskData *td,task->inpData)
+      inpData.append ( new JobData(td) );
+
+    foreach (TaskData *td,task->outData)
+      outData.append ( new JobData(td) );
+
+  }
 
 }
 
@@ -238,6 +252,21 @@ const Task *task = NULL;
 
 }
 
+
+qtCOFE::JobData::SUITABILITY qtCOFE::Job::isInputSuitable (
+                          int   inpNo,
+                          const QList<QList<JobData *> > & jobData )  {
+JobData::SUITABILITY suitable  = JobData::Unsuitable;
+
+  for (int j=0;(j<jobData.count()) &&
+               (suitable==JobData::Unsuitable);j++)
+    suitable = inpData.at(inpNo)->isSuitable ( jobData[j] );
+
+  return suitable;
+
+}
+
+
 qtCOFE::JobData::SUITABILITY qtCOFE::Job::isSuitable (
                           const QList<QList<JobData *> > & jobData )  {
 JobData::SUITABILITY suitable  = JobData::Suitable;
@@ -258,6 +287,39 @@ bool                 ambiguous = false;
   return JobData::Suitable;
 
 }
+
+void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
+                                       QString & jobName,
+                                       QString & fileName,
+                                       QString & desc,
+                                       int     & nSets)  {
+
+  jobName = name;
+  desc.clear();
+  if (outData[outNo]->metadata.isEmpty())  {
+    fileName = "<< in promise >>";
+    nSets = 1;
+  } else  {
+    fileName.clear();
+    foreach (Metadata *m,outData[outNo]->metadata)  {
+      if (!fileName.isEmpty())  {
+        fileName.append ( "\n" );
+        desc    .append ( "\n" );
+      }
+      fileName.append ( m->fname );
+      desc    .append ( m->desc  );
+      if (m->columns.count()>0)  {
+        fileName.append ( "/" );
+        foreach (QString c,m->columns)
+          fileName.append ( c + ":" );
+        fileName.resize ( fileName.size()-1 );
+      }
+    }
+    nSets = outData[outNo]->metadata.count();
+  }
+
+}
+
 
 /*
 int qtCOFE::Job::hasInput ( const QList<JobData *> & jobData )  {

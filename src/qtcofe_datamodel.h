@@ -73,6 +73,7 @@ namespace qtCOFE  {
       TaskData ();
       ~TaskData();
       void copy ( const TaskData * taskData ); // from taskData to "this"
+      int guessNData ( int nData );
   };
 
   extern int indexOf ( const QString & dtype,

@@ -43,6 +43,7 @@
 #define qtCOFE_exit_icon             ":/images/exit.png"
 
 #define qtCOFE_Ok_icon               ":/images/ok.png"
+#define qtCOFE_Ok_Amber_icon         ":/images/ok_amber.png"
 #define qtCOFE_Cancel_icon           ":/images/cancel.png"
 #define qtCOFE_Close_icon            ":/images/close.png"
 #define qtCOFE_Plus_icon             ":/images/plus.png"

@@ -196,7 +196,8 @@ void qtCOFE::TaskDialog::taskSelected ( const QString & type )  {
 
   selTaskType = type;
 
-  if (getSelTaskKey()==JobData::Unsuitable)  {
+//  if (getSelTaskKey()==JobData::Unsuitable)  {
+  if (getSelTaskKey()!=JobData::Suitable)  {
     DataDialog *ddlg = new DataDialog ( this,
                 jobTree,jobTree->currentNode(),
                 type,dataModel,"Data Summary",

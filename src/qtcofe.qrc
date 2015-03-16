@@ -24,5 +24,7 @@
         <file>images/data_merged_mtz.png</file>
         <file>images/data_structure.png</file>
         <file>images/data_xyz.png</file>
+        <file>images/task_disambiguator.png</file>
+        <file>images/ok_amber.png</file>
     </qresource>
 </RCC>

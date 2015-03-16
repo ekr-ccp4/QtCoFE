@@ -108,7 +108,8 @@ QTreeWidgetItem * qtCOFE::DataDialog::makeRow (
                                            QString           jobType,
                                            bool              checked,
                                            bool              checkbox,
-                                           int               nData
+                                           int               nData,
+                                           int               nChecked
                                               )  {
 QTreeWidgetItem *item1;
 QVBoxLayout     *vbox;
@@ -130,8 +131,8 @@ int              fsize = preferences->getFontPixelSize();
     vbox = new QVBoxLayout();
     for (int i=0;i<nData;i++)  {
       cbx = new QCheckBox();
-      vbox->addWidget  ( cbx,0    );
-      cbx->setChecked  ( checked  );
+      vbox->addWidget  ( cbx,0      );
+      cbx->setChecked  ( i<nChecked );
 //      cbx->setDisabled ( disabled );
     }
     vbox->setContentsMargins ( fsize/2,0,0,0 );
@@ -139,8 +140,11 @@ int              fsize = preferences->getFontPixelSize();
     w = new QWidget();
     w->setLayout ( vbox );
     dataTree->setItemWidget ( item1,1,w );
+    item1->parent()->setExpanded ( true );
   } else if (checked)  {
-      item1->setIcon ( 1,QIcon(qtCOFE_Ok_icon) );
+    if (nChecked==nData)
+         item1->setIcon ( 1,QIcon(qtCOFE_Ok_icon)  );
+    else item1->setIcon ( 1,QIcon(qtCOFE_Ok_Amber_icon)  );
     item1->parent()->setExpanded ( true );
   }
 
@@ -162,18 +166,17 @@ void qtCOFE::DataDialog::makeDataTree ( ProjectTree     *projectTree,
                                         QString          taskType )  {
 QList<QList<JobData *> >         projData;
 QList<QList<QTreeWidgetItem *> > nodes;
-QList<TaskData *>                taskData;
-QList<JobData *>                 prjData;
 QTreeWidgetItem                 *item;
 const DataType                  *dataType;
-Job                             *job;
+Job                             *nodeJob;
+Job                              job;
+JobData::SUITABILITY             suitable;
 QString                          fname,desc,jname;
-int                              k;
+int                              k,idata,nData,nChecked;
+bool                             missing = false;
 
-  if (!taskType.isEmpty())  {
-    const Task *task = dataModel->getTask ( taskType );
-    if (task)  taskData = task->inpData;
-  }
+  if (!taskType.isEmpty())
+    job.copy ( dataModel->getTask(taskType) );
 
   dataTree->setHeaderLabels ( QStringList()  <<
                               "File"         <<
@@ -185,95 +188,92 @@ int                              k;
   dataTree->setSelectionMode     ( QAbstractItemView::SingleSelection );
   dataTree->setAlternatingRowColors ( true );
 
-  // dtypes  === projData
-  // dtypes0 === taskData
   projectTree->addProjectedData ( jobNode,projData,nodes );
-  for (int i=0;i<projData.count();i++)
-    prjData.append ( projData[i][0] );
 
-  job = jobNode->data ( 0,Qt::UserRole ).value<Job*>();
-  for (int i=0;i<taskData.count();i++)
-    if (indexOf(taskData.at(i)->type,prjData)<0)  {
-      dataType = dataModel->getDataType ( taskData.at(i)->type );
-      item = makeSection ( dataType->name,dataType->icon,
-                           qtCOFE_Cancel_icon );
-      item->setText ( 2,dataType->desc );
-      /*
-      makeRow ( item,
-                QStringList() <<
-                  "<< not in promise >>" <<
-                  " "                    <<
-                  dataType->desc         <<
-                  job->name,
-                job->type,
-                false,
-                false,
-                1
-              );
-      */
-    }
+  if (taskType.isEmpty())  {  // data inspector
 
-//  if (!taskData.isEmpty())  iconPath = qtCOFE_Ok_icon;
-//                      else  iconPath = "";
-
-  for (int i=0;i<projData.count();i++)
-    if ((taskData.isEmpty()) ||
-        (indexOf(prjData.at(i)->type,taskData)>=0))  {
+    for (int i=0;i<projData.count();i++)  {
       dataType = dataModel->getDataType ( projData[i][0]->type );
       item     = makeSection ( dataType->name,dataType->icon,"" );
       for (int j=0;j<projData[i].count();j++)  {
-        job = nodes[i][j]->data ( 0,Qt::UserRole ).value<Job*>();
-        if (job)  {
-          k = job->indexOf ( prjData.at(i)->type );
+        nodeJob = nodes[i][j]->data ( 0,Qt::UserRole ).value<Job*>();
+        if (nodeJob)  {
+          k = nodeJob->indexOf ( projData[i][0]->type );
           if (k>=0)  {
-            if (job->outData.at(k)->metadata.isEmpty())  {
-              item = makeRow ( item,
-                               QStringList() <<
-                                 "<< in promise >>" <<
-                                 " "                <<
-                                 dataType->desc     <<
-                                 job->name,
-                               job->type,
-                               (j==0),
-                               false,
-                               1
-                             );
-            } else  {
-              jname = job->name;
-              fname.clear();
-              desc .clear();
-              foreach (Metadata *m,job->outData[k]->metadata)  {
-                if (!fname.isEmpty())  {
-                  fname.append ( "\n" );
-                  desc .append ( "\n" );
+            nodeJob->getOutputDataSpecs ( k,jname,fname,desc,nData );
+            if (desc.isEmpty())
+              desc = dataType->desc;
+            item = makeRow ( item,
+                             QStringList() <<
+                               fname       <<
+                               " "         <<
+                               desc        <<
+                               jname,
+                             nodeJob->type,
+                             (j==0),
+                             false,
+                             nData,
+                             nData
+                           );
+          }
+        }
+      }
+    }
+
+  } else  {  // disambiguator
+
+    for (int i=0;i<job.inpData.count();i++)
+      if (job.isInputSuitable(i,projData)==JobData::Unsuitable)  {
+        dataType = dataModel->getDataType ( job.inpData[i]->type );
+        item = makeSection ( dataType->name,dataType->icon,
+                             qtCOFE_Cancel_icon );
+        item->setText ( 2,dataType->desc );
+        missing = true;
+      }
+
+    for (int i=0;i<job.inpData.count();i++)  {
+      suitable = job.isInputSuitable(i,projData);
+      if (suitable!=JobData::Unsuitable)  {
+        idata = indexOf ( job.inpData[i]->type,projData );
+        if (idata>=0)  {
+          dataType = dataModel->getDataType ( projData[idata][0]->type );
+          item     = makeSection ( dataType->name,dataType->icon,"" );
+          for (int j=0;j<projData[idata].count();j++)  {
+            nodeJob = nodes[idata][j]->data ( 0,Qt::UserRole )
+                                            .value<Job*>();
+            if (nodeJob)  {
+              k = nodeJob->indexOf ( projData[idata][0]->type );
+              if (k>=0)  {
+                nodeJob->getOutputDataSpecs ( k,jname,fname,desc,nData );
+                if (desc.isEmpty())
+                  desc = dataType->desc;
+                nChecked = job.inpData[i]->guessNData ( nData );
+                if (suitable==JobData::Ambiguous)  {
+                  if (missing)  nChecked = -1;
                 }
-                fname.append ( m->fname );
-                desc .append ( m->desc  );
-                if (m->columns.count()>0)  {
-                  fname.append ( "/" );
-                  foreach (QString c,m->columns)
-                    fname.append ( c + ":" );
-                  fname.resize ( fname.size()-1 );
-                }
+                item = makeRow ( item,
+                                 QStringList() <<
+                                   fname       <<
+                                   " "         <<
+                                   desc        <<
+                                   jname,
+                                 nodeJob->type,
+                                 (j==0),
+                          (!missing) && (suitable==JobData::Ambiguous),
+                                 nData,
+                                 nChecked
+                               );
               }
-              item = makeRow ( item,
-                               QStringList() <<
-                                 fname       <<
-                                 " "         <<
-                                 desc        <<
-                                 jname,
-                               job->type,
-                               (j==0),
-                               false,
-                               job->outData[k]->metadata.count()
-                             );
             }
           }
         }
       }
     }
 
+  }
+
 }
+
 
 void qtCOFE::DataDialog::resizeToData()  {
   dataTree->setFullWidth();

@@ -73,6 +73,8 @@ namespace qtCOFE  {
 
   extern int indexOf ( const QString & dtype,
                        const QList<JobData *> & jobData );
+  extern int indexOf ( const QString & dtype,
+                       const QList<QList<JobData *> > & jobData );
 
 
 
@@ -105,8 +107,15 @@ namespace qtCOFE  {
 
       JobData::SUITABILITY isSuitable (
                             const QList<QList<JobData *> > & jobData );
-//      int  hasInput ( const QList<JobData *> & jobData );
-//      bool hasInput ( const JobData * jobData );
+      JobData::SUITABILITY isInputSuitable (
+                            int inpNo, // index in inpData
+                            const QList<QList<JobData *> > & jobData );
+
+      void getOutputDataSpecs ( int       outNo,
+                                QString & jobName,
+                                QString & fileName,
+                                QString & desc,
+                                int     & nSets);
 
       void copy ( const Task *task );
 
