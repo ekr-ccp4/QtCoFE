@@ -301,7 +301,8 @@ void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
     nSets = 1;
   } else  {
     fileName.clear();
-    foreach (Metadata *m,outData[outNo]->metadata)  {
+    for (int i=0;i<outData[outNo]->metadata.count();i++)  {
+      Metadata *m = outData[outNo]->metadata[i];
       if (!fileName.isEmpty())  {
         fileName.append ( "\n" );
         desc    .append ( "\n" );

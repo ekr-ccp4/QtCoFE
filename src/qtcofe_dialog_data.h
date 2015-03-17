@@ -26,6 +26,7 @@ QT_BEGIN_NAMESPACE
 class QLabel;
 class QPushButton;
 class QTreeWidgetItem;
+class QCheckBox;
 QT_END_NAMESPACE
 
 class QJsonObject;
@@ -40,6 +41,14 @@ namespace qtCOFE  {
   class Session;
   class ProjectTree;
   class DataModel;
+
+  struct DataChoice  {
+    QString   type;  // data type
+    int      jobId;  // job which has produced data
+    int      outNo;  // data output index in task description
+    int      setNo;  // dataset number
+    QCheckBox *cbx;  // checkbox pointer (does not own)
+  };
 
   class DataDialog : public QDialog  {
   Q_OBJECT
@@ -65,8 +74,12 @@ namespace qtCOFE  {
       qtx::Tree    *dataTree;
       QLabel       *prompt_lbl;
       QPushButton  *close_btn;
+      QPushButton  *cancel_btn;
+      QPushButton  *accept_btn;
+      QList<DataChoice *> choices;
 
-      void makeLayout   ();
+      void clear();
+      void makeLayout();
       QTreeWidgetItem * makeSection ( const QString name,
                                       const QString icon,
                                       const QString statusIcon,
@@ -76,7 +89,7 @@ namespace qtCOFE  {
                                       QStringList     & fields,
                                       QString           jobType,
                                       bool              checked,
-                                      bool              checkbox,
+                                      DataChoice      * dataChoice,
                                       int               nData,
                                       int               nChecked
                                     );

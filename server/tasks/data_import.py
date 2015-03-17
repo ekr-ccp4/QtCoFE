@@ -114,6 +114,11 @@ class Task(task.Task):
             hkl_data.addColumn ( "F_peak(+)" )
             hkl_data.addColumn ( "F_peak(-)" )
             job_data.add_data ( hkl_data )
+            hkl_data      = hkl.DType(inp.data.job_id)
+            hkl_data.file = os.path.basename ( inp.data.file_path )
+            hkl_data.addColumn ( "F_ref(+)" )
+            hkl_data.addColumn ( "F_ref(-)" )
+            job_data.add_data ( hkl_data )
 
         job_data.write ( project_repo_dir )
 

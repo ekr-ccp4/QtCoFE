@@ -53,7 +53,15 @@ qtCOFE::DataDialog::DataDialog ( QWidget         *parent,
   makeDataTree   ( projectTree,jobNode,taskType );
 }
 
-qtCOFE::DataDialog::~DataDialog()  {}
+qtCOFE::DataDialog::~DataDialog()  {
+  clear();
+}
+
+void qtCOFE::DataDialog::clear()  {
+  foreach (DataChoice *dc,choices)
+    if (dc)  delete dc;
+  choices.clear();
+}
 
 void qtCOFE::DataDialog::makeLayout()  {
 QVBoxLayout *vbox;
@@ -73,12 +81,23 @@ QHBoxLayout *hbox;
   hbox = new QHBoxLayout();
   close_btn = new QPushButton ( "Close" );
   close_btn->setIcon ( QIcon(qtCOFE_Close_icon) );
+  close_btn->setVisible ( false );
+  cancel_btn = new QPushButton ( "Cancel" );
+  cancel_btn->setIcon ( QIcon(qtCOFE_Cancel_icon) );
+  cancel_btn->setVisible ( false );
+  accept_btn = new QPushButton ( "Accept" );
+  accept_btn->setIcon ( QIcon(qtCOFE_Ok_icon) );
+  accept_btn->setVisible ( false );
   hbox->addStretch ( 100 );
-  hbox->addWidget  ( close_btn,0 );
+  hbox->addWidget  ( close_btn ,0 );
+  hbox->addWidget  ( cancel_btn,0 );
+  hbox->addWidget  ( accept_btn,0 );
   vbox->addLayout  ( hbox,0 );
 
   setLayout ( vbox );
-  connect ( close_btn,SIGNAL(clicked()), this,SLOT(close()) );
+  connect ( close_btn ,SIGNAL(clicked()), this,SLOT(close())  );
+  connect ( cancel_btn,SIGNAL(clicked()), this,SLOT(reject()) );
+  connect ( accept_btn,SIGNAL(clicked()), this,SLOT(accept()) );
 
 }
 
@@ -117,7 +136,7 @@ QTreeWidgetItem * qtCOFE::DataDialog::makeRow (
                                            QStringList     & fields,
                                            QString           jobType,
                                            bool              checked,
-                                           bool              checkbox,
+                                           DataChoice      * dataChoice,
                                            int               nData,
                                            int               nChecked
                                               )  {
@@ -126,6 +145,7 @@ QVBoxLayout     *vbox;
 QCheckBox       *cbx;
 QWidget         *w;
 const Task      *task;
+DataChoice      *dc;
 int              fsize = preferences->getFontPixelSize();
 
   fields.removeAll ( "" );
@@ -137,13 +157,19 @@ int              fsize = preferences->getFontPixelSize();
     item1->setFont ( 0,font );
   }
 
-  if (checkbox)  {
+  if (dataChoice)  {
     vbox = new QVBoxLayout();
     for (int i=0;i<nData;i++)  {
       cbx = new QCheckBox();
       vbox->addWidget  ( cbx,0      );
       cbx->setChecked  ( i<nChecked );
-//      cbx->setDisabled ( disabled );
+      dc = new DataChoice;
+      dc->type  = dataChoice->type;
+      dc->jobId = dataChoice->jobId;
+      dc->outNo = dataChoice->outNo;
+      dc->setNo = i;
+      dc->cbx   = cbx;
+      choices.append ( dc );
     }
     vbox->setContentsMargins ( fsize/2,0,0,0 );
     vbox->setSpacing         ( fsize/3 );
@@ -181,10 +207,13 @@ const DataType                  *dataType;
 Job                             *nodeJob;
 Job                              job;
 JobData::SUITABILITY             suitable;
+DataChoice                       dataChoice;
+DataChoice                      *pdChoice;
 QString                          fname,desc,jname;
 int                              k,idata,nData,nChecked;
-bool                             disambiguate;
 bool                             missing = false;
+
+  clear();
 
   if (!taskType.isEmpty())
     job.copy ( dataModel->getTask(taskType) );
@@ -222,7 +251,7 @@ bool                             missing = false;
                                jname,
                              nodeJob->type,
                              (j==0),
-                             false,
+                             NULL,
                              nData,
                              nData
                            );
@@ -230,6 +259,8 @@ bool                             missing = false;
         }
       }
     }
+
+    close_btn->setVisible ( true );
 
   } else  {  // disambiguator
 
@@ -248,8 +279,10 @@ bool                             missing = false;
         idata = indexOf ( job.inpData[i]->type,projData );
         if (idata>=0)  {
           dataType = dataModel->getDataType ( projData[idata][0]->type );
-          disambiguate = (!missing) && (suitable==JobData::Ambiguous);
-          if (disambiguate)  {
+          if ((!missing) && (suitable==JobData::Ambiguous))
+                pdChoice = &dataChoice;
+          else  pdChoice = NULL;
+          if (pdChoice)  {
             switch (job.inpData[i]->mode.toAscii())  {
               default:
               case 'A':  desc = QString("Select %1 data item(s)")
@@ -265,6 +298,7 @@ bool                             missing = false;
             desc = "ambiguous";
           else
             desc.clear();
+          dataChoice.type = job.inpData[i]->type;
           item = makeSection ( dataType->name,dataType->icon,"",desc );
           for (int j=0;j<projData[idata].count();j++)  {
             nodeJob = nodes[idata][j]->data ( 0,Qt::UserRole )
@@ -279,6 +313,8 @@ bool                             missing = false;
                 if (suitable==JobData::Ambiguous)  {
                   if (missing)  nChecked = -1;
                 }
+                dataChoice.jobId = nodeJob->id;
+                dataChoice.outNo = k;
                 item = makeRow ( item,
                                  QStringList() <<
                                    fname       <<
@@ -287,7 +323,7 @@ bool                             missing = false;
                                    jname,
                                  nodeJob->type,
                                  (j==0),
-                                 disambiguate,
+                                 pdChoice,
                                  nData,
                                  nChecked
                                );
@@ -296,6 +332,13 @@ bool                             missing = false;
           }
         }
       }
+    }
+
+    if (missing)
+      close_btn->setVisible ( true );
+    else  {
+      cancel_btn->setVisible ( true );
+      accept_btn->setVisible ( true );
     }
 
   }
