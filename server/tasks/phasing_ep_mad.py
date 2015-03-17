@@ -16,7 +16,7 @@ class Task(task.Task):
         self.name    = "EP-MAD"
         self.desc    = "MAD phasing"
         self.section = task.section_phasing().id
-        self.order   = 1  # position within section for GUI
+        self.order   = 2  # position within section for GUI
         self.icon    = "task_ep.png"
 
         self.inp_data = [

@@ -69,7 +69,8 @@ namespace qtCOFE  {
       void makeLayout   ();
       QTreeWidgetItem * makeSection ( const QString name,
                                       const QString icon,
-                                      const QString statusIcon
+                                      const QString statusIcon,
+                                      const QString prompt
                                     );
       QTreeWidgetItem * makeRow     ( QTreeWidgetItem * item,
                                       QStringList     & fields,

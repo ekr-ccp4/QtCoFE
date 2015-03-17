@@ -88,15 +88,25 @@ QHBoxLayout *hbox;
 QTreeWidgetItem * qtCOFE::DataDialog::makeSection (
                                           const QString name,
                                           const QString icon,
-                                          const QString statusIcon )  {
-QTreeWidgetItem *item = dataTree->addTreeItem ( "" );
+                                          const QString statusIcon,
+                                          const QString prompt )  {
+QString          title = "<b>" + name + "</b>";
+QTreeWidgetItem *item  = dataTree->addTreeItem ( "" );
   item->setFirstColumnSpanned ( true );
-  item = dataTree->addTreeItem ( name );
+  item = dataTree->addTreeItem ( "" );
+  if (!prompt.isEmpty())  {
+    item->setFirstColumnSpanned ( true );
+    title.append ( "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                   "<font size='-1'><i>(" + prompt +
+                   ")</i></font>" );
+  }
+  dataTree->setItemWidget( item,0,new QLabel(title) );
   if (!icon.isEmpty())
     item->setIcon ( 0,QIcon(QString(qtCOFE_icon_base) + icon) );
-  item->setText ( 1," " );
-  if (!statusIcon.isEmpty())
+  if (!statusIcon.isEmpty())  {
+    item->setText ( 1," " );
     item->setIcon ( 1,QIcon(statusIcon) );
+  }
   item->setExpanded ( true );
   return item;
 }
@@ -173,6 +183,7 @@ Job                              job;
 JobData::SUITABILITY             suitable;
 QString                          fname,desc,jname;
 int                              k,idata,nData,nChecked;
+bool                             disambiguate;
 bool                             missing = false;
 
   if (!taskType.isEmpty())
@@ -194,7 +205,7 @@ bool                             missing = false;
 
     for (int i=0;i<projData.count();i++)  {
       dataType = dataModel->getDataType ( projData[i][0]->type );
-      item     = makeSection ( dataType->name,dataType->icon,"" );
+      item     = makeSection ( dataType->name,dataType->icon,"","" );
       for (int j=0;j<projData[i].count();j++)  {
         nodeJob = nodes[i][j]->data ( 0,Qt::UserRole ).value<Job*>();
         if (nodeJob)  {
@@ -226,9 +237,9 @@ bool                             missing = false;
       if (job.isInputSuitable(i,projData)==JobData::Unsuitable)  {
         dataType = dataModel->getDataType ( job.inpData[i]->type );
         item = makeSection ( dataType->name,dataType->icon,
-                             qtCOFE_Cancel_icon );
+                             qtCOFE_Cancel_icon,"" );
         item->setText ( 2,dataType->desc );
-        missing = true;
+        missing = true; // will only present stats, no disambiguation
       }
 
     for (int i=0;i<job.inpData.count();i++)  {
@@ -237,10 +248,27 @@ bool                             missing = false;
         idata = indexOf ( job.inpData[i]->type,projData );
         if (idata>=0)  {
           dataType = dataModel->getDataType ( projData[idata][0]->type );
-          item     = makeSection ( dataType->name,dataType->icon,"" );
+          disambiguate = (!missing) && (suitable==JobData::Ambiguous);
+          if (disambiguate)  {
+            switch (job.inpData[i]->mode.toAscii())  {
+              default:
+              case 'A':  desc = QString("Select %1 data item(s)")
+                                           .arg(job.inpData[i]->nmode);
+                       break;
+              case 'G':  desc = QString("Select %1 or more data item(s)")
+                                         .arg(job.inpData[i]->nmode+1);
+                       break;
+              case 'U':  desc = QString("Select up to %1 data item(s)")
+                                           .arg(job.inpData[i]->nmode);
+            }
+          } else if (suitable==JobData::Ambiguous)
+            desc = "ambiguous";
+          else
+            desc.clear();
+          item = makeSection ( dataType->name,dataType->icon,"",desc );
           for (int j=0;j<projData[idata].count();j++)  {
             nodeJob = nodes[idata][j]->data ( 0,Qt::UserRole )
-                                            .value<Job*>();
+                                                        .value<Job*>();
             if (nodeJob)  {
               k = nodeJob->indexOf ( projData[idata][0]->type );
               if (k>=0)  {
@@ -259,7 +287,7 @@ bool                             missing = false;
                                    jname,
                                  nodeJob->type,
                                  (j==0),
-                          (!missing) && (suitable==JobData::Ambiguous),
+                                 disambiguate,
                                  nData,
                                  nChecked
                                );
