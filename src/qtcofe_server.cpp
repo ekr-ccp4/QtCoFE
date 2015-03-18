@@ -63,7 +63,7 @@ QString  masterPath = preferences->getMasterPath();
 
   QProcess process;
   QJsonObject jsonObject;
-  jsonObject.insert ( "action"     ,action );
+  jsonObject.insert ( "action"     ,action             );
   jsonObject.insert ( "login"      ,session->loginName );
   jsonObject.insert ( "pwd"        ,session->password  );
   jsonObject.insert ( "master_path",masterPath         );

@@ -25,6 +25,9 @@
 #include <QPushButton>
 #include <QCheckBox>
 
+#include "qjson/QJsonObject.h"
+#include "qjson/QJsonArray.h"
+
 #include "qtx/qtx_tree.h"
 
 #include "qtcofe_dialog_data.h"
@@ -108,7 +111,7 @@ QHBoxLayout *hbox;
   cancel_btn = new QPushButton ( "Cancel" );
   cancel_btn->setIcon ( QIcon(qtCOFE_Cancel_icon) );
   cancel_btn->setVisible ( false );
-  accept_btn = new QPushButton ( "Accept" );
+  accept_btn = new QPushButton ( "Done" );
   accept_btn->setIcon ( QIcon(qtCOFE_Ok_icon) );
   accept_btn->setVisible ( false );
   hbox->addStretch ( 100 );
@@ -410,5 +413,30 @@ bool ok = true;
   }
 
   accept_btn->setEnabled ( ok );
+
+}
+
+
+QJsonArray *qtCOFE::DataDialog::getSelections()  {
+// after "done" in disambiguator
+QJsonArray *a = new QJsonArray();
+
+  foreach (DataChoice *dc,choices)  {
+    QJsonObject choice;
+    choice.insert ( "type",dc->type );
+    QJsonArray  sa;
+    foreach (DataSelection *ds,dc->selections)
+      if (ds->cbx && (ds->cbx->checkState()==Qt::Checked))  {
+        QJsonObject sel;
+        sel.insert ( "jobId",ds->jobId );
+        sel.insert ( "outNo",ds->outNo );
+        sel.insert ( "setNo",ds->setNo );
+        sa.append ( sel );
+      }
+    choice.insert ( "selection",sa );
+    a->append ( choice );
+  }
+
+  return a;
 
 }

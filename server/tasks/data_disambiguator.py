@@ -44,7 +44,7 @@ class Task(task.Task):
     def __init__(self):
 
         self.type    = "task_disambiguator"
-        self.name    = "Data disambiguator"
+        self.name    = "Data select"
         self.desc    = "Data disambiguator"
         self.section = -1  # does not appear in task dialog
         self.order   = -2  # position within section for GUI

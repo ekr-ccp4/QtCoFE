@@ -20,7 +20,9 @@
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <QMessageBox>
+
 #include "qjson/QJsonObject.h"
+#include "qjson/QJsonArray.h"
 
 #include "qtcofe_page_project.h"
 #include "qtcofe_datamodel.h"
@@ -109,11 +111,15 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
 
 }
 
+#include "qjson/QJsonDocument.h"
 
 void qtCOFE::ProjectPage::addJob ( int jobID )  {
 TaskDialog                      *tdlg;
 QList<QList<JobData *> >         jobData;
 QList<QList<QTreeWidgetItem *> > nodes;
+QString                          taskType;
+int                              job_id    = jobID;
+bool                             createJob = true;
 
   jobTree->getProjectedData ( jobData,nodes );
   tdlg = new TaskDialog ( this,dataModel,jobData,jobTree );
@@ -121,25 +127,55 @@ QList<QList<QTreeWidgetItem *> > nodes;
   tdlg->show();
   tdlg->setFixedSize ( tdlg->size() );
   if (tdlg->exec()==QDialog::Accepted)  {
-    QJsonObject *jsonData = jobTree->getTreeData();
-    jsonData->insert ( "parent"   ,jobID );
-    jsonData->insert ( "task_type",tdlg->getSelTaskType() );
-    project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
-    delete jsonData;
-    if (tdlg->getSelTaskType()=="task_import")  {
-      DataImportDialog *didlg = new DataImportDialog ( this,
-                                 jobTree->currentJobId(),dataModel );
-      didlg->exec();
-      if (didlg->importCount()<=0)
-        jobTree->deleteCurrentJob();
-      else  {
-        QJsonObject jsd;
-        project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
+    taskType = tdlg->getSelTaskType();
+    if (tdlg->getSelTaskKey()==JobData::Ambiguous)  {
+      DataDialog *ddlg = new DataDialog ( this,
+                  jobTree,jobTree->currentNode(),
+                  taskType,dataModel,"Data Disambiguator",
+                  "Disambiguate Data for task '" +
+                      dataModel->taskName(taskType) +
+                         "'" );
+      ddlg->resizeToData();
+      if (ddlg->exec()==QDialog::Accepted)  {
+        QJsonArray *a = ddlg->getSelections();
+//        QJsonDocument jsonDoc(*a);
+//        QMessageBox::information ( NULL,"",
+//                            jsonDoc.toJson(QJsonDocument::Indented) );
+        QJsonObject *jsonData = jobTree->getTreeData();
+        jsonData->insert ( "parent"   ,job_id );
+        jsonData->insert ( "task_type",QString("task_disambiguator") );
+        project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob );
+        job_id = jobTree->currentJobId();
+        delete jsonData;
+        delete a;
+      } else
+        createJob = false;
+      delete ddlg;
+    }
+    if (createJob)  {
+      QJsonObject *jsonData = jobTree->getTreeData();
+      jsonData->insert ( "parent"   ,job_id    );
+      jsonData->insert ( "task_type",taskType );
+      project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
+      delete jsonData;
+      if (taskType=="task_import")  {
+        DataImportDialog *didlg = new DataImportDialog ( this,
+                                   jobTree->currentJobId(),dataModel );
+        didlg->exec();
+        if (didlg->importCount()<=0)
+          jobTree->deleteCurrentJob();
+        else  {
+          QJsonObject jsd;
+          project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
+        }
       }
     }
   }
 
+  delete tdlg;
+
 }
+
 
 void qtCOFE::ProjectPage::delJob ( int jobID, int nextCrJobID )  {
   QJsonObject *jsonData = jobTree->getTreeData();

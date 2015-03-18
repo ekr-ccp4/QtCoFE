@@ -29,7 +29,7 @@ class QTreeWidgetItem;
 class QCheckBox;
 QT_END_NAMESPACE
 
-class QJsonObject;
+class QJsonArray;
 
 namespace qtx  {
   class Tree;
@@ -59,6 +59,8 @@ namespace qtCOFE  {
       ~DataDialog();
 
       void resizeToData();
+
+      QJsonArray *getSelections(); // after "done" in disambiguator
 
     protected:
       Preferences  *preferences;
