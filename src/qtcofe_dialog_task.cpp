@@ -206,6 +206,7 @@ void qtCOFE::TaskDialog::taskSelected ( const QString & type )  {
                        "'" );
     ddlg->resizeToData();
     ddlg->exec();
+    delete ddlg;
   } else
     accept();
 

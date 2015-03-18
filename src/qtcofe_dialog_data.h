@@ -41,14 +41,7 @@ namespace qtCOFE  {
   class Session;
   class ProjectTree;
   class DataModel;
-
-  struct DataChoice  {
-    QString   type;  // data type
-    int      jobId;  // job which has produced data
-    int      outNo;  // data output index in task description
-    int      setNo;  // dataset number
-    QCheckBox *cbx;  // checkbox pointer (does not own)
-  };
+  class DataChoice;
 
   class DataDialog : public QDialog  {
   Q_OBJECT
@@ -97,11 +90,8 @@ namespace qtCOFE  {
                           QTreeWidgetItem * jobNode,
                           QString           taskType );
 
-      /*
     protected slots:
-      void addClicked();
-      void delClicked();
-      */
+      void checkBoxClicked();
 
   };
 

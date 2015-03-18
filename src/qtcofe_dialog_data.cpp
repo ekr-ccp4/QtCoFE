@@ -57,9 +57,32 @@ qtCOFE::DataDialog::~DataDialog()  {
   clear();
 }
 
+
+struct DataSelection  {
+  int      jobId;  // job which has produced data
+  int      outNo;  // data output index in task description
+  int      setNo;  // dataset number
+  QCheckBox *cbx;  // checkbox pointer (does not own)
+};
+
+class qtCOFE::DataChoice  {
+  public:
+    QString  type;  // data type
+    char     mode;  // modificator of data entity number (E,G,U)
+    int     nmode;  // data entity number
+    QList<DataSelection *> selections;
+    DataChoice() {}
+    ~DataChoice()  {
+      foreach (DataSelection *ds,selections)
+        delete ds;
+      selections.clear();
+    }
+};
+
+
 void qtCOFE::DataDialog::clear()  {
   foreach (DataChoice *dc,choices)
-    if (dc)  delete dc;
+    delete dc;
   choices.clear();
 }
 
@@ -100,6 +123,7 @@ QHBoxLayout *hbox;
   connect ( accept_btn,SIGNAL(clicked()), this,SLOT(accept()) );
 
 }
+
 
 #define  _align_left   (Qt::AlignLeft  | Qt::AlignVCenter)
 #define  _align_right  (Qt::AlignRight | Qt::AlignVCenter)
@@ -145,7 +169,8 @@ QVBoxLayout     *vbox;
 QCheckBox       *cbx;
 QWidget         *w;
 const Task      *task;
-DataChoice      *dc;
+DataSelection   *ds;
+int              i0;
 int              fsize = preferences->getFontPixelSize();
 
   fields.removeAll ( "" );
@@ -159,17 +184,22 @@ int              fsize = preferences->getFontPixelSize();
 
   if (dataChoice)  {
     vbox = new QVBoxLayout();
+    i0   = dataChoice->selections.count()-1;
     for (int i=0;i<nData;i++)  {
       cbx = new QCheckBox();
       vbox->addWidget  ( cbx,0      );
       cbx->setChecked  ( i<nChecked );
-      dc = new DataChoice;
-      dc->type  = dataChoice->type;
-      dc->jobId = dataChoice->jobId;
-      dc->outNo = dataChoice->outNo;
-      dc->setNo = i;
-      dc->cbx   = cbx;
-      choices.append ( dc );
+      if (i==0)
+        ds = dataChoice->selections[i0];
+      else  {
+        ds = new DataSelection;
+        ds->jobId = dataChoice->selections[i0]->jobId;
+        ds->outNo = dataChoice->selections[i0]->outNo;
+        dataChoice->selections.append ( ds );
+      }
+      ds->setNo = i;
+      ds->cbx   = cbx;
+      connect ( cbx,SIGNAL(clicked()), this,SLOT(checkBoxClicked()) );
     }
     vbox->setContentsMargins ( fsize/2,0,0,0 );
     vbox->setSpacing         ( fsize/3 );
@@ -207,8 +237,8 @@ const DataType                  *dataType;
 Job                             *nodeJob;
 Job                              job;
 JobData::SUITABILITY             suitable;
-DataChoice                       dataChoice;
-DataChoice                      *pdChoice;
+DataChoice                      *dataChoice;
+DataSelection                   *dataSelection;
 QString                          fname,desc,jname;
 int                              k,idata,nData,nChecked;
 bool                             missing = false;
@@ -279,10 +309,15 @@ bool                             missing = false;
         idata = indexOf ( job.inpData[i]->type,projData );
         if (idata>=0)  {
           dataType = dataModel->getDataType ( projData[idata][0]->type );
-          if ((!missing) && (suitable==JobData::Ambiguous))
-                pdChoice = &dataChoice;
-          else  pdChoice = NULL;
-          if (pdChoice)  {
+          if ((!missing) && (suitable==JobData::Ambiguous))  {
+            dataChoice = new DataChoice();
+            dataChoice->type  = job.inpData[i]->type;
+            dataChoice->mode  = job.inpData[i]->mode.toAscii();
+            dataChoice->nmode = job.inpData[i]->nmode;
+            choices.append ( dataChoice );
+          } else
+            dataChoice = NULL;
+          if (dataChoice)  {
             switch (job.inpData[i]->mode.toAscii())  {
               default:
               case 'A':  desc = QString("Select %1 data item(s)")
@@ -298,7 +333,6 @@ bool                             missing = false;
             desc = "ambiguous";
           else
             desc.clear();
-          dataChoice.type = job.inpData[i]->type;
           item = makeSection ( dataType->name,dataType->icon,"",desc );
           for (int j=0;j<projData[idata].count();j++)  {
             nodeJob = nodes[idata][j]->data ( 0,Qt::UserRole )
@@ -313,8 +347,12 @@ bool                             missing = false;
                 if (suitable==JobData::Ambiguous)  {
                   if (missing)  nChecked = -1;
                 }
-                dataChoice.jobId = nodeJob->id;
-                dataChoice.outNo = k;
+                if (dataChoice)  {
+                  dataSelection = new DataSelection;
+                  dataSelection->jobId = nodeJob->id;
+                  dataSelection->outNo = k;
+                  dataChoice->selections.append ( dataSelection );
+                }
                 item = makeRow ( item,
                                  QStringList() <<
                                    fname       <<
@@ -323,7 +361,7 @@ bool                             missing = false;
                                    jname,
                                  nodeJob->type,
                                  (j==0),
-                                 pdChoice,
+                                 dataChoice,
                                  nData,
                                  nChecked
                                );
@@ -352,4 +390,25 @@ void qtCOFE::DataDialog::resizeToData()  {
   s.setWidth  ( qMin(s.width (),700) );
   s.setHeight ( qMin(s.height(),400) );
   resize ( s );
+}
+
+void qtCOFE::DataDialog::checkBoxClicked()  {
+int  nSel;
+bool ok = true;
+
+  for (int i=0;(i<choices.count()) && ok;i++)  {
+    nSel = 0;
+    for (int j=0;j<choices[i]->selections.count();j++)
+      if (choices[i]->selections[j]->cbx->checkState()==Qt::Checked)
+        nSel++;
+    switch (choices[i]->mode)  {
+      default :
+      case 'E': ok = (nSel==choices[i]->nmode);  break;
+      case 'G': ok = (nSel>choices[i]->nmode);  break;
+      case 'U': ok = (nSel<=choices[i]->nmode);  break;
+    }
+  }
+
+  accept_btn->setEnabled ( ok );
+
 }
