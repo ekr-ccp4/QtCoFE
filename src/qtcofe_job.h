@@ -53,6 +53,7 @@ namespace qtCOFE  {
         Ambiguous
       };
 
+      bool         disambiguated;
       QList<Metadata *> metadata;
 
       JobData ();

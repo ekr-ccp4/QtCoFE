@@ -92,12 +92,12 @@ class Task(jsonut.jObject):
         # Job classes.
         #   Data list requirements are specified by modification letter
         # and number:
-        #  EN : the corresponding data list must contain exactly N
-        #       data entities
-        #  UN : the corresponding data list may contain up to N
-        #       data entities (inclusive of N)
-        #  GN : the corresponding data list must contain more than N
-        #       data entities (N exclusive)
+        #  E : the corresponding data list must contain exactly N
+        #      data entities
+        #  U : the corresponding data list may contain up to N
+        #      data entities (inclusive of N)
+        #  G : the corresponding data list must contain more than N
+        #      data entities (N exclusive)
         self.inp_data = [
                          [dummy.DType().type,"G",-1]
                         ]

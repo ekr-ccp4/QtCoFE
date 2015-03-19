@@ -24,11 +24,15 @@
 
 #include "qtcofe_job.h"
 #include "qtcofe_datamodel.h"
+#include "qtcofe_srvdefs.h"
 
 
-qtCOFE::JobData::JobData() : TaskData()  {}
+qtCOFE::JobData::JobData() : TaskData()  {
+  disambiguated = false;
+}
 
 qtCOFE::JobData::JobData ( TaskData *taskData )  {
+  disambiguated = false;
   type  = taskData->type;  // "dtype_xxx"
   mode  = taskData->mode;  // modificator of data entity number (E,U,G)
   nmode = taskData->nmode; // data entity number
@@ -37,6 +41,7 @@ qtCOFE::JobData::JobData ( TaskData *taskData )  {
 qtCOFE::JobData::~JobData() { clear(); }
 
 void qtCOFE::JobData::clear()  {
+  disambiguated = false;
   foreach (Metadata *m,metadata)
     if (m)  delete m;
   metadata.clear();
@@ -65,6 +70,9 @@ int nm;
   if (jobData[0]->metadata.count()==nmode+1)
     return Suitable;
 
+  if ((jobData[0]->metadata.count()>nmode) && jobData[0]->disambiguated)
+    return Suitable;
+
   nm = 0;
   for (int i=0;i<jobData.count();i++)
     nm += jobData[i]->metadata.count();
@@ -79,6 +87,9 @@ qtCOFE::JobData::SUITABILITY qtCOFE::JobData::U_Suitable (
 int nm;
 
   if (jobData[0]->metadata.count()==nmode)
+    return Suitable;
+
+  if ((jobData[0]->metadata.count()<nmode) && jobData[0]->disambiguated)
     return Suitable;
 
   nm = 0;
@@ -214,6 +225,7 @@ const Task *task = NULL;
     QJsonArray dlist = data[i].toArray();
     if (dlist.count()>0)  {
       JobData *jd =new JobData();
+      jd->disambiguated = (type==qtCOFE_TASK_Disambiguator);
       jd->type = dlist[0].toObject().value("type").toString();
       jd->copy ( dataModel->getTaskDataOut(type,jd->type) );
       for (int j=0;j<dlist.count();j++)  {

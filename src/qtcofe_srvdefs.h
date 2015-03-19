@@ -34,5 +34,10 @@
 #define qtCOFE_SERVER_ACT_DelJob              "del_job"
 #define qtCOFE_SERVER_ACT_GetDataModel        "get_data_model"
 #define qtCOFE_SERVER_ACT_ImportFile          "import_file"
+#define qtCOFE_SERVER_ACT_SetData             "set_data"
+
+
+#define qtCOFE_TASK_Import                    "task_import"
+#define qtCOFE_TASK_Disambiguator             "task_disambiguator"
 
 #endif // QTCOFE_SRVDEFS_H

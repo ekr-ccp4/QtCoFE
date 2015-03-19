@@ -111,7 +111,6 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
 
 }
 
-#include "qjson/QJsonDocument.h"
 
 void qtCOFE::ProjectPage::addJob ( int jobID )  {
 TaskDialog                      *tdlg;
@@ -137,15 +136,17 @@ bool                             createJob = true;
                          "'" );
       ddlg->resizeToData();
       if (ddlg->exec()==QDialog::Accepted)  {
-        QJsonArray *a = ddlg->getSelections();
-//        QJsonDocument jsonDoc(*a);
-//        QMessageBox::information ( NULL,"",
-//                            jsonDoc.toJson(QJsonDocument::Indented) );
         QJsonObject *jsonData = jobTree->getTreeData();
         jsonData->insert ( "parent"   ,job_id );
-        jsonData->insert ( "task_type",QString("task_disambiguator") );
+        jsonData->insert ( "task_type",QString(qtCOFE_TASK_Disambiguator) );
         project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob );
+        delete jsonData;
         job_id = jobTree->currentJobId();
+        jsonData = new QJsonObject();
+        jsonData->insert ( "job_id",job_id );
+        QJsonArray *a = ddlg->getSelections();
+        jsonData->insert ( "data_list",*a );
+        project_query ( *jsonData,qtCOFE_SERVER_ACT_SetData );
         delete jsonData;
         delete a;
       } else
@@ -158,7 +159,7 @@ bool                             createJob = true;
       jsonData->insert ( "task_type",taskType );
       project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
       delete jsonData;
-      if (taskType=="task_import")  {
+      if (taskType==qtCOFE_TASK_Import)  {
         DataImportDialog *didlg = new DataImportDialog ( this,
                                    jobTree->currentJobId(),dataModel );
         didlg->exec();
