@@ -191,7 +191,7 @@ int              fsize = preferences->getFontPixelSize();
     for (int i=0;i<nData;i++)  {
       cbx = new QCheckBox();
       vbox->addWidget  ( cbx,0      );
-      cbx->setChecked  ( i<nChecked );
+      cbx->setChecked  ( checked && (i<nChecked) );
       if (i==0)
         ds = dataChoice->selections[i0];
       else  {
