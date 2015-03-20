@@ -17,7 +17,7 @@
 // =================================================================
 //
 
-#include <QSplitter>
+//#include <QSplitter>
 #include <QVBoxLayout>
 #include <QMessageBox>
 
@@ -52,11 +52,12 @@ void qtCOFE::ProjectPage::makeLayout()  {
 QVBoxLayout *vbox = new QVBoxLayout();
 
   jobTree   = new ProjectTree(dataModel);
-  hsplitter = new QSplitter();
-  hsplitter->addWidget ( jobTree );
-  hsplitter->addWidget ( new QWidget() );
+//  hsplitter = new QSplitter();
+//  hsplitter->addWidget ( jobTree );
+//  hsplitter->addWidget ( new QWidget() );
 
-  vbox->addWidget ( hsplitter );
+//  vbox->addWidget ( hsplitter );
+  vbox->addWidget ( jobTree );
   vbox->setContentsMargins ( 0,0,0,0 );
   setLayout ( vbox );
 

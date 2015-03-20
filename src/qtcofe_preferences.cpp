@@ -954,7 +954,8 @@ bool qtCOFE::Preferences::isFontChanged()  {
 }
 
 QString qtCOFE::Preferences::getFontSizeStyleSheet ( qreal scale )  {
-  return QString("font-family: %1; font-style: %2; font-size: %3pt;")
+  return QString("font-family: %1; font-style: %2; "
+                 "font-size: %3pt; color:black;")
           .arg(QFontInfo(logFont).family())
           .arg(QFontInfo(logFont).style())
           .arg(int(scale*QFontInfo(logFont).pointSize()));
@@ -966,5 +967,5 @@ int  qtCOFE::Preferences::getToolButtonSize()  {
 }
 
 QString qtCOFE::Preferences::getToolButtonStyle()  {
-  return "padding:0px;margin:0px;border:0px;";
+  return "padding:0px;margin:0px;border:0px;color:black;";
 }

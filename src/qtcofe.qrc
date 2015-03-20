@@ -26,5 +26,8 @@
         <file>images/data_xyz.png</file>
         <file>images/task_disambiguator.png</file>
         <file>images/ok_amber.png</file>
+        <file>images/parameters.png</file>
+        <file>images/run.png</file>
+        <file>images/view.png</file>
     </qresource>
 </RCC>

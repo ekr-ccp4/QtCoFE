@@ -52,12 +52,23 @@ qtCOFE::ProjectTree::ProjectTree ( DataModel      *dm,
 qtCOFE::ProjectTree::~ProjectTree() {
 }
 
+QToolButton *makeButton ( const QString icon,
+                          const QString toolTip,
+                          const QString & btnStyle,
+                          const int     btnSize )  {
+QToolButton *btn = new QToolButton();
+  btn->setIcon        ( QIcon(icon) );
+  btn->setIconSize    ( QSize(btnSize,btnSize) );
+  btn->setStyleSheet  ( btnStyle );
+  btn->setToolTip     ( toolTip  );
+  return btn;
+}
 
 void qtCOFE::ProjectTree::makeLayout()  {
 QVBoxLayout *vbox = new QVBoxLayout();
 QHBoxLayout *hbox = new QHBoxLayout();
-QString      btnStyle = preferences->getToolButtonStyle();
-int          btnSize  = preferences->getToolButtonSize ();
+QString      bs = preferences->getToolButtonStyle();
+int          bz = preferences->getToolButtonSize ();
 
   jobTree = new qtx::Tree();
   jobTree->setColumnCount ( 1 );
@@ -68,22 +79,21 @@ int          btnSize  = preferences->getToolButtonSize ();
   jobTree->setStyle ( new QWindowsStyle() );
   vbox->addWidget ( jobTree,100 );
 
-  add_btn = new QToolButton();
-  add_btn->setIcon        ( QIcon(qtCOFE_Plus_icon) );
-  add_btn->setIconSize    ( QSize(btnSize,btnSize) );
-  add_btn->setStyleSheet  ( btnStyle );
-  hbox->addWidget         ( add_btn,1 );
-  del_btn = new QToolButton();
-  del_btn->setIcon        ( QIcon(qtCOFE_Minus_icon) );
-  del_btn->setIconSize    ( QSize(btnSize,btnSize) );
-  del_btn->setStyleSheet  ( btnStyle );
-  hbox->addWidget         ( del_btn,1 );
-  hbox->addStretch        ( 100 );
-  data_btn = new QToolButton();
-  data_btn->setIcon       ( QIcon(qtCOFE_Data_icon) );
-  data_btn->setIconSize   ( QSize(btnSize,btnSize) );
-  data_btn->setStyleSheet ( btnStyle );
-  hbox->addWidget         ( data_btn,1 );
+  add_btn  = makeButton ( qtCOFE_Plus_icon ,"Add job"       ,bs,bz );
+  del_btn  = makeButton ( qtCOFE_Minus_icon,"Delete job"    ,bs,bz );
+  prm_btn  = makeButton ( qtCOFE_Param_icon,"Job parameters",bs,bz );
+  run_btn  = makeButton ( qtCOFE_Run_icon  ,"Run job"       ,bs,bz );
+  view_btn = makeButton ( qtCOFE_View_icon ,"View results"  ,bs,bz );
+  data_btn = makeButton ( qtCOFE_Data_icon,"Data inspector" ,bs,bz );
+
+  hbox->addWidget  ( add_btn ,1 );
+  hbox->addWidget  ( del_btn ,1 );
+  hbox->addStretch ( 100 );
+  hbox->addWidget  ( prm_btn ,1 );
+  hbox->addWidget  ( run_btn ,1 );
+  hbox->addWidget  ( view_btn,1 );
+  hbox->addStretch ( 100 );
+  hbox->addWidget  ( data_btn,1 );
 
   hbox->setContentsMargins ( 0,0,0,0 );
   hbox->setSpacing ( 4 );
@@ -95,6 +105,9 @@ int          btnSize  = preferences->getToolButtonSize ();
 
   connect ( add_btn ,SIGNAL(clicked()),this,SLOT(addBtnClicked())  );
   connect ( del_btn ,SIGNAL(clicked()),this,SLOT(delBtnClicked())  );
+  connect ( prm_btn ,SIGNAL(clicked()),this,SLOT(prmBtnClicked())  );
+  connect ( run_btn ,SIGNAL(clicked()),this,SLOT(runBtnClicked())  );
+  connect ( view_btn,SIGNAL(clicked()),this,SLOT(viewBtnClicked()) );
   connect ( data_btn,SIGNAL(clicked()),this,SLOT(dataBtnClicked()) );
 
   connect ( jobTree,
@@ -118,6 +131,7 @@ QTreeWidgetItem *item1 = jobTree->addTreeItem ( item,job->name );
   if (!job->icon.isEmpty())
     item1->setIcon ( 0,QIcon(QString(qtCOFE_icon_base)+job->icon) );
   item1->setToolTip ( 0,job->desc );
+  item1->setTextColor( 0,QColor(0,0,0) );
 
   if (job->id==session->jobID)
     crItem = item1;
@@ -285,6 +299,18 @@ int  nextJobId = siblingJobId();
   if (nextJobId<0)
     nextJobId = parentJobId();
   emit del_job ( currentJobId(),nextJobId );
+}
+
+void qtCOFE::ProjectTree::prmBtnClicked()  {
+    QMessageBox::information ( this,"Not implemented","Not implemented" );
+}
+
+void qtCOFE::ProjectTree::runBtnClicked()  {
+    QMessageBox::information ( this,"Not implemented","Not implemented" );
+}
+
+void qtCOFE::ProjectTree::viewBtnClicked()  {
+    QMessageBox::information ( this,"Not implemented","Not implemented" );
 }
 
 void qtCOFE::ProjectTree::dataBtnClicked()  {

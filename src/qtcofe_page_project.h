@@ -22,9 +22,9 @@
 
 #include "qtcofe_page.h"
 
-QT_BEGIN_NAMESPACE
-class QSplitter;
-QT_END_NAMESPACE
+//QT_BEGIN_NAMESPACE
+//class QSplitter;
+//QT_END_NAMESPACE
 
 //namespace qtx  {
 //  class LineEdit;
@@ -52,7 +52,7 @@ namespace qtCOFE  {
       void loadProject();
 
     protected:
-      QSplitter   *hsplitter;
+//      QSplitter   *hsplitter;
       ProjectTree *jobTree;
       QString      currentProject;
 

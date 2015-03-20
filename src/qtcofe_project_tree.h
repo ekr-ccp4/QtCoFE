@@ -84,6 +84,9 @@ namespace qtCOFE  {
       qtx::Tree    *jobTree;
       QToolButton  *add_btn;
       QToolButton  *del_btn;
+      QToolButton  *prm_btn;
+      QToolButton  *run_btn;
+      QToolButton  *view_btn;
       QToolButton  *data_btn;
 
       void addJob ( const QJsonObject & obj,
@@ -92,8 +95,11 @@ namespace qtCOFE  {
                     int               & maxID );
 
     protected slots:
-      void addBtnClicked();
-      void delBtnClicked();
+      void addBtnClicked ();
+      void delBtnClicked ();
+      void prmBtnClicked ();
+      void runBtnClicked ();
+      void viewBtnClicked();
       void dataBtnClicked();
       void crJobChanged ( QTreeWidgetItem * current,
                           QTreeWidgetItem * previous );
