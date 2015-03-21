@@ -35,5 +35,6 @@ def test_master_path(): return "/Users/eugene/Projects/QtCoFE/cofe-master/"
 def user_data_name      ():  return "user.data"
 def project_data_name   ():  return "project.data"
 def job_data_name       ():  return "job.data"
+def job_arguments_name  ():  return "job.arguments"
 def default_project_name():  return "default"
 

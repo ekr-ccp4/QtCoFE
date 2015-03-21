@@ -37,7 +37,7 @@
 #define qtCOFE_SERVER_ACT_SetData             "set_data"
 
 
-#define qtCOFE_TASK_Import                    "task_import"
+#define qtCOFE_TASK_Import                    "task_dataimport"
 #define qtCOFE_TASK_Disambiguator             "task_disambiguator"
 
 #endif // QTCOFE_SRVDEFS_H

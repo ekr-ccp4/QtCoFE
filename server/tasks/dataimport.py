@@ -45,20 +45,29 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_import"
+        self.type    = "task_dataimport"   # must be "task_" + filename
         self.name    = "Data import"
         self.desc    = "Data import"
         self.section = task.section_data().id
         self.order   = 0  # position within section for GUI
-        self.icon    = "task_import.png"
+        self.icon    = "task_dataimport.png"
 
         self.inp_data = []
         self.out_data = []
 
+        self.executable = ""      # program to run
+        self.arguments  = []      # list of arguments
+
         return
 
 
-    def run(self,inp):
+    def run(self,inp):   # This function substitutes the data import
+                         # job and is specific to data import task.
+                         # This task is interactive and takes no data
+                         # from its parent job; other jobs use data
+                         # stored in Job classes and are run in the
+                         # background. Another exception is
+                         # Disambiguator.
 
         if inp.action != "import_file":
             return utils.make_return ( inp.action,

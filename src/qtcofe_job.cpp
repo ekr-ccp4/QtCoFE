@@ -151,15 +151,12 @@ int k = -1;
 
 
 qtCOFE::Job::Job ( QObject *parent ) : QObject(parent)  {
-  id       = 0;
-  expanded = true;
+  init();
 }
 
 qtCOFE::Job::Job ( const Task * task, QObject *parent )
            : QObject(parent)  {
-  id       = 0;
-  order    = 0;
-  expanded = true;
+  init();
   copy ( task );
 }
 
@@ -167,14 +164,19 @@ qtCOFE::Job::Job ( const QJsonObject & jobData,
                    DataModel * dataModel,
                    QObject *parent )
            : QObject(parent)  {
-  id       = 0;
-  order    = 0;
-  expanded = true;
+  init();
   setJobData ( jobData,dataModel );
 }
 
 qtCOFE::Job::~Job() {
   clear();
+}
+
+void qtCOFE::Job::init()  {
+  id       = 0;
+  status   = 0;
+  order    = 0;
+  expanded = true;
 }
 
 void qtCOFE::Job::clear()  {
@@ -184,6 +186,7 @@ void qtCOFE::Job::clear()  {
   foreach (JobData *jd,outData)
     if (jd)  delete jd;
   outData.clear();
+  init();
 }
 
 void qtCOFE::Job::copy ( const Task *task )  {
@@ -216,10 +219,11 @@ const Task *task = NULL;
 
   clear();
 
-  type = jobData.value("type").toString();
-  name = jobData.value("name").toString();
-  desc = jobData.value("desc").toString();
-  id   = jobData.value("id").toDouble();
+  type   = jobData.value("type"  ).toString();
+  name   = jobData.value("name"  ).toString();
+  desc   = jobData.value("desc"  ).toString();
+  id     = jobData.value("id"    ).toDouble();
+  status = jobData.value("status").toDouble();
 
   for (int i=0;i<data.count();i++)  {
     QJsonArray dlist = data[i].toArray();

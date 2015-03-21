@@ -107,7 +107,8 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
         message.append ( "<p>List of jobs could not be read." );
       QMessageBox::information ( this,"Error",message );
     }
-    jobTree->makeTree ( jsonReply );
+    if (action!=qtCOFE_SERVER_ACT_SetData)
+      jobTree->makeTree ( jsonReply );
   }
 
 }
@@ -129,6 +130,11 @@ bool                             createJob = true;
   if (tdlg->exec()==QDialog::Accepted)  {
     taskType = tdlg->getSelTaskType();
     if (tdlg->getSelTaskKey()==JobData::Ambiguous)  {
+      QJsonObject *jsonData = jobTree->getTreeData();
+      jsonData->insert ( "task_type",QString(qtCOFE_TASK_Disambiguator) );
+      jsonData->insert ( "parent"   ,job_id );
+      project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob );
+      delete jsonData;
       DataDialog *ddlg = new DataDialog ( this,
                   jobTree,jobTree->currentNode(),
                   taskType,dataModel,"Data Disambiguator",
@@ -137,11 +143,6 @@ bool                             createJob = true;
                          "'" );
       ddlg->resizeToData();
       if (ddlg->exec()==QDialog::Accepted)  {
-        QJsonObject *jsonData = jobTree->getTreeData();
-        jsonData->insert ( "parent"   ,job_id );
-        jsonData->insert ( "task_type",QString(qtCOFE_TASK_Disambiguator) );
-        project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob );
-        delete jsonData;
         job_id = jobTree->currentJobId();
         jsonData = new QJsonObject();
         jsonData->insert ( "job_id",job_id );
@@ -150,8 +151,10 @@ bool                             createJob = true;
         project_query ( *jsonData,qtCOFE_SERVER_ACT_SetData );
         delete jsonData;
         delete a;
-      } else
+      } else  {
+        jobTree->deleteCurrentJob();
         createJob = false;
+      }
       delete ddlg;
     }
     if (createJob)  {

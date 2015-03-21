@@ -4,7 +4,8 @@
 #  Task class template. Tasks and DTypes represent the data model.
 #  ------------------------------------------------------------------
 
-from varut  import jsonut, utils
+import  os
+from varut  import jsonut, utils, defs
 from dtypes import dummy, any
 
 #  constants for annotation in GUI dialogs/menus
@@ -76,22 +77,24 @@ def section_utilities():
 
 class Task(jsonut.jObject):
 
+    #  Template task description class
+
     def __init__(self):
 
-        self.type    = "task_template"
-        self.name    = "Task"
-        self.desc    = "Template task"
-        self.section = section_none().id
-        self.order   = 0  # position within section for GUI
+        self.type    = "task_task"       # must be "task_" + filename
+        self.name    = "Task"            # for job tree and data dialogs
+        self.desc    = "Template task"   # for data dialogs
+        self.section = section_none().id # for task dialog
+        self.order   = 0                 # position within the section
         self.icon    = "task_template.png"
 
         #   Input/output data lists contain data types which is
         # required/produced by the given task. Each data type
-        # corresponds to a list (vector) of actual data. Full
-        # data lists are kept in 'data' field of the corresponding
+        # corresponds to a list (vector) of actual data. Actual
+        # data lists are kept in the 'data' field of the corresponding
         # Job classes.
-        #   Data list requirements are specified by modification letter
-        # and number:
+        #   Data list requirements are specified by the modification
+        # letter and number:
         #  E : the corresponding data list must contain exactly N
         #      data entities
         #  U : the corresponding data list may contain up to N
@@ -105,10 +108,65 @@ class Task(jsonut.jObject):
                          [any  .DType().type,"G",-1]
                         ]
 
+        self.executable = "taskpgm"      # program to run
+        self.arguments  = [              # list of arguments
+          { "keyword": "-keyword",   # may be empty
+            "value"  : "value",      # always a string, typed next
+            "type"   : "type",       # string, int, real, bool, dtype_xxxx
+            "dtype"  : "meta",       # metadata for dtype_xxxx values
+            "name"   : "Parameter",  # name for display
+            "section": "_main",      # _main, _hidden or any custom (advanced)
+            "order"  : 1             # order within section
+          }    # continue the list as necessary
+        ]
+
         return
 
-    def run(self,inp):
-        return utils.make_return ( inp.action,"OK","OK" )
+
+    def make_output_data ( job_dir ):
+        #  This function should return data array for the corresponding
+        # Job class with references to task output data in job_dir
+        # after the corresponding job completes
+        return [[any.DType()]]
+
+
+    def write_arguments ( self,job_dir ):
+        #  Lock repository before calling this function
+        file = open ( os.path.join(job_dir,
+                                   defs.job_arguments_name()),"w" )
+        A = jsonut.jObject()
+        A.executable = self.executable
+        A.arguments  = self.arguments
+        file.write ( A.to_JSON() )
+        file.close ()
+        return
+
+
+    def read_arguments ( self,job_dir ):
+        #  Lock repository before calling this function
+        A = jsonut.jObject ( open ( os.path.join ( job_dir,
+                                    defs.job_arguments_name() ) )
+                                  .read() )
+        self.executable = A.executable
+        self.arguments  = A.arguments
+        return
+
+
+    def get_command():
+
+        cmd = []
+
+        for i in range(len(self.arguments)):
+            if arguments[i].keyword:
+                cmd = cmd + [arguments[i].keyword]
+            elif arguments[i].value:
+                cmd = cmd + [arguments[i].value]
+
+        return cmd
+
+
+#    def run(self,inp):
+#        return utils.make_return ( inp.action,"OK","OK" )
 
 
 

@@ -12,7 +12,7 @@ class DType(jsonut.jObject):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(json_str)
-        self.type  = "dtype_template"
+        self.type  = "dtype_dtype"  # has to be "dtype_" + filename
         self.name  = "Template"
         self.desc  = "Data type template"
         self.icon  = "dtype_template.png"

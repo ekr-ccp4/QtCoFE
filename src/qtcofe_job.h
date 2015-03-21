@@ -91,6 +91,7 @@ namespace qtCOFE  {
       QList<JobData *> inpData;
       QList<JobData *> outData;
       int         id;
+      int         status;  // 0,1000,2000 (norun, running, finished)
       int         order;
       bool        expanded;
 
@@ -121,6 +122,7 @@ namespace qtCOFE  {
       void copy ( const Task *task );
 
     protected:
+      void init ();
       void clear();
 
   };

@@ -50,7 +50,7 @@
 #    "message"    : error-desc,
 #    "current_job": current-job-id,
 #    "job_count"  : job-count,
-#    "jobs"       : [
+#    "jobs"       : [  // tree of Job classes, cf. job.py
 #       { "name": name1, "desc": desc1,
 #         "task": type1, "id": id1,
 #         "jobs: []
@@ -176,13 +176,18 @@ def add(inp):
     project_data.current_job = job_data.id
 
     try:
-        os.mkdir ( utils.get_job_dir_path ( defs.master_path(),inp.login,
-                                            inp.project,job_data.id ) )
+        job_dir = utils.get_job_dir_path ( defs.master_path(),inp.login,
+                                           inp.project,job_data.id )
+        os.mkdir ( job_dir )
     except OSError,err:
         pass
     job_data.write ( project_repo_dir );
 
     project_data.write ( project_repo_dir )
+
+    tsk = __import__("tasks."+job_data.type[5:] )
+    task = getattr(tsk,job_data.type[5:]).Task()
+    task.write_arguments ( job_dir )
 
     result = gitut.commit ( project_repo_dir,["."],
         "add job " + str(job_data.id) + \

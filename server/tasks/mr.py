@@ -12,7 +12,7 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_mr"
+        self.type    = "task_mr"       # must be "task_" + filename
         self.name    = "MR"
         self.desc    = "Molecular Replacement"
         self.section = task.section_phasing().id
@@ -28,7 +28,17 @@ class Task(task.Task):
                          [structure.DType(-1).type,"G",0]
                         ]
 
+        self.executable = ""      # program to run
+        self.arguments  = []      # list of arguments
+
         return
+
+
+    def make_output_data ( job_dir ):
+        #  This function should return data array for the corresponding
+        # Job class with references to task output data in job_dir
+        # after the corresponding job completes
+        return [[any.DType()]]
 
 #
 #  ------------------------------------------------------------------

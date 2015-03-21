@@ -75,7 +75,7 @@ def checkout ( repo_dir,files ):
 
 
 def commit ( repo_dir,files,message ):
-# Repository should be locked before and unlocked after this function
+# Repository should be locked before /and unlocked after/ this function
 
     result = jsonut.jObject()
 

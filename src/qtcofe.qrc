@@ -1,33 +1,34 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/qtcofe.png</file>
-        <file>images/configure.png</file>
-        <file>images/exit.png</file>
-        <file>images/help.png</file>
-        <file>images/logout.png</file>
         <file>images/account.png</file>
         <file>images/cancel.png</file>
-        <file>images/ok.png</file>
-        <file>images/list.png</file>
-        <file>images/minus.png</file>
-        <file>images/plus.png</file>
-        <file>images/data.png</file>
-        <file>images/task_ep.png</file>
-        <file>images/task_hkl.png</file>
-        <file>images/task_import.png</file>
-        <file>images/task_modbuild.png</file>
-        <file>images/task_mr.png</file>
-        <file>images/task_refinement.png</file>
-        <file>images/task_root.png</file>
         <file>images/close.png</file>
+        <file>images/configure.png</file>
+        <file>images/data.png</file>
         <file>images/data_sequence.png</file>
         <file>images/data_merged_mtz.png</file>
         <file>images/data_structure.png</file>
         <file>images/data_xyz.png</file>
-        <file>images/task_disambiguator.png</file>
+        <file>images/exit.png</file>
+        <file>images/help.png</file>
+        <file>images/logout.png</file>
+        <file>images/list.png</file>
+        <file>images/minus.png</file>
+        <file>images/ok.png</file>
         <file>images/ok_amber.png</file>
         <file>images/parameters.png</file>
+        <file>images/plus.png</file>
+        <file>images/qtcofe.png</file>
         <file>images/run.png</file>
+        <file>images/task_building.png</file>
+        <file>images/task_dataimport.png</file>
+        <file>images/task_dataprocessing.png</file>
+        <file>images/task_disambiguator.png</file>
+        <file>images/task_mad.png</file>
+        <file>images/task_mr.png</file>
+        <file>images/task_refinement.png</file>
+        <file>images/task_root.png</file>
+        <file>images/task_sad.png</file>
         <file>images/view.png</file>
     </qresource>
 </RCC>

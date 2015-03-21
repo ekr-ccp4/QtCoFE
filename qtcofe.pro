@@ -77,12 +77,12 @@ OTHER_FILES += \
     server/project/task.py \
     server/project/dtype.py \
     server/tasks/root.py \
-    server/tasks/data_import.py \
-    server/tasks/data_processing.py \
-    server/tasks/model_building.py \
-    server/tasks/phasing_ep_mad.py \
-    server/tasks/phasing_ep_sad.py \
-    server/tasks/phasing_mr.py \
+    server/tasks/dataimport.py \
+    server/tasks/dataprocessing.py \
+    server/tasks/building.py \
+    server/tasks/mad.py \
+    server/tasks/sad.py \
+    server/tasks/mr.py \
     server/tasks/refinement.py \
     server/dtypes/dummy.py \
     server/dtypes/any.py \
@@ -95,7 +95,8 @@ OTHER_FILES += \
     server/project/datamodel.py \
     server/dtypes/__init__.py \
     server/tasks/__init__.py \
-    server/tasks/data_disambiguator.py
+    server/tasks/disambiguator.py \
+    server/project/process.py
 
 HEADERS += \
     qjson/QJsonArray.h \

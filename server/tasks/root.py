@@ -11,8 +11,8 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_root"
-        self.name    = "$project_name$"  # to be substituted
+        self.type    = "task_root"       # must be "task_" + filename
+        self.name    = "$project_name$"  # to be substituted in GUI
         self.desc    = "Project root"
         self.section = ""  # not to show in task list
         self.order   = -1  # position within section for GUI
@@ -23,7 +23,11 @@ class Task(task.Task):
                          [dummy.DType(-1).type,"E",0]
                         ]
 
+        self.executable = ""      # program to run
+        self.arguments  = []      # list of arguments
+
         return
+
 
 #
 #  ------------------------------------------------------------------

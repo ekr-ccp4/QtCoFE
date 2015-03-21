@@ -11,12 +11,12 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_hkl"
+        self.type    = "task_dataprocessing"    # must be "task_" + filename
         self.name    = "Data processing"
         self.desc    = "Data processing"
         self.section = task.section_data_proc().id
         self.order   = 0  # position within section for GUI
-        self.icon    = "task_hkl.png"
+        self.icon    = "task_dataprocessing.png"
 
         self.inp_data = [
                          [images.DType(-1).type,"G",0]
@@ -25,8 +25,17 @@ class Task(task.Task):
                          [hkl   .DType(-1).type,"E",1]
                         ]
 
+        self.executable = ""      # program to run
+        self.arguments  = []      # list of arguments
+
         return
 
+
+    def make_output_data ( job_dir ):
+        #  This function should return data array for the corresponding
+        # Job class with references to task output data in job_dir
+        # after the corresponding job completes
+        return [[any.DType()]]
 
 #
 #  ------------------------------------------------------------------

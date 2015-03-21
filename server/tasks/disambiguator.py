@@ -55,7 +55,7 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_disambiguator"
+        self.type    = "task_disambiguator"  # must be "task_" + filename
         self.name    = "Disambiguation"
         self.desc    = "Data disambiguator"
         self.section = -1  # does not appear in task dialog
@@ -65,10 +65,17 @@ class Task(task.Task):
         self.inp_data = []
         self.out_data = []
 
+        self.executable = ""      # program to run
+        self.arguments  = []      # list of arguments
+
         return
 
 
-    def run(self,inp):
+    def run(self,inp):   # This function substitutes the disambiguator
+                         # job and is specific to disambiguator task.
+                         # This task is interactive; other jobs are run
+                         # in the background. Another exception is
+                         # Data Import.
 
         if inp.action != "set_data":
             return utils.make_return ( inp.action,
