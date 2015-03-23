@@ -152,7 +152,7 @@ class Task(jsonut.jObject):
         return
 
 
-    def get_command():
+    def get_command ( data ):
 
         cmd = []
 

@@ -48,6 +48,7 @@ namespace qtCOFE  {
 //      int      maxDecorationSize;
       QString  procPath;
       QString  masterDataPath;
+      QString  binPath;
       QString  ccp4Path;
       QString  cootPath;
       QString  ccp4mgPath;
@@ -89,6 +90,7 @@ namespace qtCOFE  {
 
       QString getProcessingGate();
       QString getMasterPath    ();
+      QString getBinPath       ();
 
       void readSettings  ( QSettings *settings );
       void writeSettings ( QSettings *settings );
@@ -112,11 +114,13 @@ namespace qtCOFE  {
 
       QLineEdit     *server_uri_edt;
       QLineEdit     *master_path_edt;
+      QLineEdit     *bin_path_edt;
       QLineEdit     *coot_path_edt;
       QLineEdit     *ccp4mg_path_edt;
       QLineEdit     *browser_path_edt;
       QPushButton   *server_uri_btn;
       QPushButton   *master_path_btn;
+      QPushButton   *bin_path_btn;
       QPushButton   *coot_path_btn;
       QPushButton   *ccp4mg_path_btn;
       QPushButton   *browser_path_btn;
@@ -143,6 +147,7 @@ namespace qtCOFE  {
       void refreshEnabledClicked  ();
       void browse_server_dir();
       void browse_master_dir();
+      void browse_bin_dir();
       void browse_coot   ();
       void browse_ccp4mg ();
       void browse_browser();

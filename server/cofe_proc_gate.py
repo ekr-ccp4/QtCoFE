@@ -11,6 +11,7 @@
 #    "login"      : login-name,
 #    "pwd"        : password,
 #    "master_path": path-to-master-directory,
+#    "bin_path"   : path-to-bin-directory,
 #    "session"    : session-id,
 #    "project"    : project-id,
 #    "data"  : {
@@ -51,6 +52,18 @@ if not os.path.isdir(defs.master_path()):
             "Master Path either does not exist or is not a directory"
                    ).to_JSON() )
     sys.exit(0)
+
+
+if not defs.is_bin_path():
+    defs.set_bin_path ( inpdata.bin_path )
+
+if not os.path.isdir(defs.bin_path()):
+    print (
+        utils.make_return ( inpdata.action,"wrong_bin_path",
+            "Path to executables either does not exist or is not a directory"
+                   ).to_JSON() )
+    sys.exit(0)
+
 
 def unknown_action(inp):
     return utils.make_return ( inp.action,"unknown_action_code",

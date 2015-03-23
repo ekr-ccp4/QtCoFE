@@ -84,8 +84,10 @@ QChar    dirsep = QDir::separator();
 
   procPath       = "";
   masterDataPath = "";
+  binPath        = "";
 
 #ifdef Q_OS_MAC
+  binPath     = ccp4Path + "bin/";
   cootPath    = ccp4Path + "coot.app";
   ccp4mgPath  = ccp4Path + "QtMG.app";
   viewhklPath = ccp4Path + "ViewHKL.app";
@@ -115,9 +117,11 @@ QChar    dirsep = QDir::separator();
       if (!QFileInfo(ccp4mgPath).exists())  ccp4mgPath = "winccp4mg.exe";
     }
   }
-  if (!ccp4Path.isEmpty())
-        viewhklPath = ccp4Path + "bin" +  dirsep + "viewhkl.exe";
-  else  viewhklPath = "viewhkl.exe";
+  if (!ccp4Path.isEmpty())  {
+    binPath     = ccp4Path + "bin" +  dirsep;
+    viewhklPath = binPath  + "viewhkl.exe";
+  } else
+    viewhklPath = "viewhkl.exe";
   browserPath = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
   oldMac      = false;
 
@@ -141,9 +145,11 @@ QChar    dirsep = QDir::separator();
       ccp4mgPath = masterDataPath + lst.at(lst.count()-1) + dirsep +
                                           "bin" + dirsep + "ccp4mg";
   }
-  if (!ccp4Path.isEmpty())
-        viewhklPath = ccp4Path + "bin" +  dirsep + "viewhkl";
-  else  viewhklPath = "viewhkl";
+  if (!ccp4Path.isEmpty())  {
+    binPath     = ccp4Path + "bin" +  dirsep;
+    viewhklPath = binPath  + "viewhkl";
+  } else
+    viewhklPath = "viewhkl";
   browserPath = "firefox";
   oldMac      = false;
 
@@ -740,6 +746,31 @@ bool  done = false;
 //    masterDataPath.clear();
 
   return masterDataPath;
+
+}
+
+QString qtCOFE::Preferences::getBinPath()  {
+bool  done = false;
+
+  QApplication::processEvents();
+
+  while ((!QFileInfo(binPath).exists()) && (!done))  {
+    if (QMessageBox::question ( this,"Path to executables misconfigured",
+         "Path to executables is misconfigured, looking at<p>'" +
+         binPath + "'<p>Would you like to specify the path "
+         "now (just navigate to directory where all executables " +
+         "should be found)? This needs to be done only once.",
+         QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
+                                                   QMessageBox::Yes)  {
+      browse_bin_dir();
+      if (bin_path_edt->text()==binPath)
+            done = true;
+      else  binPath = bin_path_edt->text();
+    } else
+      done = true;
+  }
+
+  return binPath;
 
 }
 

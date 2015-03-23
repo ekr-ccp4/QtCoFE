@@ -48,6 +48,7 @@ qtCOFE::SERVER_RC qtCOFE::Server::call ( QString           action,
                                          QJsonObject        &reply )  {
 QString  processor  = preferences->getProcessingGate();
 QString  masterPath = preferences->getMasterPath();
+QString  binPath    = preferences->getBinPath();
 
   if (processor.isEmpty())  {
     errorCode = SERVER_RC_Unconfigured;
@@ -55,6 +56,10 @@ QString  masterPath = preferences->getMasterPath();
   }
   if (masterPath.isEmpty())  {
     errorCode = SERVER_RC_NoMasterPath;
+    return errorCode;
+  }
+  if (binPath.isEmpty())  {
+    errorCode = SERVER_RC_NoBinPath;
     return errorCode;
   }
 
@@ -67,6 +72,7 @@ QString  masterPath = preferences->getMasterPath();
   jsonObject.insert ( "login"      ,session->loginName );
   jsonObject.insert ( "pwd"        ,session->password  );
   jsonObject.insert ( "master_path",masterPath         );
+  jsonObject.insert ( "bin_path"   ,binPath            );
   jsonObject.insert ( "session"    ,session->sessionID );
   jsonObject.insert ( "project"    ,session->projectID );
   jsonObject.insert ( "job"        ,session->jobID     );
@@ -141,6 +147,10 @@ QString message;
     case SERVER_RC_NoMasterPath : message = QString(
             "Master Data Path is not set. Please open<br>"
             "<i>Preferences</i> and set up Master data path." );
+          break;
+    case SERVER_RC_NoBinPath : message = QString(
+            "Master Path to executables is not set. Please open<br>"
+            "<i>Preferences</i> and set up Path to executables." );
           break;
     default : message = QString(
             "Unknown error code at server call (%1).<p>"

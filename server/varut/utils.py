@@ -27,6 +27,10 @@ def get_job_dir_path ( master_path,login,project,job_id ):
                           "job." + str(job_id) )
 
 
+def get_job_dir ( project_repo_path,job_id ):
+    return os.path.join ( project_repo_path,"job." + str(job_id) )
+
+
 def make_return ( action,result,message ):
     res = jsonut.jObject()
     res.action  = action

@@ -52,7 +52,8 @@ namespace qtCOFE  {
     SERVER_RC_NoAnswer,
     SERVER_RC_NotJsonAnswer,
     SERVER_RC_Unconfigured,
-    SERVER_RC_NoMasterPath
+    SERVER_RC_NoMasterPath,
+    SERVER_RC_NoBinPath
   };
 
   class Server : public QObject  {

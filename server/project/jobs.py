@@ -89,7 +89,7 @@
 import os
 import shutil
 from varut   import jsonut, gitut, utils, defs
-from project import job, tree
+from project import job, tree, datamodel
 
 def get_list(inp):
 
@@ -185,8 +185,7 @@ def add(inp):
 
     project_data.write ( project_repo_dir )
 
-    tsk = __import__("tasks."+job_data.type[5:] )
-    task = getattr(tsk,job_data.type[5:]).Task()
+    task = datamodel.get_task ( job_data.type )
     task.write_arguments ( job_dir )
 
     result = gitut.commit ( project_repo_dir,["."],

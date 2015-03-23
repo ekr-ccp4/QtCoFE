@@ -104,6 +104,25 @@ class Job(jsonut.jObject):
         return
 
 
+
+def get_projected_data ( data,project_repo_dir,jobId ):
+
+    J = Job()
+    J.read ( project_repo_dir,jobId )
+    for i in range(len(J.data)):
+        projected = False
+        typei     = J.data[i][0].type
+        for j in range(len(data)):
+            if data[j][0].type == typei:
+                projected = True
+        if not projected:
+            data.append ( J.data[i] )
+
+    if J.parentId > 0:
+        get_projected_data ( data,project_repo_dir,J.parentId )
+
+    return
+
 #
 #  ------------------------------------------------------------------
 #   Tests

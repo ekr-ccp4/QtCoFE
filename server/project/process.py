@@ -15,8 +15,10 @@
 #
 #  ------------------------------------------------------------------
 
+import os
 import sys
-from varut   import gitut
+import subprocess
+from varut   import gitut, utils
 from project import job, datamodel
 
 
@@ -25,6 +27,8 @@ if __name__ == "__main__":
     #  Read input parameters
     project_repo_dir = sys.argv[1]
     jobID            = int(sys.arg[2])
+    job_dir          = utils.get_job_dir ( project_repo_dir,jobID ):
+
 
     #  Read job data
     result = gitut.lock ( project_repo_dir )
@@ -38,6 +42,11 @@ if __name__ == "__main__":
         sys.exit(2)
 
     #  1. Form the command
+    proj_data = []
+    job.get_projected_data    ( proj_data,project_repo_dir,jobID )
+    task = datamodel.get_task ( job_data.type )
+    task.read_arguments       ( job_dir       )
+    cmd = task.get_command    ( proj_data     )
 
     #  2. Set job status to "running"
     job_data.status = 1000  # running
@@ -55,14 +64,22 @@ if __name__ == "__main__":
 
 
     #  3. Start job and wait to finish
+    file_stdout_path = os.path.join ( job_dir,"_stdout.log" )
+    file_stderr_path = os.path.join ( job_dir,"_stderr.log" )
+    file_stdout = open ( file_stdout_path,'w' )
+    file_stderr = open ( file_stderr_path,'w' )
+    p = subprocess.call ( cmd,stdout=file_stdout,stderr=file_stderr )
+    file_stdout.close()
+    file_stderr.close()
+
+    #  4. Register generated files into job's output data
 
     #  Lock project directory
     result = gitut.lock ( project_repo_dir )
     if result.result != "OK":
         sys.exit(4)
 
-
-    #  4. Register generated files into job's output data
+    job_data.data = task.make_output_data ( job_dir )
 
     #  5. Set job status to "finished"
     job_data.status = 2000  # finished

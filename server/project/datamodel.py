@@ -85,6 +85,10 @@ def tasktype_list():
     return tlist
 
 
+def get_task ( type ):
+    tsk = __import__("tasks."+type[len("task_"):] )
+    return getattr(tsk,type[len("task_"):]).Task()
+
 
 def section_list():
 
