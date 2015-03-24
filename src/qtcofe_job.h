@@ -25,6 +25,12 @@
 
 #include "qtcofe_datamodel.h"
 
+QT_BEGIN_NAMESPACE
+class QTreeWidgetItem;
+class QTimer;
+QT_END_NAMESPACE
+
+
 class QJsonObject;
 
 namespace qtCOFE  {
@@ -104,6 +110,9 @@ namespace qtCOFE  {
       void setJobData ( const QJsonObject & jobData,
                         DataModel * dataModel );
 
+      inline void setTreeItem ( QTreeWidgetItem *item )
+                                                  { treeItem = item; }
+
       inline int indexOf ( const QString & dtype )
                             { return qtCOFE::indexOf(dtype,outData); }
 
@@ -121,9 +130,18 @@ namespace qtCOFE  {
 
       void copy ( const Task *task );
 
+      void startTimer();
+
     protected:
+      QTreeWidgetItem *treeItem;
+      QTimer          *timer;
+      int              timerCount;
+
       void init ();
       void clear();
+
+     protected slots:
+      void timerSlot();
 
   };
 

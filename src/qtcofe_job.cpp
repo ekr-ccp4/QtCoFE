@@ -18,6 +18,8 @@
 //
 
 #include <QMessageBox>
+#include <QTreeWidgetItem>
+#include <QTimer>
 
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"
@@ -26,6 +28,8 @@
 #include "qtcofe_datamodel.h"
 #include "qtcofe_srvdefs.h"
 
+
+// =================================================================
 
 qtCOFE::JobData::JobData() : TaskData()  {
   disambiguated = false;
@@ -119,18 +123,6 @@ qtCOFE::JobData::SUITABILITY qtCOFE::JobData::isSuitable (
 
 }
 
-/*
-int qtCOFE::JobData::suitability ( const JobData * jobData )  {
-
-  if (type=="dtype_dummy")  return 1;
-  if (type=="dtype_any")    return 1;
-  if (type!=jobData->type)  return 0;
-
-  return 1;
-
-}
-*/
-
 int qtCOFE::indexOf ( const QString & dtype,
                       const QList<JobData *> & jobData )  {
 int k = -1;
@@ -150,12 +142,18 @@ int k = -1;
 }
 
 
+// =================================================================
+
 qtCOFE::Job::Job ( QObject *parent ) : QObject(parent)  {
+  timer    = NULL;
+  treeItem = NULL;
   init();
 }
 
 qtCOFE::Job::Job ( const Task * task, QObject *parent )
            : QObject(parent)  {
+  timer    = NULL;
+  treeItem = NULL;
   init();
   copy ( task );
 }
@@ -164,12 +162,16 @@ qtCOFE::Job::Job ( const QJsonObject & jobData,
                    DataModel * dataModel,
                    QObject *parent )
            : QObject(parent)  {
+  timer    = NULL;
+  treeItem = NULL;
   init();
   setJobData ( jobData,dataModel );
 }
 
 qtCOFE::Job::~Job() {
   clear();
+  if (timer)
+    timer->stop();
 }
 
 void qtCOFE::Job::init()  {
@@ -338,43 +340,24 @@ void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
 }
 
 
-/*
-int qtCOFE::Job::hasInput ( const QList<JobData *> & jobData )  {
-int suitable = 1;
-
-  for (int i=0;(i<inpData.count()) && (suitable!=0);i++)  {
-    suitable = 0;
-    for (int j=0;(j<jobData.count()) && (suitable==0);j++)
-      suitable = inpData.at(i)->suitability ( jobData.at(j) );
+void qtCOFE::Job::startTimer()  {
+  if (treeItem)  {
+    if (timer)
+      timer->stop();
+    else  {
+      timer = new QTimer(this);
+      connect ( timer,SIGNAL(timeout()),this,SLOT(timerSlot()) );
+    }
+    timerCount = 0;
+    timer->start ( 1000 );
   }
-
-  return suitable;
-
-/--
-bool included = true;
-
-  for (int i=0;(i<inpData.count()) && included;i++)
-    included = (qtCOFE::indexOf(inpData.at(i)->type,jobData)>=0);
-
-  for (int i=0;(i<inpData.count()) && (!included);i++)  {
-//    QString dtype = inpData.at(i)->type;
-    included = (inpData.at(i)->type=="dtype_dummy") ||
-               (inpData.at(i)->type=="dtype_any");
-  }
-
-  if (included)  return 1;
-  return 0;
---/
-
 }
 
-bool qtCOFE::Job::hasInput ( const JobData * jobData )  {
-bool b = false;
 
-  for (int i=0;(i<inpData.count()) && (!b);i++)
-    b = (inpData.at(i)->type==jobData->type);
+void qtCOFE::Job::timerSlot()  {
+  if (treeItem && timer)  {
+    QString name = treeItem->text ( 0 );
 
-  return b;
-
+  }
 }
-*/
+
