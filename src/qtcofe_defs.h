@@ -113,6 +113,7 @@
 // session settings
 #define  qtCOFE_SET_LoginName        "login_name"
 #define  qtCOFE_SET_MasterDataPath   "master_data_path"
+#define  qtCOFE_SET_BinPath          "bin_path"
 #define  qtCOFE_SET_ProjectID        "project_id"
 #define  qtCOFE_SET_ProjectPath      "project_path"
 #define  qtCOFE_SET_Password         "magic_key"

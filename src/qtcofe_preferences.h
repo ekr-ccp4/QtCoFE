@@ -46,16 +46,16 @@ namespace qtCOFE  {
 //      int      plotHeight;
 //      int      plotWidth;
 //      int      maxDecorationSize;
-      QString  procPath;
+      QString  procPath;         //!< path to local processing scripts
       QString  masterDataPath;
-      QString  binPath;
+      QString  binPath;          //!< path to local executables
       QString  ccp4Path;
       QString  cootPath;
       QString  ccp4mgPath;
       QString  viewhklPath;
       QString  browserPath;
       QString  exportDir;
-      QString  workingDir;  //!< not stored in preferences
+      QString  workingDir;       //!< not stored in preferences
 //      QString  logFind;
       QString  macVersion;
       QFont    logFont;
@@ -85,6 +85,7 @@ namespace qtCOFE  {
 
       void setProcPath   ( const QString & server_uri  );
       void setMasterPath ( const QString & master_path );
+      void setBinPath    ( const QString & bin_path    );
       void setCootPath   ( const QString & coot_path   );
       void setMGPath     ( const QString & ccp4mg_path );
 
