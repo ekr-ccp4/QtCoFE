@@ -23,6 +23,8 @@
 #include <QWindowsStyle>
 #include <QFontMetrics>
 #include <QMessageBox>
+#include <QLabel>
+#include <QProgressBar>
 
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"
@@ -123,13 +125,39 @@ void qtCOFE::ProjectTree::addJob ( const QJsonObject   & obj,
                                    QTreeWidgetItem *& crItem,
                                    int              & maxID )  {
 Job             *job   = new Job(obj,dataModel);
-QTreeWidgetItem *item1 = jobTree->addTreeItem ( item,job->name );
+QTreeWidgetItem *item1 = jobTree->addTreeItem ( item,"" );
+QHBoxLayout     *hbox  = new QHBoxLayout();
+QWidget         *w     = new QWidget();
+QProgressBar    *pb    = job->getProgressBar();
+QLabel          *lbl;
+int              charHeight;
 
   item1->setData ( 0,Qt::UserRole,QVariant::fromValue<Job*>(job) );
   item1->setExpanded ( job->expanded );
 
-  if (!job->icon.isEmpty())
-    item1->setIcon ( 0,QIcon(QString(qtCOFE_icon_base)+job->icon) );
+  if (!job->icon.isEmpty())  {
+    lbl = new QLabel("");
+    charHeight = (preferences->getToolButtonSize() +
+                  preferences->getFontHeight()) / 2;
+    lbl->setPixmap ( QPixmap(QString(qtCOFE_icon_base)+job->icon)
+                     .scaledToHeight(charHeight,Qt::SmoothTransformation) );
+    hbox->addWidget ( lbl,0 );
+  }
+  hbox->addWidget ( new QLabel(job->name),0 );
+
+  pb->setRange(0,0);
+  charHeight = preferences->getFontHeight();
+  pb->setMinimumSize(10*charHeight,charHeight);
+  pb->setMaximumSize(10*charHeight,charHeight);
+  hbox->addWidget(pb,0);
+
+  hbox->addStretch ( 100 );
+  hbox->setContentsMargins ( 0,1,0,1 );
+  w->setLayout ( hbox );
+  jobTree->setItemWidget ( item1,0,w);
+
+//  if (!job->icon.isEmpty())
+//    item1->setIcon ( 0,QIcon(QString(qtCOFE_icon_base)+job->icon) );
   item1->setToolTip ( 0,job->desc );
   item1->setTextColor( 0,QColor(0,0,0) );
 

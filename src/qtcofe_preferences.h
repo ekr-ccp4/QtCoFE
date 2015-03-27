@@ -96,10 +96,11 @@ namespace qtCOFE  {
       void readSettings  ( QSettings *settings );
       void writeSettings ( QSettings *settings );
 
-      QFont getScaledFont ( const QFont & font );
+      QFont getScaledFont   ( const QFont & font );
       int   getFontPointSize();
       int   getFontPixelSize();
-      bool  isFontChanged();
+      int   getFontHeight   ();
+      bool  isFontChanged   ();
 
       QString getFontSizeStyleSheet ( qreal scale );
       int     getToolButtonSize ();

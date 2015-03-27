@@ -28,6 +28,7 @@
 QT_BEGIN_NAMESPACE
 class QTreeWidgetItem;
 class QTimer;
+class QProgressBar;
 QT_END_NAMESPACE
 
 
@@ -132,16 +133,15 @@ namespace qtCOFE  {
 
       void startTimer();
 
+      inline QProgressBar *getProgressBar()  { return progressBar; }
+      void   showProgressBar ( bool showBar );
+
     protected:
       QTreeWidgetItem *treeItem;
-      QTimer          *timer;
-      int              timerCount;
+      QProgressBar    *progressBar;
 
       void init ();
       void clear();
-
-     protected slots:
-      void timerSlot();
 
   };
 

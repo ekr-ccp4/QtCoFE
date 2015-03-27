@@ -1010,6 +1010,10 @@ int qtCOFE::Preferences::getFontPixelSize()  {
   return QFontInfo(logFont).pixelSize();
 }
 
+int qtCOFE::Preferences::getFontHeight()  {
+  return QFontMetrics(logFont).height();
+}
+
 bool qtCOFE::Preferences::isFontChanged()  {
   if (fontChanged)  {
     fontChanged = false;

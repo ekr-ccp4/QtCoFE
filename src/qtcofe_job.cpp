@@ -19,7 +19,7 @@
 
 #include <QMessageBox>
 #include <QTreeWidgetItem>
-#include <QTimer>
+#include <QProgressBar>
 
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"
@@ -145,14 +145,12 @@ int k = -1;
 // =================================================================
 
 qtCOFE::Job::Job ( QObject *parent ) : QObject(parent)  {
-  timer    = NULL;
   treeItem = NULL;
   init();
 }
 
 qtCOFE::Job::Job ( const Task * task, QObject *parent )
            : QObject(parent)  {
-  timer    = NULL;
   treeItem = NULL;
   init();
   copy ( task );
@@ -162,7 +160,6 @@ qtCOFE::Job::Job ( const QJsonObject & jobData,
                    DataModel * dataModel,
                    QObject *parent )
            : QObject(parent)  {
-  timer    = NULL;
   treeItem = NULL;
   init();
   setJobData ( jobData,dataModel );
@@ -170,8 +167,6 @@ qtCOFE::Job::Job ( const QJsonObject & jobData,
 
 qtCOFE::Job::~Job() {
   clear();
-  if (timer)
-    timer->stop();
 }
 
 void qtCOFE::Job::init()  {
@@ -179,6 +174,8 @@ void qtCOFE::Job::init()  {
   status   = 0;
   order    = 0;
   expanded = true;
+  progressBar = new QProgressBar();
+  progressBar->setVisible ( false );
 }
 
 void qtCOFE::Job::clear()  {
@@ -339,25 +336,7 @@ void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
 
 }
 
-
-void qtCOFE::Job::startTimer()  {
-  if (treeItem)  {
-    if (timer)
-      timer->stop();
-    else  {
-      timer = new QTimer(this);
-      connect ( timer,SIGNAL(timeout()),this,SLOT(timerSlot()) );
-    }
-    timerCount = 0;
-    timer->start ( 1000 );
-  }
-}
-
-
-void qtCOFE::Job::timerSlot()  {
-  if (treeItem && timer)  {
-    QString name = treeItem->text ( 0 );
-
-  }
+void qtCOFE::Job::showProgressBar ( bool showBar )  {
+  progressBar->setVisible ( showBar );
 }
 
