@@ -119,6 +119,8 @@ int          bz = preferences->getToolButtonSize ();
 }
 
 Q_DECLARE_METATYPE ( qtCOFE::Job* )
+Q_DECLARE_METATYPE ( QLabel* )
+Q_DECLARE_METATYPE ( QProgressBar* )
 
 void qtCOFE::ProjectTree::addJob ( const QJsonObject   & obj,
                                    QTreeWidgetItem     *item,
@@ -128,7 +130,7 @@ Job             *job   = new Job(obj,dataModel);
 QTreeWidgetItem *item1 = jobTree->addTreeItem ( item,"" );
 QHBoxLayout     *hbox  = new QHBoxLayout();
 QWidget         *w     = new QWidget();
-QProgressBar    *pb    = job->getProgressBar();
+QProgressBar    *pbar;
 QLabel          *lbl;
 int              charHeight;
 
@@ -141,25 +143,35 @@ int              charHeight;
                   preferences->getFontHeight()) / 2;
     lbl->setPixmap ( QPixmap(QString(qtCOFE_icon_base)+job->icon)
                      .scaledToHeight(charHeight,Qt::SmoothTransformation) );
+    lbl->setStyleSheet("QLabel{background-color: white; color: back;}");
     hbox->addWidget ( lbl,0 );
+    item1->setData ( 0,Qt::UserRole+1,QVariant::fromValue<QLabel*>(lbl) );
   }
-  hbox->addWidget ( new QLabel(job->name),0 );
+  lbl = new QLabel(" " + job->name + " " );
+  lbl->setStyleSheet("QLabel{background-color: transparent; color: back;}");
+  hbox->addWidget ( lbl,0 );
+  item1->setData ( 0,Qt::UserRole+2,QVariant::fromValue<QLabel*>(lbl) );
 
-  pb->setRange(0,0);
+  pbar = new QProgressBar();
+  pbar->setRange(0,0);
   charHeight = preferences->getFontHeight();
-  pb->setMinimumSize(10*charHeight,charHeight);
-  pb->setMaximumSize(10*charHeight,charHeight);
-  hbox->addWidget(pb,0);
+  pbar->setMinimumSize(10*charHeight,charHeight);
+  pbar->setMaximumSize(10*charHeight,charHeight);
+  hbox->addWidget(pbar,0);
+  item1->setData ( 0,Qt::UserRole+3,
+                     QVariant::fromValue<QProgressBar*>(pbar) );
 
   hbox->addStretch ( 100 );
+  hbox->setSpacing ( 0   );
   hbox->setContentsMargins ( 0,1,0,1 );
   w->setLayout ( hbox );
   jobTree->setItemWidget ( item1,0,w);
+  job->setProgressBar ( pbar );
 
 //  if (!job->icon.isEmpty())
 //    item1->setIcon ( 0,QIcon(QString(qtCOFE_icon_base)+job->icon) );
-  item1->setToolTip ( 0,job->desc );
-  item1->setTextColor( 0,QColor(0,0,0) );
+  item1->setToolTip   ( 0,job->desc     );
+  item1->setTextColor ( 0,QColor(0,0,0) );
 
   if (job->id==session->jobID)
     crItem = item1;
@@ -174,6 +186,45 @@ int              charHeight;
     for (int i=0;i<n;i++)
       addJob ( jobs[i].toObject(),item1,crItem,maxID );
   }
+
+}
+
+
+bool qtCOFE::ProjectTree::updateJob ( const QJsonObject     & obj,
+                                 QVector<QTreeWidgetItem *> & items,
+                                 QVector<int>               & job_ids
+                                    )  {
+Job *job = new Job(obj,dataModel);
+Job *jobn;
+int  n = job_ids.indexOf ( job->id );
+bool updated;
+
+  if (n<0)  {
+    delete job;
+    return false;
+  }
+
+  jobn = items[n]->data ( 0,Qt::UserRole ).value<Job*>();
+  if (!jobn)  {
+    delete job;
+    return false;
+  }
+
+  items[n]->setData ( 0,Qt::UserRole,QVariant::fromValue<Job*>(job) );
+  job->copyTreeData ( jobn );
+  job->showStatus();
+
+  delete jobn;
+  updated = true;
+
+  if (obj.contains("jobs"))  {
+    QJsonArray jobs = obj.value("jobs").toArray();
+    int nc = jobs.count();
+    for (int i=0;(i<nc) && updated;i++)
+      updated = updateJob ( jobs[i].toObject(),items,job_ids );
+  }
+
+  return updated;
 
 }
 
@@ -212,6 +263,42 @@ void qtCOFE::ProjectTree::makeTree ( QJsonObject & prjData )  {
     del_btn->setEnabled ( false );
   }
 
+}
+
+void qtCOFE::ProjectTree::updateTree ( QJsonObject & prjData )  {
+QTreeWidgetItemIterator    it(jobTree);
+QVector<QTreeWidgetItem *> items;
+QVector<int>               job_ids;
+Job                       *job;
+int                        njobs;
+bool                       updated;
+
+  if (prjData.keys().contains("jobs",Qt::CaseInsensitive))  {
+
+    QJsonArray jobs = prjData.value("jobs").toArray();
+    njobs = jobs.count();
+
+    while (*it) {
+      items.append ( *it );
+      job = (*it)->data ( 0,Qt::UserRole ).value<Job*>();
+      if (job)  job_ids.append ( job->id );
+          else  job_ids.append ( -1      );
+      ++it;
+    }
+
+    updated = (items.count()>0);
+    for (int i=0;(i<njobs) && updated;i++)
+      updated = updateJob ( jobs[i].toObject(),items,job_ids );
+    if (!updated)
+      makeTree ( prjData );
+
+  } else
+    makeTree ( prjData );
+
+}
+
+void qtCOFE::ProjectTree::clearTree()  {
+  jobTree->clear();
 }
 
 QJsonObject * qtCOFE::ProjectTree::getTreeData()  {
@@ -334,7 +421,8 @@ void qtCOFE::ProjectTree::prmBtnClicked()  {
 }
 
 void qtCOFE::ProjectTree::runBtnClicked()  {
-    QMessageBox::information ( this,"Not implemented","Not implemented" );
+  emit run_job ( currentJobId() );
+//    QMessageBox::information ( this,"Not implemented","Not implemented" );
 }
 
 void qtCOFE::ProjectTree::viewBtnClicked()  {
@@ -347,9 +435,21 @@ void qtCOFE::ProjectTree::dataBtnClicked()  {
 
 void qtCOFE::ProjectTree::crJobChanged ( QTreeWidgetItem * current,
                                          QTreeWidgetItem * previous )  {
-UNUSED_ARGUMENT(current);
-UNUSED_ARGUMENT(previous);
-int jid = currentJobId();
+QLabel *lbl;
+int     jid = currentJobId();
+
+  if (previous)  {
+    lbl = previous->data ( 0,Qt::UserRole+1 ).value<QLabel*>();
+    lbl->setStyleSheet ( "QLabel{background-color: white; color: black;}" );
+    lbl = previous->data ( 0,Qt::UserRole+2 ).value<QLabel*>();
+    lbl->setStyleSheet ( "QLabel{background-color: transparent; color: black;}" );
+  }
+  if (current)  {
+    lbl = current->data ( 0,Qt::UserRole+1 ).value<QLabel*>();
+    lbl->setStyleSheet ( "QLabel{background-color: white; color: white;}" );
+    lbl = current->data ( 0,Qt::UserRole+2 ).value<QLabel*>();
+    lbl->setStyleSheet ( "QLabel{background-color: transparent; color: white;}" );
+  }
 
   if (jid>=0)
     session->jobID = jid;

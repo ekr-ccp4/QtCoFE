@@ -39,15 +39,15 @@ namespace qtCOFE  {
   class DataModel;
   class Task;
 
-  class Metadata {
+  class Component {
     public:
-      int         jobId;  // job where file is kept
-      QString     desc;
-      QString     fname;
-      QStringList columns;
+      int                jobId;  // job where file is kept
+      QString            desc;
+      QStringList        fnames;
+      QList<QStringList> metadata;
 
-      Metadata () {}
-      ~Metadata() {}
+      Component () {}
+      ~Component() {}
   };
 
   class JobData : public TaskData  {
@@ -60,8 +60,8 @@ namespace qtCOFE  {
         Ambiguous
       };
 
-      bool         disambiguated;
-      QList<Metadata *> metadata;
+      bool            disambiguated;
+      QList<Component *> components;  // list on data sets/items
 
       JobData ();
       JobData ( TaskData *taskData );
@@ -96,9 +96,10 @@ namespace qtCOFE  {
       QString     section;
       QString     icon;
       QList<JobData *> inpData;
-      QList<JobData *> outData;
+      QList<JobData *> outData;  // list on data types
       int         id;
-      int         status;  // 0,1000,2000 (norun, running, finished)
+      int         status;  // 0,100,1000,2000 (norun, starting,
+                           //                  running, finished)
       int         order;
       bool        expanded;
 
@@ -131,10 +132,10 @@ namespace qtCOFE  {
 
       void copy ( const Task *task );
 
-      void startTimer();
+      void setProgressBar ( QProgressBar *pbar );
+      void showStatus();
 
-      inline QProgressBar *getProgressBar()  { return progressBar; }
-      void   showProgressBar ( bool showBar );
+      void copyTreeData ( Job * job );
 
     protected:
       QTreeWidgetItem *treeItem;

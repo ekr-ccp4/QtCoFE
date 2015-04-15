@@ -32,6 +32,7 @@
 #define qtCOFE_SERVER_ACT_GetListOfJobs       "get_list_of_jobs"
 #define qtCOFE_SERVER_ACT_AddJob              "add_job"
 #define qtCOFE_SERVER_ACT_DelJob              "del_job"
+#define qtCOFE_SERVER_ACT_RunJob              "run_job"
 #define qtCOFE_SERVER_ACT_GetDataModel        "get_data_model"
 #define qtCOFE_SERVER_ACT_ImportFile          "import_file"
 #define qtCOFE_SERVER_ACT_SetData             "set_data"

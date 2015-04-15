@@ -7,6 +7,7 @@
 #  Functions:  jobs.get_list ( inp )
 #              jobs.add      ( inp )
 #              jobs.delete   ( inp )
+#              jobs.run      ( inp )
 #
 #
 #  Input 'inp' is JSON string in sys.argv[1]:
@@ -38,7 +39,11 @@
 #
 #    "del_job"          : deletes job, specified in "data/job" field,
 #                         together with all children
-#                               Function: add ( inp )
+#                               Function: del ( inp )
+#
+#    "run_job"          : runs job, specified in "data/job" field,
+#                         together with all children
+#                               Function: run ( inp )
 #
 #
 #  Output is, in all cases, the JSON description of project tree,
@@ -88,8 +93,10 @@
 
 import os
 import shutil
+import subprocess
 from varut   import jsonut, gitut, utils, defs
 from project import job, tree, datamodel
+
 
 def get_list(inp):
 
@@ -186,7 +193,7 @@ def add(inp):
     project_data.write ( project_repo_dir )
 
     task = datamodel.get_task ( job_data.type )
-    task.write_arguments ( job_dir )
+    task.write_arguments ( job_dir,task.executable,task.arguments )
 
     result = gitut.commit ( project_repo_dir,["."],
         "add job " + str(job_data.id) + \
@@ -288,28 +295,102 @@ def set_job_data ( project_repo_dir,job_data ):
     return utils.make_return ( "action","OK","OK" )
 
 
+
+def run(inp):
+
+    if inp.action != "run_job":
+        return utils.make_return ( inp.action,
+                             "wrong_action_code","Wrong action code" )
+
+    project_repo_dir = utils.get_project_repo_path (
+                             defs.master_path(),inp.login,inp.project )
+
+    if not os.path.isdir(project_repo_dir):
+        return utils.make_return ( inp.action,"repo_does_not_exist",
+                                 "Project repository '" + inp.project + \
+                                 "' does not exist" )
+
+    result = gitut.lock ( project_repo_dir )
+    if result.result != "OK":
+        return utils.pass_return ( inp.action,result )
+
+
+    project_data = tree.Tree()
+    result = project_data.read ( project_repo_dir )
+
+    if result.result != "OK":
+        gitut.unlock ( project_repo_dir )
+        return utils.pass_return ( inp.action,result )
+
+    job_data = job.Job();
+    result = job_data.read ( project_repo_dir,inp.data.job )
+    if result.result != "OK":
+        gitut.unlock ( project_repo_dir )
+        return utils.pass_return ( inp.action,result )
+
+    #  Set job status to "starting"
+    job_data.status = defs.job_starting()  # running
+    job_data.write ( project_repo_dir )
+
+    #  Update project data accordingly
+    j = __find ( project_data.jobs,job_data.id )
+
+    if not j:
+        gitut.unlock ( project_repo_dir )
+        return utils.make_return ( "action","wrong_job_specs",
+                                            "Wrong job id" )
+
+    j.v[j.v.index(j.j)] = job_data
+    project_data.current_job = inp.data.job
+    project_data.write ( project_repo_dir )
+
+    result = gitut.commit ( project_repo_dir,["."],
+                            "starting job " + str(inp.data.job)  )
+
+    project_data.action = inp.action
+    project_data.result = result.result
+    if result.result == "OK":
+        project_data.message = "Job added successfully"
+    else:
+        project_data.message = result.message
+
+    proc_path =  os.path.join ( os.path.dirname (
+                    os.path.abspath(__file__ + "/../")),"process.py" )
+
+    cmd = ["python",proc_path,project_repo_dir,
+           defs.bin_path(),str(job_data.id)]
+    subprocess.Popen ( cmd,creationflags=0 )
+
+    return project_data
+
 #
 #  ------------------------------------------------------------------
 #   Use example
 #  ------------------------------------------------------------------
 #
 #
-#if __name__ == "__main__":
-#    import sys
-#
-#    inp = jsonut.jObject (
-#       '{ "action"      : "get_list_of_projects",'
-#       '  "master_path" : "../cofe-master/",'
-#       '  "login"       : "eugene"'
-#       '}' )
-#
-#    print inp.action
-#    print inp.master_path
-#    print inp.login
-#
-#    defs.set_master_path ( defs.test_master_path() )
-#
-#    result = get_list ( inp )
-#    print ( result.to_JSON() )
-#
-#    sys.exit(0)
+if __name__ == "__main__":
+    import sys
+
+    inp = jsonut.jObject (
+       '{'
+       '  "action"      : "run_job",'
+       '  "login"       : "eugene",'
+       '  "pwd"         : "12345",'
+       '  "master_path" : "../cofe-master/",'
+       '  "bin_path"    : "../bin-master/",'
+       '  "project"     : "test",'
+       '  "data"        :  {'
+       '    "job"       : 3,'
+       '    "next"      : 3'
+       '  }'
+       '}'
+    )
+
+    defs.set_master_path ( defs.test_master_path() )
+    defs.set_bin_path    ( defs.test_bin_path()    )
+
+    result = run ( inp )
+    print ( result.to_JSON() )
+
+    sys.exit(0)

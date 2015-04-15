@@ -30,5 +30,6 @@
         <file>images/task_root.png</file>
         <file>images/task_sad.png</file>
         <file>images/view.png</file>
+        <file>images/data_image.png</file>
     </qresource>
 </RCC>

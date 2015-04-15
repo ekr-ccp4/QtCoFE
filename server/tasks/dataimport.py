@@ -109,25 +109,22 @@ class Task(task.Task):
             return utils.pass_return ( inp.action,job_data )
 
         if file_ext == ".seq":
-            seq      = sequence.DType(inp.data.job_id)
-            seq.file = os.path.basename ( inp.data.file_path )
+            seq = sequence.DType(inp.data.job_id)
+            seq.setFile ( os.path.basename(inp.data.file_path),[] )
             job_data.set_data ( [seq] )
         elif file_ext == ".mtz":
-            hkl_data      = hkl.DType(inp.data.job_id)
-            hkl_data.file = os.path.basename ( inp.data.file_path )
-            hkl_data.addColumn ( "F(+)" )
-            hkl_data.addColumn ( "F(-)" )
-            job_data.add_data ( hkl_data )
-            hkl_data      = hkl.DType(inp.data.job_id)
-            hkl_data.file = os.path.basename ( inp.data.file_path )
-            hkl_data.addColumn ( "F_peak(+)" )
-            hkl_data.addColumn ( "F_peak(-)" )
-            job_data.add_data ( hkl_data )
-            hkl_data      = hkl.DType(inp.data.job_id)
-            hkl_data.file = os.path.basename ( inp.data.file_path )
-            hkl_data.addColumn ( "F_ref(+)" )
-            hkl_data.addColumn ( "F_ref(-)" )
-            job_data.add_data ( hkl_data )
+            hkl_data = hkl.DType(inp.data.job_id)
+            hkl_data.setFile    ( os.path.basename(inp.data.file_path),
+                                  ["F(+)","F(-)"] )
+            job_data.add_data   ( hkl_data )
+            hkl_data = hkl.DType(inp.data.job_id)
+            hkl_data.setFile    ( os.path.basename(inp.data.file_path),
+                                  ["F_peak(+)","F_peak(-)"] )
+            job_data.add_data   ( hkl_data )
+            hkl_data = hkl.DType(inp.data.job_id)
+            hkl_data.setFile    ( os.path.basename(inp.data.file_path),
+                                  ["F_ref(+)","F_ref(-)"] )
+            job_data.add_data   ( hkl_data )
 
         job_data.write ( project_repo_dir )
 

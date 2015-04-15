@@ -26,9 +26,11 @@
 QT_BEGIN_NAMESPACE
 class QSettings;
 class QTabWidget;
+class QLabel;
 class QLineEdit;
 class QSpinBox;
 class QCheckBox;
+class QComboBox;
 class QPushButton;
 QT_END_NAMESPACE
 
@@ -60,8 +62,8 @@ namespace qtCOFE  {
       QString  macVersion;
       QFont    logFont;
       int      refreshPeriod;
+      int      refreshMode;
       bool     useSystemBrowser;
-      bool     refreshEnabled;
 //      bool     gdExtSelection;   //!< graph data extended selection
 //      bool     logFindCaseSensitive;
 //      bool     logFindWholeWords;
@@ -131,9 +133,11 @@ namespace qtCOFE  {
 //      QSpinBox      *plot_height_sbx;
 //      QSpinBox      *max_decor_size_sbx;
       qtx::LineEdit *font_edt;
+      QComboBox     *refresh_mode_cmb;
+      QLabel        *refresh_lbl;
       QSpinBox      *refresh_period_sbx;
       QCheckBox     *use_system_browser_chk;
-      QCheckBox     *refresh_enabled_chk;
+//      QCheckBox     *refresh_enabled_chk;
 //      QCheckBox     *gd_ext_browsing_chk;
       bool           fontChanged;
 
@@ -146,14 +150,14 @@ namespace qtCOFE  {
       void apply();
       void close();
       void useSystemBrowserClicked();
-      void refreshEnabledClicked  ();
+      void refreshModeChanged     ( int index );
       void browse_server_dir();
       void browse_master_dir();
-      void browse_bin_dir();
-      void browse_coot   ();
-      void browse_ccp4mg ();
-      void browse_browser();
-      void choose_font   ();
+      void browse_bin_dir   ();
+      void browse_coot      ();
+      void browse_ccp4mg    ();
+      void browse_browser   ();
+      void choose_font      ();
 
   };
 

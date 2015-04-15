@@ -20,6 +20,7 @@
 //#include <QSplitter>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QTimer>
 
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"
@@ -30,6 +31,7 @@
 #include "qtcofe_dialog_data.h"
 #include "qtcofe_dialog_import.h"
 #include "qtcofe_dialog_task.h"
+#include "qtcofe_preferences.h"
 #include "qtcofe_session.h"
 #include "qtcofe_server.h"
 #include "qtcofe_srvdefs.h"
@@ -65,6 +67,8 @@ QVBoxLayout *vbox = new QVBoxLayout();
             this,SLOT(addJob(int)) );
   connect ( jobTree,SIGNAL(del_job(int,int)),
             this,SLOT(delJob(int,int)) );
+  connect ( jobTree,SIGNAL(run_job(int)),
+            this,SLOT(runJob(int)) );
   connect ( jobTree,SIGNAL(crjob_changed(int)),
             this,SLOT(switchJob(int)) );
   connect ( jobTree,SIGNAL(view_job_data(int)),
@@ -79,6 +83,12 @@ QJsonObject jsonData;
       (session->projectPath!=currentProject))
     save_project_state();
   currentProject = session->projectPath;
+  jobTree->clearTree();
+  project_query ( jsonData,qtCOFE_SERVER_ACT_GetListOfJobs );
+}
+
+void qtCOFE::ProjectPage::refreshProject()  {
+QJsonObject jsonData;
   project_query ( jsonData,qtCOFE_SERVER_ACT_GetListOfJobs );
 }
 
@@ -107,9 +117,15 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
         message.append ( "<p>List of jobs could not be read." );
       QMessageBox::information ( this,"Error",message );
     }
-    if (action!=qtCOFE_SERVER_ACT_SetData)
-      jobTree->makeTree ( jsonReply );
+    if (action!=qtCOFE_SERVER_ACT_SetData)  {
+      if (action==qtCOFE_SERVER_ACT_GetListOfJobs)
+            jobTree->updateTree ( jsonReply );
+      else  jobTree->makeTree   ( jsonReply );
+    }
   }
+
+  QTimer::singleShot ( preferences->refreshPeriod,
+                       this,SLOT(refreshProject()) );
 
 }
 
@@ -187,6 +203,14 @@ void qtCOFE::ProjectPage::delJob ( int jobID, int nextCrJobID )  {
   jsonData->insert ( "job" ,jobID );
   jsonData->insert ( "next",nextCrJobID );
   project_query    ( *jsonData,qtCOFE_SERVER_ACT_DelJob );
+  delete jsonData;
+}
+
+void qtCOFE::ProjectPage::runJob ( int jobID )  {
+  QJsonObject *jsonData = jobTree->getTreeData();
+  jsonData->insert ( "job" ,jobID );
+  jsonData->insert ( "next",jobID );
+  project_query    ( *jsonData,qtCOFE_SERVER_ACT_RunJob );
   delete jsonData;
 }
 

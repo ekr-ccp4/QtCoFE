@@ -5,6 +5,7 @@
 #  ------------------------------------------------------------------
 #
 
+import os
 from project import task
 from dtypes  import sequence, structure, hkl
 
@@ -27,17 +28,35 @@ class Task(task.Task):
                          [structure.DType(-1).type,"G",0]
                         ]
 
-        self.executable = ""      # program to run
+        self.executable = "mad"   # program to run
         self.arguments  = []      # list of arguments
 
         return
 
 
-    def make_output_data ( job_dir ):
+    def make_output_data ( self,job_dir,job_id ):
         #  This function should return data array for the corresponding
         # Job class with references to task output data in job_dir
         # after the corresponding job completes
-        return [[any.DType()]]
+
+        dout = []
+
+        n    = 1
+        while n > 0:
+            fname_map = "structure_" + str(n) + ".mtz"
+            fname_xyz = "structure_" + str(n) + ".mtz"
+            if os.path.isfile(os.path.join(job_dir,fname_map)) and \
+               os.path.isfile(os.path.join(job_dir,fname_xyz)):
+                structure_data = structure.DType(job_id)
+                structure_data.addFile ( fname_xyz,[] )
+                structure_data.addFile ( fname_map,["FWT","PHWT"] )
+                structure_data.addFile ( fname_map,["DELFWT","PHDELWT"] )
+                dout.append ( structure_data )
+                n = n + 1
+            else:
+                n = 0
+
+        return [dout]
 
 #
 #  ------------------------------------------------------------------

@@ -28,6 +28,12 @@ class Job(jsonut.jObject):
         self.type     = type   # task type
         self.parentId = parentId
         self.id       = jobId
+        self.status   = defs.job_idle()
+                               # 0   :  idle, haven't run
+                               # 100 :  starting
+                               # 1000:  running
+                               # 2000:  idle, job's done
+
         self.jobs     = []     # child job(s)
 
         self.data     = []     # data (represented by metadata)

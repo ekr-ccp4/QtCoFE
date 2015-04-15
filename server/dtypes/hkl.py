@@ -11,15 +11,10 @@ class DType(dtype.DType):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(job_id,json_str)
-        self.type = "dtype_hkl"   # has to be "dtype_" + filename
-        self.name = "HKL"
-        self.desc = "Reflections"
-        self.icon = "data_merged_mtz.png"
-        self.columns = []
-        return
-
-    def addColumn ( self,colname ):
-        self.columns.append ( colname )
+        self.type    = "dtype_hkl"   # has to be "dtype_" + filename
+        self.name    = "HKL"
+        self.desc    = "Reflections"
+        self.icon    = "data_merged_mtz.png"
         return
 
 

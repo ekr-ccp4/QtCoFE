@@ -38,6 +38,11 @@ def test_master_path(): return "/Users/eugene/Projects/QtCoFE/cofe-master/"
 #  length, or is assigned in cofe_proc_gate.py from input json object.
 #  bin_path must end with a slash.
 
+
+#  test_bin_path is used in module tests by copying it into
+#  bin_path prior the test.
+def test_bin_path(): return "/Users/eugene/Projects/QtCoFE/cofe-bin/"
+
 __bin_path__ = ""
 
 def is_bin_path():
@@ -55,15 +60,23 @@ def set_bin_path(bpath):
 def bin_path():  return __bin_path__
 
 
-#  test_bin_path is used in module tests by copying it into
-#  bin_path prior the test.
-def test_bin_path(): return "/Users/eugene/Projects/QtCoFE/cofe-bin/"
-
-
-
 def user_data_name      ():  return "user.data"
 def project_data_name   ():  return "project.data"
 def job_data_name       ():  return "job.data"
 def job_arguments_name  ():  return "job.arguments"
 def default_project_name():  return "default"
 
+
+def job_idle    (): return 0
+def job_starting(): return 100
+def job_running (): return 1000
+def job_done    (): return 2000
+
+def process_ok                ():  return 0;
+def process_cant_get_lock_1   ():  return 1;
+def process_cant_read_job     ():  return 2;
+def process_cant_update_tree_1():  return 3;
+def process_cant_commit_1     ():  return 4;
+def process_cant_get_lock_2   ():  return 5;
+def process_cant_update_tree_2():  return 6;
+def process_cant_commit_2     ():  return 7;

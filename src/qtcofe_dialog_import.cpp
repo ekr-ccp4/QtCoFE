@@ -122,14 +122,14 @@ int          btnSize  = preferences->getToolButtonSize ();
 
 void qtCOFE::DataImportDialog::makeEmptyTable()  {
 
-  importTable->setColumnCount ( 4  );
+  importTable->setColumnCount ( 3  );
   importTable->setRowCount    ( 10 );
   importTable->setAlternatingRowColors ( true );
 
   importTable->setHorzHeader ( 0,"File"        );
   importTable->setHorzHeader ( 1,"Type"        );
-  importTable->setHorzHeader ( 2,"Metadata"    );
-  importTable->setHorzHeader ( 3,"Description" );
+//  importTable->setHorzHeader ( 2,"Metadata"    );
+  importTable->setHorzHeader ( 2,"Description" );
 
   importTable->setSelectionBehavior ( QAbstractItemView::SelectRows      );
   importTable->setSelectionMode     ( QAbstractItemView::SingleSelection );
@@ -139,10 +139,10 @@ void qtCOFE::DataImportDialog::makeEmptyTable()  {
       importTable->setTableItem  ( i,j," " );
   }
 
-  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+30 );
+  importTable->setColumnWidth ( 0,importTable->columnWidth(0)+60 );
   importTable->setColumnWidth ( 1,importTable->columnWidth(1)+20 );
-  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+10 );
-  importTable->setColumnWidth ( 3,importTable->columnWidth(3)+80 );
+//  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+10 );
+  importTable->setColumnWidth ( 2,importTable->columnWidth(2)+80 );
   importTable->setFullSize ( false,false );
   importTable->setRowCount ( 0 );
 
@@ -152,9 +152,8 @@ void qtCOFE::DataImportDialog::makeImportTable (
                                      const QJsonObject & jobData )  {
 QJsonArray        data = jobData.value("data").toArray();
 QTableWidgetItem *item;
-//QJsonParseError   e;
 QString           iconPath;
-QString           metadata;
+QString           files;
 int               row  = 0;
 int               row0 = qMax(data.count(),10);
 
@@ -169,32 +168,32 @@ int               row0 = qMax(data.count(),10);
   for (int i=0;i<data.count();i++)  {
     QJsonArray dlist = data[data.count()-i-1].toArray();
     for (int j=0;j<dlist.count();j++)  {
-//      QJsonObject jd = QJsonDocument::fromJson (
-//                           dlist[j].toString().toAscii(),&e ).object();
       QJsonObject jd = dlist[j].toObject();
       if (row>=row0)  importTable->setRowCount ( row+1 );
       importTable->setVertHeader ( row,QString("%1").arg(row+1) );
-      item = importTable->setTableItem  ( row,0,
-                                   jd.value("file").toString(),
-                                   Qt::AlignLeft | Qt::AlignVCenter );
+
+      QJsonArray flist = jd.value("files").toArray();
+      QJsonArray mlist = jd.value("metadata").toArray();
+      files.clear();
+      for (int j=0;j<flist.count();j++)  {
+        if (j>0)  files.append ( "\n" );
+        files.append ( flist[j].toString() );
+        QJsonArray meta = mlist[j].toArray();
+        if (meta.count()>0)
+          files.append ( "/" );
+        for (int k=0;k<meta.count();k++)  {
+          if (k>1)  files.append ( ":" );
+          files.append ( meta[k].toString() );
+        }
+      }
+      item = importTable->setTableItem  ( row,0,files,
+                                    Qt::AlignLeft | Qt::AlignVCenter );
       iconPath = jd.value("icon").toString();
       if (!iconPath.isEmpty())
         item->setIcon ( QIcon(QString(qtCOFE_icon_base)+iconPath) );
       importTable->setTableItem  ( row,1,jd.value("name").toString(),
                                    Qt::AlignRight | Qt::AlignVCenter );
-      if (!jd.keys().contains("columns",Qt::CaseInsensitive))
-        metadata = " ";
-      else  {
-        metadata = "Columns:";
-        QJsonArray clist = jd.value("columns").toArray();
-        for (int k=0;k<clist.count();k++)
-          metadata.append ( " \n" + clist[k].toString() );
-      }
-//      QLabel *lbl = new QLabel ( metadata );
-//      importTable->setCellWidget ( row,2,lbl );
-      importTable->setTableItem  ( row,2,metadata,
-                                   Qt::AlignLeft | Qt::AlignVCenter );
-      importTable->setTableItem  ( row,3,jd.value("desc").toString(),
+      importTable->setTableItem  ( row,2,jd.value("desc").toString(),
                                    Qt::AlignLeft | Qt::AlignVCenter );
       row++;
     }

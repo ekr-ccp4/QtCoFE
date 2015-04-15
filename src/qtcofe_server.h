@@ -32,19 +32,7 @@ namespace qtCOFE  {
 
   class Preferences;
   class Session;
-/*
-  enum SERVER_ACTION  {
-    SERVER_Login,
-    SERVER_RecoverLogin,
-    SERVER_CreateNewUser,
-    SERVER_GetListOfProjects,
-    SERVER_AddProject,
-    SERVER_RenameProject,
-    SERVER_DeleteProject,
-    SERVER_GetUserData,
-    SERVER_SetUserData
-  };
-*/
+
   enum SERVER_RC  {
     SERVER_RC_Ok,
     SERVER_RC_UnknownAction,

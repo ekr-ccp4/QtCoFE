@@ -17,10 +17,19 @@ class DType(jsonut.jObject):
         self.desc  = "Data type template"
         self.icon  = "dtype_template.png"
         self.jobId = job_id;
-        self.file  = ""
+        self.files = []  # may be a multiple-file data type
+        self.metadata = [] # list of lists per file item
         return
 
+    def setFile ( self,fname,meta ):
+        self.files    = [fname]
+        self.metadata = [meta]
+        return
 
+    def addFile ( self,fname,meta ):
+        self.files   .append ( fname )
+        self.metadata.append ( meta  )
+        return
 
 #
 #  ------------------------------------------------------------------

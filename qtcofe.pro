@@ -96,7 +96,8 @@ OTHER_FILES += \
     server/dtypes/__init__.py \
     server/tasks/__init__.py \
     server/tasks/disambiguator.py \
-    server/project/process.py
+    server/process.py \
+    cofe-bin/mad
 
 HEADERS += \
     qjson/QJsonArray.h \

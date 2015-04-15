@@ -51,7 +51,9 @@ namespace qtCOFE  {
 
       virtual void makeLayout();
 
-      void makeTree ( QJsonObject & prjData );
+      void makeTree   ( QJsonObject & prjData );
+      void updateTree ( QJsonObject & prjData );
+      void clearTree  ();
 
       QJsonObject * getTreeData();
 
@@ -74,8 +76,9 @@ namespace qtCOFE  {
     signals:
       void add_new_job   ( int parentId );
       void del_job       ( int jobId, int nextCrJobId );
+      void run_job       ( int jobId    );
       void view_job_data ( int parentId );
-      void crjob_changed ( int jobId  );
+      void crjob_changed ( int jobId    );
 
     protected:
       Preferences  *preferences;
@@ -89,10 +92,13 @@ namespace qtCOFE  {
       QToolButton  *view_btn;
       QToolButton  *data_btn;
 
-      void addJob ( const QJsonObject & obj,
-                    QTreeWidgetItem   * item,
-                    QTreeWidgetItem  *& crItem,
-                    int               & maxID );
+      void addJob    ( const QJsonObject & obj,
+                       QTreeWidgetItem   * item,
+                       QTreeWidgetItem  *& crItem,
+                       int               & maxID );
+      bool updateJob ( const QJsonObject          & obj,
+                       QVector<QTreeWidgetItem *> & items,
+                       QVector<int>               & job_ids );
 
     protected slots:
       void addBtnClicked ();

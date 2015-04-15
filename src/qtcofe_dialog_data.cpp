@@ -138,15 +138,21 @@ QTreeWidgetItem * qtCOFE::DataDialog::makeSection (
                                           const QString prompt )  {
 QString          title = "<b>" + name + "</b>";
 QTreeWidgetItem *item  = dataTree->addTreeItem ( "" );
+QLabel          *lbl;
+
   item->setFirstColumnSpanned ( true );
-  item = dataTree->addTreeItem ( "" );
+  item = dataTree->addTreeItem ( "                           " );
   if (!prompt.isEmpty())  {
     item->setFirstColumnSpanned ( true );
     title.append ( "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                    "<font size='-1'><i>(" + prompt +
                    ")</i></font>" );
   }
-  dataTree->setItemWidget( item,0,new QLabel(title) );
+
+  lbl = new QLabel(title);
+//  lbl->setStyleSheet("QLabel{background-color: white; color: back;}");
+  dataTree->setItemWidget( item,0,lbl );
+
   if (!icon.isEmpty())
     item->setIcon ( 0,QIcon(QString(qtCOFE_icon_base) + icon) );
   if (!statusIcon.isEmpty())  {
@@ -211,9 +217,9 @@ int              fsize = preferences->getFontPixelSize();
     dataTree->setItemWidget ( item1,1,w );
     item1->parent()->setExpanded ( true );
   } else if (checked)  {
-    if (nChecked==nData)
-         item1->setIcon ( 1,QIcon(qtCOFE_Ok_icon)  );
-    else item1->setIcon ( 1,QIcon(qtCOFE_Ok_Amber_icon)  );
+    if (fields[0].startsWith("<<") || (nChecked!=nData))
+          item1->setIcon ( 1,QIcon(qtCOFE_Ok_Amber_icon) );
+    else  item1->setIcon ( 1,QIcon(qtCOFE_Ok_icon)       );
     item1->parent()->setExpanded ( true );
   }
 

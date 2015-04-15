@@ -111,32 +111,32 @@ class Task(jsonut.jObject):
         self.executable = "taskpgm"      # program to run
         self.arguments  = [              # list of arguments
           { "keyword": "-keyword",   # may be empty
-            "value"  : "value",      # always a string, typed next
+            "value"  : "value",      # always a string, typed as below
             "type"   : "type",       # string, int, real, bool, dtype_xxxx
             "dtype"  : "meta",       # metadata for dtype_xxxx values
             "name"   : "Parameter",  # name for display
             "section": "_main",      # _main, _hidden or any custom (advanced)
-            "order"  : 1             # order within section
+            "order"  : 1             # order within parameter display section
           }    # continue the list as necessary
         ]
 
         return
 
 
-    def make_output_data ( job_dir ):
+    def make_output_data ( self,job_dir ):
         #  This function should return data array for the corresponding
         # Job class with references to task output data in job_dir
         # after the corresponding job completes
         return [[any.DType()]]
 
 
-    def write_arguments ( self,job_dir ):
+    def write_arguments ( self,job_dir,executable,arguments ):
         #  Lock repository before calling this function
         file = open ( os.path.join(job_dir,
                                    defs.job_arguments_name()),"w" )
         A = jsonut.jObject()
-        A.executable = self.executable
-        A.arguments  = self.arguments
+        A.executable = executable
+        A.arguments  = arguments
         file.write ( A.to_JSON() )
         file.close ()
         return
@@ -152,7 +152,7 @@ class Task(jsonut.jObject):
         return
 
 
-    def get_command ( data ):
+    def get_command ( self,proj_data ):
 
         cmd = []
 

@@ -34,7 +34,7 @@ class Task(task.Task):
         return
 
 
-    def make_output_data ( job_dir ):
+    def make_output_data ( self,job_dir,job_id ):
         #  This function should return data array for the corresponding
         # Job class with references to task output data in job_dir
         # after the corresponding job completes

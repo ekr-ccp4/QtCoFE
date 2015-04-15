@@ -83,6 +83,11 @@
 */
 
 #define  qtCOFE_DefaultRefreshPeriod  6000
+#define  qtCOFE_SmartRefresh          0
+#define  qtCOFE_ConstantRefresh       1
+#define  qtCOFE_ManualRefresh         2
+
+
 #define  qtCOFE_Doc_Directory        "html/"
 
 #define  qtCOFE_SET_WinState         "win_state"
@@ -96,7 +101,7 @@
 //#define  qtCOFE_SET_PlotHeight       "plot_height"
 //#define  qtCOFE_SET_MaxDecorSize     "max_decor_size"
 #define  qtCOFE_SET_UseSystemBrowser "use_system_browser"
-#define  qtCOFE_SET_RefreshEnabled   "refresh_enabled"
+#define  qtCOFE_SET_RefreshMode      "refresh_mode"
 #define  qtCOFE_SET_gdExtSelection   "gd_ext_selection"
 #define  qtCOFE_SET_AppDir           "app_dir"
 #define  qtCOFE_SET_ProcPath         "proc_path"
@@ -120,6 +125,12 @@
 #define  qtCOFE_SET_JobID            "job_id"
 #define  qtCOFE_SET_KeepLogged       "keep_logged"
 #define  qtCOFE_SET_LoggedIn         "logged_in"
+
+// job status
+#define  qtCOFE_JOB_Idle        0
+#define  qtCOFE_JOB_Starting    100
+#define  qtCOFE_JOB_Running     1000
+#define  qtCOFE_JOB_Done        2000
 
 /*
 #define  qtCOFE_SET_ImageFile        "image_file"

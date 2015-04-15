@@ -82,6 +82,7 @@ action = {
     "get_list_of_jobs"       : jobs.get_list,
     "add_job"                : jobs.add,
     "del_job"                : jobs.delete,
+    "run_job"                : jobs.run,
     "get_data_model"         : datamodel.get_data_model,
     "import_file"            : dataimport.run,
     "set_data"               : disambiguator.run

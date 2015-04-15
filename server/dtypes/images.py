@@ -15,7 +15,7 @@ class DType(dtype.DType):
         self.type = "dtype_images"     # has to be "dtype_" + filename
         self.name = "Images"
         self.desc = "Diffraction images"
-        self.icon = "dtype_images.png"
+        self.icon = "data_image.png"
         return
 
 

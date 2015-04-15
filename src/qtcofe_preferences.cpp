@@ -26,6 +26,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QFileDialog>
@@ -53,8 +54,8 @@ QChar    dirsep = QDir::separator();
 
 //  maxDecorationSize = 1000;
 
-  refreshPeriod  = qtCOFE_DefaultRefreshPeriod;
-  refreshEnabled = true;
+  refreshPeriod = qtCOFE_DefaultRefreshPeriod;
+  refreshMode   = qtCOFE_SmartRefresh;
 
 #ifdef Q_OS_MAC
   useSystemBrowser = false;
@@ -332,19 +333,27 @@ int          row;
 //  gbox->setVerticalSpacing ( 0 );
   row  = 0;
 
-  refresh_enabled_chk = new QCheckBox ( "Refresh period:" );
-  refresh_enabled_chk->setChecked ( refreshEnabled );
+  refresh_mode_cmb = new QComboBox();
+  refresh_mode_cmb->addItem ( "Smart"   ,qtCOFE_SmartRefresh    );
+  refresh_mode_cmb->addItem ( "Constant",qtCOFE_ConstantRefresh );
+  refresh_mode_cmb->addItem ( "Manual"  ,qtCOFE_ManualRefresh   );
+
+  refresh_lbl = new QLabel ( "Refresh period:" );
+
   refresh_period_sbx = new QSpinBox();
-  refresh_period_sbx->setRange  ( 1,100   );
-  refresh_period_sbx->setSuffix ( " secs"     );
-  refresh_period_sbx->setValue  ( refreshPeriod/1000 );
-  refresh_period_sbx->setEnabled ( refreshEnabled );
-  gbox->addWidget ( refresh_enabled_chk,row,0,1,1 );
-  gbox->addWidget ( refresh_period_sbx,row,1,1,1 );
+  refresh_period_sbx->setRange   ( 1,100   );
+  refresh_period_sbx->setSuffix  ( " secs" );
+  refresh_period_sbx->setValue   ( refreshPeriod/1000 );
+
+//  refresh_period_sbx->setEnabled ( refreshEnabled );
+  gbox->addWidget ( new QLabel("Refresh mode:"),row,0,1,1 );
+  gbox->addWidget ( refresh_mode_cmb         ,row++,1,1,1 );
+  gbox->addWidget ( refresh_lbl                ,row,0,1,1 );
+  gbox->addWidget ( refresh_period_sbx         ,row,1,1,1 );
   gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
 
-  connect ( refresh_enabled_chk,SIGNAL(clicked()),
-            this,SLOT(refreshEnabledClicked()) );
+  connect ( refresh_mode_cmb,SIGNAL(currentIndexChanged(int)),
+            this,SLOT(refreshModeChanged(int)) );
 
 //  gd_ext_browsing_chk = new QCheckBox ( "Extended graph data selection" );
 //  gd_ext_browsing_chk->setChecked ( gdExtSelection );
@@ -412,8 +421,11 @@ void qtCOFE::Preferences::actualize()  {
 //  tree_width_sbx      -> setValue   ( treeWidth  );
 //  max_decor_size_sbx  -> setValue   ( maxDecorationSize  );
   refresh_period_sbx  -> setValue   ( refreshPeriod/1000 );
-  refresh_enabled_chk -> setChecked ( refreshEnabled     );
-  refresh_period_sbx  -> setEnabled ( refreshEnabled     );
+  refresh_mode_cmb    -> setCurrentIndex ( refreshMode   );
+
+  refreshModeChanged ( refreshMode );
+
+//  refresh_period_sbx  -> setEnabled ( refreshEnabled     );
 //  gd_ext_browsing_chk -> setChecked ( gdExtSelection     );
 
   setFontSpec();
@@ -479,8 +491,8 @@ void qtCOFE::Preferences::readSettings  ( QSettings *settings )  {
                                    qtCOFE_DefaultRefreshPeriod).toInt();
   useSystemBrowser = settings->value(qtCOFE_SET_UseSystemBrowser,
                                              useSystemBrowser).toBool();
-  refreshEnabled   = settings->value(qtCOFE_SET_RefreshEnabled,
-                                               refreshEnabled).toBool();
+  refreshMode      = settings->value(qtCOFE_SET_RefreshMode,
+                                                   refreshMode).toInt();
 //  gdExtSelection   = settings->value(qtCOFE_SET_gdExtSelection,
 //                                               gdExtSelection).toBool();
 
@@ -534,7 +546,7 @@ void qtCOFE::Preferences::writeSettings ( QSettings *settings )  {
 //  settings->setValue ( qtCOFE_SET_MaxDecorSize    ,maxDecorationSize );
   settings->setValue ( qtCOFE_SET_RefreshPeriod   ,refreshPeriod     );
   settings->setValue ( qtCOFE_SET_UseSystemBrowser,useSystemBrowser  );
-  settings->setValue ( qtCOFE_SET_RefreshEnabled  ,refreshEnabled    );
+  settings->setValue ( qtCOFE_SET_RefreshMode     ,refreshMode       );
 //  settings->setValue ( qtCOFE_SET_gdExtSelection  ,gdExtSelection    );
   settings->setValue ( qtCOFE_SET_AppDir,
                                 QApplication::applicationFilePath()  );
@@ -568,8 +580,8 @@ void qtCOFE::Preferences::apply()  {
 //  plotWidth         = plot_width_sbx ->value();
 //  treeWidth         = tree_width_sbx ->value();
 //  maxDecorationSize = max_decor_size_sbx ->value();
-  refreshPeriod     = refresh_period_sbx ->value()*1000;
-  refreshEnabled    = refresh_enabled_chk->isChecked();
+  refreshPeriod     = refresh_period_sbx -> value()*1000;
+  refreshMode       = refresh_mode_cmb   -> currentIndex();
 //  gdExtSelection    = gd_ext_browsing_chk->isChecked();
 
 //  accept();
@@ -591,7 +603,7 @@ void qtCOFE::Preferences::close()  {
 //      (treeWidth         != tree_width_sbx ->value()) ||
 //      (maxDecorationSize != max_decor_size_sbx ->value()) ||
       (refreshPeriod     != refresh_period_sbx->value()*1000)  ||
-      (refreshEnabled ^ refresh_enabled_chk->isChecked())
+      (refreshMode       != refresh_mode_cmb->currentIndex())
 //      (gdExtSelection ^ gd_ext_browsing_chk->isChecked())
      )  {
     if (QMessageBox::question(this,tr("Apply changes?"),
@@ -607,8 +619,9 @@ void qtCOFE::Preferences::close()  {
 
 }
 
-void qtCOFE::Preferences::refreshEnabledClicked()  {
-  refresh_period_sbx->setEnabled ( refresh_enabled_chk->isChecked() );
+void qtCOFE::Preferences::refreshModeChanged ( int index )  {
+  refresh_lbl        -> setVisible ( index != qtCOFE_ManualRefresh );
+  refresh_period_sbx -> setVisible ( index != qtCOFE_ManualRefresh );
 }
 
 void qtCOFE::Preferences::useSystemBrowserClicked()  {

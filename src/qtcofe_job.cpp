@@ -27,6 +27,7 @@
 #include "qtcofe_job.h"
 #include "qtcofe_datamodel.h"
 #include "qtcofe_srvdefs.h"
+#include "qtcofe_defs.h"
 
 
 // =================================================================
@@ -46,21 +47,21 @@ qtCOFE::JobData::~JobData() { clear(); }
 
 void qtCOFE::JobData::clear()  {
   disambiguated = false;
-  foreach (Metadata *m,metadata)
-    if (m)  delete m;
-  metadata.clear();
+  foreach (Component *c,components)
+    if (c)  delete c;
+  components.clear();
 }
 
 qtCOFE::JobData::SUITABILITY qtCOFE::JobData::E_Suitable (
                                     const QList<JobData *> jobData )  {
 int nm;
 
-  if (nmode==jobData[0]->metadata.count())
+  if (nmode==jobData[0]->components.count())
     return Suitable;
 
   nm = 0;
   for (int i=0;i<jobData.count();i++)
-    nm += jobData[i]->metadata.count();
+    nm += jobData[i]->components.count();
   if (nmode<=nm)  return Ambiguous;
 
   return Unsuitable;
@@ -71,15 +72,15 @@ qtCOFE::JobData::SUITABILITY qtCOFE::JobData::G_Suitable (
                                     const QList<JobData *> jobData )  {
 int nm;
 
-  if (jobData[0]->metadata.count()==nmode+1)
+  if (jobData[0]->components.count()==nmode+1)
     return Suitable;
 
-  if ((jobData[0]->metadata.count()>nmode) && jobData[0]->disambiguated)
+  if ((jobData[0]->components.count()>nmode) && jobData[0]->disambiguated)
     return Suitable;
 
   nm = 0;
   for (int i=0;i<jobData.count();i++)
-    nm += jobData[i]->metadata.count();
+    nm += jobData[i]->components.count();
   if (nm>nmode)  return Ambiguous;
 
   return Unsuitable;
@@ -90,15 +91,15 @@ qtCOFE::JobData::SUITABILITY qtCOFE::JobData::U_Suitable (
                                     const QList<JobData *> jobData )  {
 int nm;
 
-  if (jobData[0]->metadata.count()==nmode)
+  if (jobData[0]->components.count()==nmode)
     return Suitable;
 
-  if ((jobData[0]->metadata.count()<nmode) && jobData[0]->disambiguated)
+  if ((jobData[0]->components.count()<nmode) && jobData[0]->disambiguated)
     return Suitable;
 
   nm = 0;
   for (int i=0;i<jobData.count();i++)
-    nm += jobData[i]->metadata.count();
+    nm += jobData[i]->components.count();
   if (nm<nmode)  return Ambiguous;
 
   return Unsuitable;
@@ -170,12 +171,11 @@ qtCOFE::Job::~Job() {
 }
 
 void qtCOFE::Job::init()  {
-  id       = 0;
-  status   = 0;
-  order    = 0;
-  expanded = true;
-  progressBar = new QProgressBar();
-  progressBar->setVisible ( false );
+  id          = 0;
+  status      = qtCOFE_JOB_Idle;
+  order       = 0;
+  expanded    = true;
+  progressBar = NULL;
 }
 
 void qtCOFE::Job::clear()  {
@@ -223,28 +223,44 @@ const Task *task = NULL;
   desc   = jobData.value("desc"  ).toString();
   id     = jobData.value("id"    ).toDouble();
   status = jobData.value("status").toDouble();
+  showStatus();
 
   for (int i=0;i<data.count();i++)  {
     QJsonArray dlist = data[i].toArray();
     if (dlist.count()>0)  {
+
       JobData *jd =new JobData();
       jd->disambiguated = (type==qtCOFE_TASK_Disambiguator);
       jd->type = dlist[0].toObject().value("type").toString();
       jd->copy ( dataModel->getTaskDataOut(type,jd->type) );
+
       for (int j=0;j<dlist.count();j++)  {
-        Metadata *m = new Metadata();
+
+        Component *c = new Component();
+
         QJsonObject jobj = dlist[j].toObject();
-        m->jobId = jobj.value("jobId").toDouble();
-        m->desc  = jobj.value("desc" ).toString();
-        m->fname = jobj.value("file" ).toString();
-        if (jobj.keys().contains("columns",Qt::CaseInsensitive))  {
-          QJsonArray clist = jobj.value("columns").toArray();
-          for (int k=0;k<clist.count();k++)
-            m->columns.append ( clist[k].toString() );
+        c->jobId = jobj.value("jobId").toDouble();
+        c->desc  = jobj.value("desc" ).toString();
+
+        QJsonArray flist = jobj.value("files").toArray();
+        for (int k=0;k<flist.count();k++)
+          c->fnames.append ( flist[k].toString() );
+
+        QJsonArray mlist = jobj.value("metadata").toArray();
+        for (int k=0;k<mlist.count();k++)  {
+          QJsonArray  meta = mlist[k].toArray();
+          QStringList metadata;
+          for (int m=0;m<meta.count();m++)
+            metadata.append ( meta[m].toString() );
+          c->metadata.append ( metadata );
         }
-        jd->metadata.append ( m );
+
+        jd->components.append ( c );
+
       }
+
       outData.append ( jd );
+
     }
   }
 
@@ -308,35 +324,69 @@ void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
                                        QString & fileName,
                                        QString & desc,
                                        int     & nSets)  {
+int nFiles;
 
   jobName = name;
   desc.clear();
-  if (outData[outNo]->metadata.isEmpty())  {
+  if (outData[outNo]->components.isEmpty())  {
     fileName = "<< in promise >>";
     nSets = 1;
   } else  {
     fileName.clear();
-    for (int i=0;i<outData[outNo]->metadata.count();i++)  {
-      Metadata *m = outData[outNo]->metadata[i];
+    for (int i=0;i<outData[outNo]->components.count();i++)  {
+      Component *c = outData[outNo]->components[i];
       if (!fileName.isEmpty())  {
         fileName.append ( "\n" );
         desc    .append ( "\n" );
       }
-      fileName.append ( m->fname );
-      desc    .append ( m->desc  );
-      if (m->columns.count()>0)  {
-        fileName.append ( "/" );
-        foreach (QString c,m->columns)
-          fileName.append ( c + ":" );
-        fileName.resize ( fileName.size()-1 );
+      desc.append ( c->desc  );
+      nFiles = c->fnames.count();
+      if (nFiles>1)
+        fileName.append ( "[" );
+      for (int j=0;j<nFiles;j++)  {
+        fileName.append ( c->fnames[j] );
+        if (c->metadata[j].count()>0)  {
+          fileName.append ( "/" );
+          foreach (QString S,c->metadata[j])
+            fileName.append ( S + ":" );
+          fileName.resize ( fileName.size()-1 );
+        }
+        if (j<nFiles-1)
+          fileName.append ( "\n" );
       }
+      if (nFiles>1)
+        fileName.append ( "]" );
     }
-    nSets = outData[outNo]->metadata.count();
+    nSets = outData[outNo]->components.count();
   }
 
 }
 
-void qtCOFE::Job::showProgressBar ( bool showBar )  {
-  progressBar->setVisible ( showBar );
+void qtCOFE::Job::setProgressBar ( QProgressBar *pbar )  {
+  progressBar = pbar;
+  showStatus();
+}
+
+void qtCOFE::Job::copyTreeData ( Job * job )  {
+  treeItem    = job->treeItem;
+  progressBar = job->progressBar;
+}
+
+void qtCOFE::Job::showStatus()  {
+
+  if (progressBar)  {
+
+    if (status==qtCOFE_JOB_Starting)  {
+      progressBar->setRange   ( 1,10 );
+      progressBar->setVisible ( true );
+    } else if ((qtCOFE_JOB_Running<=status) && (status<qtCOFE_JOB_Done)) {
+      if (progressBar->maximum()!=0)
+        progressBar->setRange ( 0,0 );
+      progressBar->setVisible ( true );
+    } else
+      progressBar->setVisible ( false );
+
+  }
+
 }
 
