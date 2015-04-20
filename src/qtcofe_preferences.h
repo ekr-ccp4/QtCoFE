@@ -44,9 +44,9 @@ namespace qtCOFE  {
   Q_OBJECT
 
     public:
-//      int      treeWidth;
-//      int      plotHeight;
-//      int      plotWidth;
+      int      treeWidth;
+      int      plotHeight;
+      int      plotWidth;
 //      int      maxDecorationSize;
       QString  procPath;         //!< path to local processing scripts
       QString  masterDataPath;
@@ -128,9 +128,9 @@ namespace qtCOFE  {
       QPushButton   *coot_path_btn;
       QPushButton   *ccp4mg_path_btn;
       QPushButton   *browser_path_btn;
-//      QSpinBox      *tree_width_sbx;
-//      QSpinBox      *plot_width_sbx;
-//      QSpinBox      *plot_height_sbx;
+      QSpinBox      *tree_width_sbx;
+      QSpinBox      *plot_width_sbx;
+      QSpinBox      *plot_height_sbx;
 //      QSpinBox      *max_decor_size_sbx;
       qtx::LineEdit *font_edt;
       QComboBox     *refresh_mode_cmb;

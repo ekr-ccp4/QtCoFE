@@ -48,9 +48,9 @@ QChar    dirsep = QDir::separator();
 
   fontChanged = false;
 
-//  treeWidth  = 300;
-//  plotHeight = 400;
-//  plotWidth  = 505;
+  treeWidth  = 300;
+  plotHeight = 400;
+  plotWidth  = 505;
 
 //  maxDecorationSize = 1000;
 
@@ -272,29 +272,29 @@ int          row;
 //  gbox->setVerticalSpacing ( 0 );
   row  = 0;
 
-//  plot_height_sbx = new QSpinBox();
-//  plot_height_sbx->setRange  ( 50,1500    );
-//  plot_height_sbx->setSuffix ( " px"      );
-//  plot_height_sbx->setValue  ( plotHeight );
-//  gbox->addWidget ( new QLabel("Embedded graph height:"),row,0,1,1 );
-//  gbox->addWidget ( plot_height_sbx,row,1,1,1 );
-//  gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
+  plot_height_sbx = new QSpinBox();
+  plot_height_sbx->setRange  ( 50,1500    );
+  plot_height_sbx->setSuffix ( " px"      );
+  plot_height_sbx->setValue  ( plotHeight );
+  gbox->addWidget ( new QLabel("Embedded graph height:"),row,0,1,1 );
+  gbox->addWidget ( plot_height_sbx,row,1,1,1 );
+  gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
 
-//  plot_width_sbx = new QSpinBox();
-//  plot_width_sbx->setRange  ( 50,1500   );
-//  plot_width_sbx->setSuffix ( " px"     );
-//  plot_width_sbx->setValue  ( plotWidth );
-//  gbox->addWidget ( new QLabel("Embedded graph width:"),row,0,1,1 );
-//  gbox->addWidget ( plot_width_sbx,row,1,1,1 );
-//  gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
+  plot_width_sbx = new QSpinBox();
+  plot_width_sbx->setRange  ( 50,1500   );
+  plot_width_sbx->setSuffix ( " px"     );
+  plot_width_sbx->setValue  ( plotWidth );
+  gbox->addWidget ( new QLabel("Embedded graph width:"),row,0,1,1 );
+  gbox->addWidget ( plot_width_sbx,row,1,1,1 );
+  gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
 
-//  tree_width_sbx = new QSpinBox();
-//  tree_width_sbx->setRange  ( 50,1500   );
-//  tree_width_sbx->setSuffix ( " px"     );
-//  tree_width_sbx->setValue  ( treeWidth );
-//  gbox->addWidget ( new QLabel("Graph tree width:"),row,0,1,1 );
-//  gbox->addWidget ( tree_width_sbx,row,1,1,1 );
-//  gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
+  tree_width_sbx = new QSpinBox();
+  tree_width_sbx->setRange  ( 50,1500   );
+  tree_width_sbx->setSuffix ( " px"     );
+  tree_width_sbx->setValue  ( treeWidth );
+  gbox->addWidget ( new QLabel("Graph tree width:"),row,0,1,1 );
+  gbox->addWidget ( tree_width_sbx,row,1,1,1 );
+  gbox->addWidget ( new QLabel(" "),row++,2,1,1 );
 
 //  max_decor_size_sbx = new QSpinBox();
 //  max_decor_size_sbx->setRange  ( 50,1500   );
@@ -416,9 +416,9 @@ void qtCOFE::Preferences::actualize()  {
   coot_path_edt       -> setText    ( cootPath       );
   ccp4mg_path_edt     -> setText    ( ccp4mgPath     );
 
-//  plot_height_sbx     -> setValue   ( plotHeight );
-//  plot_width_sbx      -> setValue   ( plotWidth  );
-//  tree_width_sbx      -> setValue   ( treeWidth  );
+  plot_height_sbx     -> setValue   ( plotHeight );
+  plot_width_sbx      -> setValue   ( plotWidth  );
+  tree_width_sbx      -> setValue   ( treeWidth  );
 //  max_decor_size_sbx  -> setValue   ( maxDecorationSize  );
   refresh_period_sbx  -> setValue   ( refreshPeriod/1000 );
   refresh_mode_cmb    -> setCurrentIndex ( refreshMode   );
@@ -482,12 +482,12 @@ void qtCOFE::Preferences::readSettings  ( QSettings *settings )  {
     move   (settings->value(qtCOFE_SET_PrefWinPos,QPoint(100,50)).toPoint());
   }
 
-//  treeWidth     = settings->value ( qtCOFE_SET_TreeWidth ,300 ).toInt();
-//  plotWidth     = settings->value ( qtCOFE_SET_PlotWidth ,505 ).toInt();
-//  plotHeight    = settings->value ( qtCOFE_SET_PlotHeight,400 ).toInt();
+  treeWidth     = settings->value ( qtCOFE_SET_TreeWidth ,300 ).toInt();
+  plotWidth     = settings->value ( qtCOFE_SET_PlotWidth ,505 ).toInt();
+  plotHeight    = settings->value ( qtCOFE_SET_PlotHeight,400 ).toInt();
 //  maxDecorationSize = settings->value(qtCOFE_SET_MaxDecorSize,
 //                                           maxDecorationSize ).toInt();
-  refreshPeriod = settings->value(qtCOFE_SET_RefreshPeriod,
+  refreshPeriod    = settings->value(qtCOFE_SET_RefreshPeriod,
                                    qtCOFE_DefaultRefreshPeriod).toInt();
   useSystemBrowser = settings->value(qtCOFE_SET_UseSystemBrowser,
                                              useSystemBrowser).toBool();
@@ -540,9 +540,9 @@ void qtCOFE::Preferences::writeSettings ( QSettings *settings )  {
   settings->setValue ( qtCOFE_SET_PrefWinSize     ,size()            );
   settings->setValue ( qtCOFE_SET_PrefWinPos      ,pos ()            );
 
-//  settings->setValue ( qtCOFE_SET_TreeWidth       ,treeWidth         );
-//  settings->setValue ( qtCOFE_SET_PlotWidth       ,plotWidth         );
-//  settings->setValue ( qtCOFE_SET_PlotHeight      ,plotHeight        );
+  settings->setValue ( qtCOFE_SET_TreeWidth       ,treeWidth         );
+  settings->setValue ( qtCOFE_SET_PlotWidth       ,plotWidth         );
+  settings->setValue ( qtCOFE_SET_PlotHeight      ,plotHeight        );
 //  settings->setValue ( qtCOFE_SET_MaxDecorSize    ,maxDecorationSize );
   settings->setValue ( qtCOFE_SET_RefreshPeriod   ,refreshPeriod     );
   settings->setValue ( qtCOFE_SET_UseSystemBrowser,useSystemBrowser  );
@@ -576,9 +576,9 @@ void qtCOFE::Preferences::apply()  {
   ccp4mgPath        = ccp4mg_path_edt ->text();
   browserPath       = browser_path_edt->text();
 
-//  plotHeight        = plot_height_sbx->value();
-//  plotWidth         = plot_width_sbx ->value();
-//  treeWidth         = tree_width_sbx ->value();
+  plotHeight        = plot_height_sbx->value();
+  plotWidth         = plot_width_sbx ->value();
+  treeWidth         = tree_width_sbx ->value();
 //  maxDecorationSize = max_decor_size_sbx ->value();
   refreshPeriod     = refresh_period_sbx -> value()*1000;
   refreshMode       = refresh_mode_cmb   -> currentIndex();
@@ -598,9 +598,9 @@ void qtCOFE::Preferences::close()  {
       (binPath           != bin_path_edt   ->text())  ||
       (cootPath          != coot_path_edt  ->text())  ||
       (ccp4mgPath        != ccp4mg_path_edt->text())  ||
-//      (plotHeight        != plot_height_sbx->value()) ||
-//      (plotWidth         != plot_width_sbx ->value()) ||
-//      (treeWidth         != tree_width_sbx ->value()) ||
+      (plotHeight        != plot_height_sbx->value()) ||
+      (plotWidth         != plot_width_sbx ->value()) ||
+      (treeWidth         != tree_width_sbx ->value()) ||
 //      (maxDecorationSize != max_decor_size_sbx ->value()) ||
       (refreshPeriod     != refresh_period_sbx->value()*1000)  ||
       (refreshMode       != refresh_mode_cmb->currentIndex())

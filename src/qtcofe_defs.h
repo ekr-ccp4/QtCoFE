@@ -96,9 +96,9 @@
 #define  qtCOFE_SET_RefreshPeriod    "refresh_period"
 #define  qtCOFE_SET_PrefWinSize      "pref_win_size"
 #define  qtCOFE_SET_PrefWinPos       "pref_win_pos"
-//#define  qtCOFE_SET_TreeWidth        "tree_width"
-//#define  qtCOFE_SET_PlotWidth        "plot_width"
-//#define  qtCOFE_SET_PlotHeight       "plot_height"
+#define  qtCOFE_SET_TreeWidth        "tree_width"
+#define  qtCOFE_SET_PlotWidth        "plot_width"
+#define  qtCOFE_SET_PlotHeight       "plot_height"
 //#define  qtCOFE_SET_MaxDecorSize     "max_decor_size"
 #define  qtCOFE_SET_UseSystemBrowser "use_system_browser"
 #define  qtCOFE_SET_RefreshMode      "refresh_mode"
@@ -114,6 +114,10 @@
 //#define  qtCOFE_SET_LogFindCase      "log_find_case"
 //#define  qtCOFE_SET_LogFindWords     "log_find_words"
 #define  qtCOFE_SET_LogFont          "log_font"
+#define  qtCOFE_SET_JSRV_WinState    "jsrv_win_state"
+#define  qtCOFE_SET_JSRV_WinSize     "jsrv_win_size"
+#define  qtCOFE_SET_JSRV_WinPos      "jsrv_win_pos"
+#define  qtCOFE_SET_JSRV_ImageFile   "jsrv_image_file"
 
 // session settings
 #define  qtCOFE_SET_LoginName        "login_name"
@@ -131,6 +135,18 @@
 #define  qtCOFE_JOB_Starting    100
 #define  qtCOFE_JOB_Running     1000
 #define  qtCOFE_JOB_Done        2000
+
+// jsrview commands
+#define  qtCOFE_JSRV_rvGateName                "rvGate"
+#define  qtCOFE_JSRV_COMMAND_Copy              "{copy}"
+#define  qtCOFE_JSRV_COMMAND_Export            "{export}"
+#define  qtCOFE_JSRV_COMMAND_Coot              "{coot}"
+#define  qtCOFE_JSRV_COMMAND_CCP4MG            "{ccp4mg}"
+#define  qtCOFE_JSRV_COMMAND_ViewHKL           "{viewhkl}"
+#define  qtCOFE_JSRV_COMMAND_Display           "{display}"
+#define  qtCOFE_JSRV_COMMAND_Browser           "{browser}"
+#define  qtCOFE_JSRV_par_del                   "*"
+
 
 /*
 #define  qtCOFE_SET_ImageFile        "image_file"

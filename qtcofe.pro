@@ -55,7 +55,10 @@ SOURCES += \
     src/qtcofe_dialog_data.cpp \
     src/qtcofe_dialog_import.cpp \
     src/qtcofe_dialog_task.cpp \
-    src/qtcofe_dialogs.cpp
+    src/qtcofe_dialogs.cpp \
+    src/qtcofe_jsrvgate.cpp \
+    src/qtcofe_jsrview.cpp \
+    qtx/qtx_printutils.cpp
 
 RESOURCES += \
     src/qtcofe.qrc
@@ -132,5 +135,8 @@ HEADERS += \
     src/qtcofe_dialog_data.h \
     src/qtcofe_dialog_import.h \
     src/qtcofe_dialog_task.h \
-    src/qtcofe_dialogs.h
+    src/qtcofe_dialogs.h \
+    src/qtcofe_jsrvgate.h \
+    src/qtcofe_jsrview.h \
+    qtx/qtx_printutils.h
 
