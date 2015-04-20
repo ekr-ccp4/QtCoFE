@@ -38,6 +38,7 @@ namespace qtCOFE  {
   class Preferences;
   class Session;
   class DataModel;
+  class Job;
   class JobData;
 
   class ProjectTree : public QWidget  {
@@ -57,6 +58,7 @@ namespace qtCOFE  {
 
       QJsonObject * getTreeData();
 
+      Job *currentJob  ();
       int  currentJobId();
       int  parentJobId ();
       int  siblingJobId();
@@ -77,6 +79,7 @@ namespace qtCOFE  {
       void add_new_job   ( int parentId );
       void del_job       ( int jobId, int nextCrJobId );
       void run_job       ( int jobId    );
+      void view_report   ( int jobId    );
       void view_job_data ( int parentId );
       void crjob_changed ( int jobId    );
 
@@ -99,6 +102,7 @@ namespace qtCOFE  {
       bool updateJob ( const QJsonObject          & obj,
                        QVector<QTreeWidgetItem *> & items,
                        QVector<int>               & job_ids );
+      void enableControls();
 
     protected slots:
       void addBtnClicked ();
@@ -107,8 +111,8 @@ namespace qtCOFE  {
       void runBtnClicked ();
       void viewBtnClicked();
       void dataBtnClicked();
-      void crJobChanged ( QTreeWidgetItem * current,
-                          QTreeWidgetItem * previous );
+      void crJobChanged  ( QTreeWidgetItem * current,
+                           QTreeWidgetItem * previous );
 
   };
 

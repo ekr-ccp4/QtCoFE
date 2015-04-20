@@ -147,6 +147,8 @@
 #define  qtCOFE_JSRV_COMMAND_Browser           "{browser}"
 #define  qtCOFE_JSRV_par_del                   "*"
 
+#define  qtCOFE_TASK_DataImport     "task_dataimport"
+#define  qtCOFE_TASK_Disambiguator  "task_disambiguator"
 
 /*
 #define  qtCOFE_SET_ImageFile        "image_file"

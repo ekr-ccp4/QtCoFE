@@ -255,13 +255,14 @@ void qtCOFE::ProjectTree::makeTree ( QJsonObject & prjData )  {
       }
     } else
       session->jobID = 0;
-    del_btn->setEnabled ( session->jobID>0 );
-    add_btn->setEnabled ( true );
+//    del_btn->setEnabled ( session->jobID>0 );
+//    add_btn->setEnabled ( true );
   } else  {
     session->jobID = 0;
-    add_btn->setEnabled ( false );
-    del_btn->setEnabled ( false );
+//    add_btn->setEnabled ( false );
+//    del_btn->setEnabled ( false );
   }
+  enableControls();
 
 }
 
@@ -290,7 +291,8 @@ bool                       updated;
     for (int i=0;(i<njobs) && updated;i++)
       updated = updateJob ( jobs[i].toObject(),items,job_ids );
     if (!updated)
-      makeTree ( prjData );
+          makeTree ( prjData );
+    else  enableControls();
 
   } else
     makeTree ( prjData );
@@ -323,6 +325,14 @@ QTreeWidgetItemIterator it(jobTree);
 }
 
 
+qtCOFE::Job *qtCOFE::ProjectTree::currentJob()  {
+QTreeWidgetItem *item = jobTree->currentItem();
+Job             *job;
+  if (!item)  return NULL;
+  job = item->data ( 0,Qt::UserRole ).value<Job*>();
+  return job;
+}
+
 int qtCOFE::ProjectTree::currentJobId()  {
 QTreeWidgetItem *item = jobTree->currentItem();
 Job             *job;
@@ -331,7 +341,6 @@ Job             *job;
   if (!job)   return -2;
   return job->id;
 }
-
 int qtCOFE::ProjectTree::parentJobId()  {
 QTreeWidgetItem *item = jobTree->currentItem();
 Job             *job;
@@ -417,21 +426,55 @@ int  nextJobId = siblingJobId();
 }
 
 void qtCOFE::ProjectTree::prmBtnClicked()  {
-    QMessageBox::information ( this,"Not implemented","Not implemented" );
+  QMessageBox::information ( this,"Not implemented","Not implemented" );
 }
 
 void qtCOFE::ProjectTree::runBtnClicked()  {
   emit run_job ( currentJobId() );
-//    QMessageBox::information ( this,"Not implemented","Not implemented" );
+//  QMessageBox::information ( this,"Not implemented","Not implemented" );
 }
 
 void qtCOFE::ProjectTree::viewBtnClicked()  {
-    QMessageBox::information ( this,"Not implemented","Not implemented" );
+  emit view_report ( currentJobId() );
+//  QMessageBox::information ( this,"Not implemented","Not implemented" );
 }
 
 void qtCOFE::ProjectTree::dataBtnClicked()  {
   emit view_job_data ( currentJobId() );
 }
+
+void qtCOFE::ProjectTree::enableControls()  {
+Job *job = currentJob();
+bool runnable,running,done,root,children;
+
+  if (job)  {
+    done     = (job->status>=qtCOFE_JOB_Done);
+    running  = (qtCOFE_JOB_Starting<=job->status) &&
+               (job->status<qtCOFE_JOB_Done);
+    root     = (job->id<=0);
+    children = (jobTree->currentItem()->childCount()>0);
+    runnable = (!root) && (job->type!=qtCOFE_TASK_DataImport) &&
+               (job->type!=qtCOFE_TASK_Disambiguator);
+
+    add_btn ->setEnabled ( done || root );
+    del_btn ->setEnabled ( (!root) && (!running) );
+    prm_btn ->setEnabled ( runnable );
+    run_btn ->setEnabled ( runnable && (!running) &&
+                           ((!done) || (!children)) );
+    view_btn->setEnabled ( running || done );
+    data_btn->setEnabled ( !root );
+
+  } else  {
+    add_btn ->setEnabled ( false );
+    del_btn ->setEnabled ( false );
+    prm_btn ->setEnabled ( false );
+    run_btn ->setEnabled ( false );
+    view_btn->setEnabled ( false );
+    data_btn->setEnabled ( false );
+  }
+
+}
+
 
 void qtCOFE::ProjectTree::crJobChanged ( QTreeWidgetItem * current,
                                          QTreeWidgetItem * previous )  {
@@ -454,7 +497,7 @@ int     jid = currentJobId();
   if (jid>=0)
     session->jobID = jid;
 
-  del_btn->setEnabled ( jid>0 );
+  enableControls();
 
   if (jid>=0)
     emit crjob_changed ( jid );

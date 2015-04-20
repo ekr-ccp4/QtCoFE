@@ -96,7 +96,7 @@ class Task(task.Task):
             return utils.pass_return ( inp.action,result )
 
         # Read (disambiguator) job metadata
-        job_data = job.Job();
+        job_data = job.Job()
         job_data.read ( project_repo_dir,inp.data.job_id )
         if hasattr(job_data,"result"):
             gitut.unlock ( project_repo_dir )
@@ -107,7 +107,7 @@ class Task(task.Task):
         for i in range(len(data_list)):
             selection = data_list[i].selection
             for j in range(len(selection)):
-                jdata = job.Job();
+                jdata = job.Job()
                 jdata.read ( project_repo_dir,selection[j].jobId )
                 if hasattr(jdata,"result"):
                     gitut.unlock ( project_repo_dir )
@@ -127,6 +127,7 @@ class Task(task.Task):
 
 
         # Write job data to project repository
+        job_data.status = defs.job_done()
         job_data.write ( project_repo_dir )
 
         # Write job data to project tree

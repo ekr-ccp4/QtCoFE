@@ -90,7 +90,7 @@ class Task(task.Task):
         if result.result != "OK":
             return utils.pass_return ( inp.action,result )
 
-        job_data = job.Job();
+        job_data = job.Job()
         job_data.read ( project_repo_dir,inp.data.job_id )
         if hasattr(job_data,"result"):
             gitut.unlock ( project_repo_dir )
@@ -126,6 +126,7 @@ class Task(task.Task):
                                   ["F_ref(+)","F_ref(-)"] )
             job_data.add_data   ( hkl_data )
 
+        job_data.status = defs.job_done()
         job_data.write ( project_repo_dir )
 
         result = jobs.set_job_data ( project_repo_dir,job_data )
