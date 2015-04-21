@@ -182,17 +182,25 @@ def add(inp):
 
     project_data.current_job = job_data.id
 
+    task = datamodel.get_task ( job_data.type )
+
     try:
         job_dir = utils.get_job_dir_path ( defs.master_path(),inp.login,
                                            inp.project,job_data.id )
         os.mkdir ( job_dir )
+        report_dir = os.path.join ( job_dir,defs.report_dir_name() )
+        os.mkdir ( report_dir )
+        file = open ( os.path.join(report_dir,defs.report_file_name()),"w" )
+        file.write ( "<html><body><h1>Job #" + str(job_data.id) + \
+                     " " + task.name + "</h1><p>Report not formed yet" + \
+                     "</body></html>" )
+        file.close ()
     except OSError,err:
         pass
     job_data.write ( project_repo_dir );
 
     project_data.write ( project_repo_dir )
 
-    task = datamodel.get_task ( job_data.type )
     task.write_arguments ( job_dir,task.executable,task.arguments )
 
     result = gitut.commit ( project_repo_dir,["."],

@@ -65,6 +65,8 @@ def project_data_name   ():  return "project.data"
 def job_data_name       ():  return "job.data"
 def job_arguments_name  ():  return "job.arguments"
 def default_project_name():  return "default"
+def report_dir_name     ():  return "html"
+def report_file_name    ():  return "index.html"
 
 
 def job_idle    (): return 0

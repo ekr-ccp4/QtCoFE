@@ -458,7 +458,7 @@ bool runnable,running,done,root,children;
 
     add_btn ->setEnabled ( done || root );
     del_btn ->setEnabled ( (!root) && (!running) );
-    prm_btn ->setEnabled ( runnable );
+    prm_btn ->setEnabled ( runnable     );
     run_btn ->setEnabled ( runnable && (!running) &&
                            ((!done) || (!children)) );
     view_btn->setEnabled ( running || done );

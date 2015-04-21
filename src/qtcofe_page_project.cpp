@@ -69,6 +69,8 @@ QVBoxLayout *vbox = new QVBoxLayout();
             this,SLOT(delJob(int,int)) );
   connect ( jobTree,SIGNAL(run_job(int)),
             this,SLOT(runJob(int)) );
+  connect ( jobTree,SIGNAL(view_report(int)),
+            this,SLOT(viewReport(int)) );
   connect ( jobTree,SIGNAL(crjob_changed(int)),
             this,SLOT(switchJob(int)) );
   connect ( jobTree,SIGNAL(view_job_data(int)),
@@ -212,6 +214,9 @@ void qtCOFE::ProjectPage::runJob ( int jobID )  {
   jsonData->insert ( "next",jobID );
   project_query    ( *jsonData,qtCOFE_SERVER_ACT_RunJob );
   delete jsonData;
+}
+
+void qtCOFE::ProjectPage::viewReport ( int jobID )  {
 }
 
 void qtCOFE::ProjectPage::switchJob ( int jobID )  {

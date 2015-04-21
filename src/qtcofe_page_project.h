@@ -63,6 +63,7 @@ namespace qtCOFE  {
       void addJob        ( int jobID );
       void delJob        ( int jobID, int nextCrJobID );
       void runJob        ( int jobID );
+      void viewReport    ( int jobID );
       void switchJob     ( int jobID );
       void dataInspector ( int jobID );
       void refreshProject();
