@@ -8,6 +8,7 @@
 #              jobs.add      ( inp )
 #              jobs.delete   ( inp )
 #              jobs.run      ( inp )
+#              jobs.get_report_uri ( inp )
 #
 #
 #  Input 'inp' is JSON string in sys.argv[1]:
@@ -370,6 +371,22 @@ def run(inp):
     subprocess.Popen ( cmd,creationflags=0 )
 
     return project_data
+
+
+def get_report_uri ( inp ):
+
+    if inp.action != "get_report_uri":
+        return utils.make_return ( inp.action,
+                             "wrong_action_code","Wrong action code" )
+
+    result = utils.make_return ( inp.action,"OK","OK" )
+    result.report_uri = os.path.join ( utils.get_job_dir_path (
+             defs.master_path(),inp.login,inp.project,inp.data.job ),
+             defs.report_dir_name(),defs.report_file_name() )
+
+    return result
+
+
 
 #
 #  ------------------------------------------------------------------

@@ -26,6 +26,7 @@ QT_BEGIN_NAMESPACE
 class QLabel;
 class QGridLayout;
 class QPushButton;
+class QSettings;
 QT_END_NAMESPACE
 
 namespace qtx  {
@@ -52,6 +53,7 @@ namespace qtCOFE  {
 
     public:
       Page ( DataModel      *dm,
+             QSettings      *stn,
              QWidget        *parent = 0,
              Qt::WindowFlags flags  = 0 );
       virtual ~Page();
@@ -68,6 +70,7 @@ namespace qtCOFE  {
     protected:
       Preferences *preferences;
       Session     *session;
+      QSettings   *settings;
       DataModel   *dataModel;
       QWidget     *prevPage;
 

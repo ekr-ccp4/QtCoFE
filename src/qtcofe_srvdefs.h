@@ -33,12 +33,13 @@
 #define qtCOFE_SERVER_ACT_AddJob              "add_job"
 #define qtCOFE_SERVER_ACT_DelJob              "del_job"
 #define qtCOFE_SERVER_ACT_RunJob              "run_job"
+#define qtCOFE_SERVER_ACT_GetReportURI        "get_report_uri"
 #define qtCOFE_SERVER_ACT_GetDataModel        "get_data_model"
 #define qtCOFE_SERVER_ACT_ImportFile          "import_file"
 #define qtCOFE_SERVER_ACT_SetData             "set_data"
 
 
-#define qtCOFE_TASK_Import                    "task_dataimport"
-#define qtCOFE_TASK_Disambiguator             "task_disambiguator"
+#define  qtCOFE_TASK_DataImport     "task_dataimport"
+#define  qtCOFE_TASK_Disambiguator  "task_disambiguator"
 
 #endif // QTCOFE_SRVDEFS_H

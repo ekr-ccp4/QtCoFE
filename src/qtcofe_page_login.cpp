@@ -38,9 +38,10 @@
 #include "qjson/QJsonValue.h"
 
 qtCOFE::LoginPage::LoginPage ( DataModel      *dm,
+                               QSettings      *stn,
                                QWidget        *parent,
                                Qt::WindowFlags flags )
-                 : Page(dm,parent,flags)  {
+                 : Page(dm,stn,parent,flags)  {
   loginNameEdt  = NULL;
   passwordEdt   = NULL;
   keepLoggedCkb = NULL;

@@ -36,6 +36,7 @@
 #include "qtcofe_job.h"
 #include "qtcofe_session.h"
 #include "qtcofe_dialogs.h"
+#include "qtcofe_srvdefs.h"
 #include "qtcofe_defs.h"
 #include "qtx/qtx_tree.h"
 //#include "qtcofe_preferences.h"

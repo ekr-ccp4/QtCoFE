@@ -42,6 +42,7 @@ namespace qtCOFE  {
   class Component {
     public:
       int                jobId;  // job where file is kept
+      QString            dname;  // display name
       QString            desc;
       QStringList        fnames;
       QList<QStringList> metadata;
@@ -126,7 +127,7 @@ namespace qtCOFE  {
 
       void getOutputDataSpecs ( int       outNo,
                                 QString & jobName,
-                                QString & fileName,
+                                QString & dataName,
                                 QString & desc,
                                 int     & nSets);
 

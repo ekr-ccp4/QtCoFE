@@ -131,10 +131,10 @@
 #define  qtCOFE_SET_LoggedIn         "logged_in"
 
 // job status
-#define  qtCOFE_JOB_Idle        0
-#define  qtCOFE_JOB_Starting    100
-#define  qtCOFE_JOB_Running     1000
-#define  qtCOFE_JOB_Done        2000
+#define  qtCOFE_JOB_Idle             0
+#define  qtCOFE_JOB_Starting         100
+#define  qtCOFE_JOB_Running          1000
+#define  qtCOFE_JOB_Done             2000
 
 // jsrview commands
 #define  qtCOFE_JSRV_rvGateName                "rvGate"
@@ -146,9 +146,6 @@
 #define  qtCOFE_JSRV_COMMAND_Display           "{display}"
 #define  qtCOFE_JSRV_COMMAND_Browser           "{browser}"
 #define  qtCOFE_JSRV_par_del                   "*"
-
-#define  qtCOFE_TASK_DataImport     "task_dataimport"
-#define  qtCOFE_TASK_Disambiguator  "task_disambiguator"
 
 /*
 #define  qtCOFE_SET_ImageFile        "image_file"

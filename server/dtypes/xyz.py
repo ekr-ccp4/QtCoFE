@@ -12,10 +12,11 @@ class DType(dtype.DType):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(job_id,json_str)
-        self.type = "dtype_xyz"       # has to be "dtype_" + filename
-        self.name = "XYZ"
-        self.desc = "XYZ Coordinates"
-        self.icon = "data_xyz.png"
+        self.type  = "dtype_xyz"       # has to be "dtype_" + filename
+        self.name  = "XYZ"
+        self.dname = "xyz"
+        self.desc  = "XYZ Coordinates"
+        self.icon  = "data_xyz.png"
         return
 
 

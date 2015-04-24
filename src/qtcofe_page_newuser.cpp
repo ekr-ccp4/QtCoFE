@@ -32,9 +32,10 @@
 
 
 qtCOFE::NewUserPage::NewUserPage ( DataModel      *dm,
+                                   QSettings      *stn,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
-                   : Page(dm,parent,flags)  {
+                   : Page(dm,stn,parent,flags)  {
   titleLbl       = NULL;
   gbox           = NULL;
   userNameEdt    = NULL;

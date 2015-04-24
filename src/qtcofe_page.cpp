@@ -30,12 +30,14 @@
 
 
 qtCOFE::Page::Page ( DataModel      *dm,
+                     QSettings      *stn,
                      QWidget        *parent,
                      Qt::WindowFlags flags )
             : QWidget(parent,flags)  {
   dataModel   = dm;
   preferences = dataModel->getPreferences();
   session     = dataModel->getSession    ();
+  settings    = stn;
 //  setStyleSheet ( preferences->getFontSizeStyleSheet(1.0) );
 }
 

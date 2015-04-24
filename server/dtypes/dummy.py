@@ -12,10 +12,11 @@ class DType(dtype.DType):  # for data import task input and root output
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(job_id,json_str)
-        self.type = "dtype_dummy"    # has to be "dtype_" + filename
-        self.name = "Dummy"
-        self.desc = "No data required"
-        self.icon = "dtype_dummy.png"
+        self.type  = "dtype_dummy"    # has to be "dtype_" + filename
+        self.name  = "Dummy"
+        self.dname = "dummy"
+        self.desc  = "No data required"
+        self.icon  = "dtype_dummy.png"
         return
 
 

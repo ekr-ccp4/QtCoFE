@@ -51,6 +51,7 @@ class Task(task.Task):
                 structure_data.addFile ( fname_xyz,[] )
                 structure_data.addFile ( fname_map,["FWT","PHWT"] )
                 structure_data.addFile ( fname_map,["DELFWT","PHDELWT"] )
+                structure_data.makeDName ( n )
                 dout.append ( structure_data )
                 n = n + 1
             else:

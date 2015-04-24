@@ -12,12 +12,16 @@ class DType(dtype.DType):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(job_id,json_str)
-        self.type = "dtype_structure"   # has to be "dtype_" + filename
-        self.name = "Structure"
-        self.desc = "Crystal structure"
-        self.icon = "data_structure.png"
+        self.type  = "dtype_structure"   # has to be "dtype_" + filename
+        self.name  = "Structure"
+        self.dname = "structure"
+        self.desc  = "Crystal structure"
+        self.icon  = "data_structure.png"
         return
 
+    def makeDName ( self,serialNo ):
+        self.dname = "structure " + str(self.jobId) + "-" + str(serialNo)
+        return
 
 #
 #  ------------------------------------------------------------------

@@ -240,6 +240,7 @@ const Task *task = NULL;
 
         QJsonObject jobj = dlist[j].toObject();
         c->jobId = jobj.value("jobId").toDouble();
+        c->dname = jobj.value("dname").toString();
         c->desc  = jobj.value("desc" ).toString();
 
         QJsonArray flist = jobj.value("files").toArray();
@@ -321,16 +322,29 @@ bool                 ambiguous = false;
 
 void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
                                        QString & jobName,
-                                       QString & fileName,
+                                       QString & dataName,
                                        QString & desc,
                                        int     & nSets)  {
-int nFiles;
 
   jobName = name;
   desc.clear();
   if (outData[outNo]->components.isEmpty())  {
-    fileName = "<< in promise >>";
+    dataName = "<< in promise >>";
     nSets = 1;
+  } else  {
+    dataName.clear();
+    for (int i=0;i<outData[outNo]->components.count();i++)  {
+      Component *c = outData[outNo]->components[i];
+      if (!dataName.isEmpty())  {
+        dataName.append ( "\n" );
+        desc    .append ( "\n" );
+      }
+      dataName.append ( c->dname );
+      desc.append     ( c->desc  );
+    }
+    nSets = outData[outNo]->components.count();
+  }
+  /*
   } else  {
     fileName.clear();
     for (int i=0;i<outData[outNo]->components.count();i++)  {
@@ -359,6 +373,7 @@ int nFiles;
     }
     nSets = outData[outNo]->components.count();
   }
+  */
 
 }
 

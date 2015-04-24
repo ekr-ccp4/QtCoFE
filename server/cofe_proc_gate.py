@@ -83,6 +83,7 @@ action = {
     "add_job"                : jobs.add,
     "del_job"                : jobs.delete,
     "run_job"                : jobs.run,
+    "get_report_uri"         : jobs.get_report_uri,
     "get_data_model"         : datamodel.get_data_model,
     "import_file"            : dataimport.run,
     "set_data"               : disambiguator.run

@@ -33,9 +33,10 @@
 
 
 qtCOFE::AccountPage::AccountPage ( DataModel      *dm,
+                                   QSettings      *stn,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
-                   : Page(dm,parent,flags)  {
+                   : Page(dm,stn,parent,flags)  {
   prevPage     = NULL;
   userNameEdt  = NULL;
   emailEdt     = NULL;

@@ -21,6 +21,7 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 #include <QTimer>
+#include <QUrl>
 
 #include "qjson/QJsonObject.h"
 #include "qjson/QJsonArray.h"
@@ -32,15 +33,17 @@
 #include "qtcofe_dialog_import.h"
 #include "qtcofe_dialog_task.h"
 #include "qtcofe_preferences.h"
+#include "qtcofe_jsrview.h"
 #include "qtcofe_session.h"
 #include "qtcofe_server.h"
 #include "qtcofe_srvdefs.h"
 
 
 qtCOFE::ProjectPage::ProjectPage ( DataModel      *dm,
+                                   QSettings      *stn,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
-                   : Page(dm,parent,flags)  {
+                   : Page(dm,stn,parent,flags)  {
 }
 
 
@@ -119,7 +122,9 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
         message.append ( "<p>List of jobs could not be read." );
       QMessageBox::information ( this,"Error",message );
     }
-    if (action!=qtCOFE_SERVER_ACT_SetData)  {
+    if (action==qtCOFE_SERVER_ACT_GetReportURI)  {
+      jsonData.insert ( "report_uri",jsonReply.value("report_uri") );
+    } else if (action!=qtCOFE_SERVER_ACT_SetData)  {
       if (action==qtCOFE_SERVER_ACT_GetListOfJobs)
             jobTree->updateTree ( jsonReply );
       else  jobTree->makeTree   ( jsonReply );
@@ -181,7 +186,7 @@ bool                             createJob = true;
       jsonData->insert ( "task_type",taskType );
       project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob    );
       delete jsonData;
-      if (taskType==qtCOFE_TASK_Import)  {
+      if (taskType==qtCOFE_TASK_DataImport)  {
         DataImportDialog *didlg = new DataImportDialog ( this,
                                    jobTree->currentJobId(),dataModel );
         didlg->exec();
@@ -209,7 +214,7 @@ void qtCOFE::ProjectPage::delJob ( int jobID, int nextCrJobID )  {
 }
 
 void qtCOFE::ProjectPage::runJob ( int jobID )  {
-  QJsonObject *jsonData = jobTree->getTreeData();
+QJsonObject *jsonData = new QJsonObject(); // = jobTree->getTreeData();
   jsonData->insert ( "job" ,jobID );
   jsonData->insert ( "next",jobID );
   project_query    ( *jsonData,qtCOFE_SERVER_ACT_RunJob );
@@ -217,6 +222,19 @@ void qtCOFE::ProjectPage::runJob ( int jobID )  {
 }
 
 void qtCOFE::ProjectPage::viewReport ( int jobID )  {
+QJsonObject *jsonData = new QJsonObject(); // = jobTree->getTreeData();
+JSRView     *jsrview;
+
+  jsonData->insert ( "job" ,jobID );
+  jsonData->insert ( "next",jobID );
+  project_query    ( *jsonData,qtCOFE_SERVER_ACT_GetReportURI );
+
+  jsrview = new JSRView ( preferences,settings,this );
+  jsrview->show();
+  jsrview->loadPage ( QUrl(jsonData->value("report_uri").toString()) );
+
+  delete jsonData;
+
 }
 
 void qtCOFE::ProjectPage::switchJob ( int jobID )  {

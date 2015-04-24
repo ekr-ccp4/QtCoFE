@@ -38,9 +38,10 @@
 
 
 qtCOFE::ProjectListPage::ProjectListPage ( DataModel      *dm,
+                                           QSettings      *stn,
                                            QWidget        *parent,
                                            Qt::WindowFlags flags )
-                       : Page(dm,parent,flags)  {
+                       : Page(dm,stn,parent,flags)  {
   projectTree  = NULL;
   openBtn      = NULL;
   addNewBtn    = NULL;

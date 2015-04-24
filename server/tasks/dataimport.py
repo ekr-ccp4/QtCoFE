@@ -111,19 +111,23 @@ class Task(task.Task):
         if file_ext == ".seq":
             seq = sequence.DType(inp.data.job_id)
             seq.setFile ( os.path.basename(inp.data.file_path),[] )
+            seq.dname = seq.files[0];
             job_data.set_data ( [seq] )
         elif file_ext == ".mtz":
             hkl_data = hkl.DType(inp.data.job_id)
             hkl_data.setFile    ( os.path.basename(inp.data.file_path),
                                   ["F(+)","F(-)"] )
+            hkl_data.makeDName  ( 1 )
             job_data.add_data   ( hkl_data )
             hkl_data = hkl.DType(inp.data.job_id)
             hkl_data.setFile    ( os.path.basename(inp.data.file_path),
                                   ["F_peak(+)","F_peak(-)"] )
+            hkl_data.makeDName  ( 2 )
             job_data.add_data   ( hkl_data )
             hkl_data = hkl.DType(inp.data.job_id)
             hkl_data.setFile    ( os.path.basename(inp.data.file_path),
                                   ["F_ref(+)","F_ref(-)"] )
+            hkl_data.makeDName  ( 3 )
             job_data.add_data   ( hkl_data )
 
         job_data.status = defs.job_done()
