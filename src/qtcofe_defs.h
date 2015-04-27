@@ -104,7 +104,7 @@
 #define  qtCOFE_SET_RefreshMode      "refresh_mode"
 #define  qtCOFE_SET_gdExtSelection   "gd_ext_selection"
 #define  qtCOFE_SET_AppDir           "app_dir"
-#define  qtCOFE_SET_ProcPath         "proc_path"
+#define  qtCOFE_SET_ServerUri        "server_uri"
 #define  qtCOFE_SET_CootPath         "coot_path"
 #define  qtCOFE_SET_MGPath           "ccp4mg_path"
 #define  qtCOFE_SET_ViewHKLPath      "viewhkl_path"
@@ -121,8 +121,8 @@
 
 // session settings
 #define  qtCOFE_SET_LoginName        "login_name"
-#define  qtCOFE_SET_MasterDataPath   "master_data_path"
-#define  qtCOFE_SET_BinPath          "bin_path"
+#define  qtCOFE_SET_ProjectsPath     "projects_path"
+//#define  qtCOFE_SET_BinPath          "bin_path"
 #define  qtCOFE_SET_ProjectID        "project_id"
 #define  qtCOFE_SET_ProjectPath      "project_path"
 #define  qtCOFE_SET_Password         "magic_key"

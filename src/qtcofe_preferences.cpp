@@ -83,12 +83,12 @@ QChar    dirsep = QDir::separator();
     ccp4MasterPath.append ( dirsep );
 
 
-  procPath       = "";
-  masterDataPath = "";
-  binPath        = "";
+  serverUri    = "";
+  projectsPath = "";
+//  binPath      = "";
 
 #ifdef Q_OS_MAC
-  binPath     = ccp4Path + "bin/";
+//  binPath     = ccp4Path + "bin/";
   cootPath    = ccp4Path + "coot.app";
   ccp4mgPath  = ccp4Path + "QtMG.app";
   viewhklPath = ccp4Path + "ViewHKL.app";
@@ -201,31 +201,31 @@ int          row;
   row  = 0;
 
   gbox->addWidget ( new QLabel("Server URI:"),row++,0,1,2 );
-  server_uri_edt = new QLineEdit ( procPath );
+  server_uri_edt = new QLineEdit ( serverUri );
   server_uri_btn = new QPushButton ( "browse" );
   connect ( server_uri_btn,SIGNAL(clicked()),
             this,SLOT(browse_server_dir()) );
   gbox->addWidget ( server_uri_edt,row,0,1,1 );
   gbox->addWidget ( server_uri_btn,row++,1,1,1 );
 
+//  gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
+//
+//  gbox->addWidget ( new QLabel("Path to executables:"),row++,0,1,2 );
+//  bin_path_edt = new QLineEdit ( binPath );
+//  bin_path_btn = new QPushButton ( "browse" );
+//  connect ( bin_path_btn,SIGNAL(clicked()),this,SLOT(browse_bin_dir()) );
+//  gbox->addWidget ( bin_path_edt,row,0,1,1 );
+//  gbox->addWidget ( bin_path_btn,row++,1,1,1 );
+
   gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
 
-  gbox->addWidget ( new QLabel("Path to executables:"),row++,0,1,2 );
-  bin_path_edt = new QLineEdit ( binPath );
-  bin_path_btn = new QPushButton ( "browse" );
-  connect ( bin_path_btn,SIGNAL(clicked()),this,SLOT(browse_bin_dir()) );
-  gbox->addWidget ( bin_path_edt,row,0,1,1 );
-  gbox->addWidget ( bin_path_btn,row++,1,1,1 );
-
-  gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
-
-  gbox->addWidget ( new QLabel("Master Path to repositories:"),row++,0,1,2 );
-  master_path_edt = new QLineEdit ( masterDataPath );
-  master_path_btn = new QPushButton ( "browse" );
-  connect ( master_path_btn,SIGNAL(clicked()),
-            this,SLOT(browse_master_dir()) );
-  gbox->addWidget ( master_path_edt,row,0,1,1 );
-  gbox->addWidget ( master_path_btn,row++,1,1,1 );
+  gbox->addWidget ( new QLabel("Path to porject repositories:"),row++,0,1,2 );
+  projects_path_edt = new QLineEdit   ( projectsPath );
+  projects_path_btn = new QPushButton ( "browse" );
+  connect ( projects_path_btn,SIGNAL(clicked()),
+            this,SLOT(browse_projects_dir()) );
+  gbox->addWidget ( projects_path_edt,row,0,1,1 );
+  gbox->addWidget ( projects_path_btn,row++,1,1,1 );
 
   gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
 
@@ -410,11 +410,11 @@ void qtCOFE::Preferences::choose_font()  {
 
 void qtCOFE::Preferences::actualize()  {
 
-  server_uri_edt      -> setText    ( procPath       );
-  master_path_edt     -> setText    ( masterDataPath );
-  bin_path_edt        -> setText    ( binPath        );
-  coot_path_edt       -> setText    ( cootPath       );
-  ccp4mg_path_edt     -> setText    ( ccp4mgPath     );
+  server_uri_edt      -> setText    ( serverUri    );
+  projects_path_edt   -> setText    ( projectsPath );
+//  bin_path_edt        -> setText    ( binPath      );
+  coot_path_edt       -> setText    ( cootPath     );
+  ccp4mg_path_edt     -> setText    ( ccp4mgPath   );
 
   plot_height_sbx     -> setValue   ( plotHeight );
   plot_width_sbx      -> setValue   ( plotWidth  );
@@ -432,26 +432,29 @@ void qtCOFE::Preferences::actualize()  {
 
 }
 
-void qtCOFE::Preferences::setProcPath ( const QString & server_uri )  {
-  procPath = server_uri;
-  server_uri_edt->setText    ( procPath       );
+void qtCOFE::Preferences::setServerUri ( const QString & server_uri )  {
+  serverUri = server_uri;
+  server_uri_edt->setText    ( serverUri );
 //  server_uri_edt->setEnabled ( !cfgFromCCP4gui );
 //  server_uri_btn->setEnabled ( !cfgFromCCP4gui );
 }
 
-void qtCOFE::Preferences::setMasterPath ( const QString & master_path )  {
-  masterDataPath = master_path;
-  master_path_edt->setText    ( masterDataPath );
+void qtCOFE::Preferences::setProjectsPath (
+                                     const QString & projects_path )  {
+  projectsPath = projects_path;
+  projects_path_edt->setText    ( projectsPath );
 //  server_uri_edt->setEnabled ( !cfgFromCCP4gui );
 //  server_uri_btn->setEnabled ( !cfgFromCCP4gui );
 }
 
+/*
 void qtCOFE::Preferences::setBinPath ( const QString & bin_path )  {
   binPath = bin_path;
   bin_path_edt->setText    ( binPath );
 //  server_uri_edt->setEnabled ( !cfgFromCCP4gui );
 //  server_uri_btn->setEnabled ( !cfgFromCCP4gui );
 }
+*/
 
 void qtCOFE::Preferences::setCootPath ( const QString & coot_path )  {
   cootPath = coot_path;
@@ -497,15 +500,15 @@ void qtCOFE::Preferences::readSettings  ( QSettings *settings )  {
 //                                               gdExtSelection).toBool();
 
 
-  masterDataPath = settings->value(qtCOFE_SET_MasterDataPath,
-                                            masterDataPath).toString();
-  binPath = settings->value(qtCOFE_SET_BinPath,binPath).toString();
+  projectsPath = settings->value(qtCOFE_SET_ProjectsPath,
+                                            projectsPath).toString();
+//  binPath = settings->value(qtCOFE_SET_BinPath,binPath).toString();
 
   if (settings->value(qtCOFE_SET_AppDir,"*").toString()
       .compare(QApplication::applicationFilePath()) == 0)  {
     // CCP4 directory has not moved, assume no new release, so coot
     // and mg paths should be read
-    procPath = settings->value(qtCOFE_SET_ProcPath,"").toString();
+    serverUri = settings->value(qtCOFE_SET_ServerUri,"").toString();
     cootPath  = readPGMPath ( cootPath ,qtCOFE_SET_CootPath ,settings );
 #ifdef Q_OS_WIN32
     if (!cootPath.endsWith(".bat",Qt::CaseInsensitive))
@@ -550,9 +553,9 @@ void qtCOFE::Preferences::writeSettings ( QSettings *settings )  {
 //  settings->setValue ( qtCOFE_SET_gdExtSelection  ,gdExtSelection    );
   settings->setValue ( qtCOFE_SET_AppDir,
                                 QApplication::applicationFilePath()  );
-  settings->setValue ( qtCOFE_SET_ProcPath        ,procPath          );
-  settings->setValue ( qtCOFE_SET_MasterDataPath  ,masterDataPath    );
-  settings->setValue ( qtCOFE_SET_BinPath         ,binPath           );
+  settings->setValue ( qtCOFE_SET_ServerUri       ,serverUri         );
+  settings->setValue ( qtCOFE_SET_ProjectsPath    ,projectsPath      );
+//  settings->setValue ( qtCOFE_SET_BinPath         ,binPath           );
   settings->setValue ( qtCOFE_SET_CootPath        ,cootPath          );
   settings->setValue ( qtCOFE_SET_MGPath          ,ccp4mgPath        );
   settings->setValue ( qtCOFE_SET_ViewHKLPath     ,viewhklPath       );
@@ -569,12 +572,12 @@ void qtCOFE::Preferences::writeSettings ( QSettings *settings )  {
 
 void qtCOFE::Preferences::apply()  {
 
-  procPath          = server_uri_edt  ->text();
-  masterDataPath    = master_path_edt ->text();
-  binPath           = bin_path_edt    ->text();
-  cootPath          = coot_path_edt   ->text();
-  ccp4mgPath        = ccp4mg_path_edt ->text();
-  browserPath       = browser_path_edt->text();
+  serverUri         = server_uri_edt    ->text();
+  projectsPath      = projects_path_edt ->text();
+//  binPath           = bin_path_edt      ->text();
+  cootPath          = coot_path_edt     ->text();
+  ccp4mgPath        = ccp4mg_path_edt   ->text();
+  browserPath       = browser_path_edt  ->text();
 
   plotHeight        = plot_height_sbx->value();
   plotWidth         = plot_width_sbx ->value();
@@ -593,17 +596,17 @@ void qtCOFE::Preferences::apply()  {
 void qtCOFE::Preferences::close()  {
 
   if (
-      (procPath          != server_uri_edt ->text())  ||
-      (masterDataPath    != master_path_edt->text())  ||
-      (binPath           != bin_path_edt   ->text())  ||
-      (cootPath          != coot_path_edt  ->text())  ||
-      (ccp4mgPath        != ccp4mg_path_edt->text())  ||
-      (plotHeight        != plot_height_sbx->value()) ||
-      (plotWidth         != plot_width_sbx ->value()) ||
-      (treeWidth         != tree_width_sbx ->value()) ||
+      (serverUri         != server_uri_edt   ->text())  ||
+      (projectsPath      != projects_path_edt->text())  ||
+//      (binPath           != bin_path_edt     ->text())  ||
+      (cootPath          != coot_path_edt    ->text())  ||
+      (ccp4mgPath        != ccp4mg_path_edt  ->text())  ||
+      (plotHeight        != plot_height_sbx  ->value()) ||
+      (plotWidth         != plot_width_sbx   ->value()) ||
+      (treeWidth         != tree_width_sbx   ->value()) ||
 //      (maxDecorationSize != max_decor_size_sbx ->value()) ||
       (refreshPeriod     != refresh_period_sbx->value()*1000)  ||
-      (refreshMode       != refresh_mode_cmb->currentIndex())
+      (refreshMode       != refresh_mode_cmb ->currentIndex())
 //      (gdExtSelection ^ gd_ext_browsing_chk->isChecked())
      )  {
     if (QMessageBox::question(this,tr("Apply changes?"),
@@ -664,19 +667,20 @@ QString dirName;
   }
 }
 
-void qtCOFE::Preferences::browse_master_dir() {
+void qtCOFE::Preferences::browse_projects_dir() {
 QString dirName;
   if (!dirName.isEmpty())
-    dirName = QFileInfo(master_path_edt->text()).absolutePath();
+    dirName = QFileInfo(projects_path_edt->text()).absolutePath();
   dirName = QFileDialog::getExistingDirectory ( this,
-                              "Locate Master Data Directory",dirName );
+                              "Locate Projects Directory",dirName );
   if (!dirName.isEmpty())  {
     if (!dirName.endsWith('/'))
       dirName.append ( "/" );
-    master_path_edt->setText ( dirName );
+    projects_path_edt->setText ( dirName );
   }
 }
 
+/*
 void qtCOFE::Preferences::browse_bin_dir() {
 QString dirName;
   if (!dirName.isEmpty())
@@ -689,6 +693,7 @@ QString dirName;
     bin_path_edt->setText ( dirName );
   }
 }
+*/
 
 void qtCOFE::Preferences::browse_coot()  {
 QString fileName = browse ( "Locate Coot",coot_path_edt->text() );
@@ -737,7 +742,7 @@ QString docPath = ccp4Path + qtCOFE_Doc_Directory + pgmName + ".html";
 
 
 QString qtCOFE::Preferences::getProcessingGate()  {
-QString  processor = procPath + qtCOFE_SERVER_ProcGate;
+QString  processor = serverUri + qtCOFE_SERVER_ProcGate;
 bool     done = false;
 
   QApplication::processEvents();
@@ -745,17 +750,17 @@ bool     done = false;
   while ((!QFileInfo(processor).exists()) && (!done))  {
     if (QMessageBox::question ( this,"Server misconfigured",
          "Server is misconfigured, looking at<p>'" +
-         procPath + "'<p>Would you like to specify the server "
+         serverUri + "'<p>Would you like to specify the server "
          "now (just navigate to directory containing " +
          qtCOFE_SERVER_ProcGate +")? This needs to be done only once.",
          QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
            QMessageBox::Yes)  {
       browse_server_dir();
-      if (server_uri_edt->text()==procPath)
+      if (server_uri_edt->text()==serverUri)
         done = true;
       else  {
-        procPath = server_uri_edt->text();
-        processor = procPath + qtCOFE_SERVER_ProcGate;
+        serverUri = server_uri_edt->text();
+        processor = serverUri + qtCOFE_SERVER_ProcGate;
       }
     } else
       done = true;
@@ -768,23 +773,23 @@ bool     done = false;
 
 }
 
-QString qtCOFE::Preferences::getMasterPath()  {
+QString qtCOFE::Preferences::getProjectsPath()  {
 bool  done = false;
 
   QApplication::processEvents();
 
-  while ((!QFileInfo(masterDataPath).exists()) && (!done))  {
+  while ((!QFileInfo(projectsPath).exists()) && (!done))  {
     if (QMessageBox::question ( this,"Master Path misconfigured",
-         "Master Data Path is misconfigured, looking at<p>'" +
-         masterDataPath + "'<p>Would you like to specify the MDP "
+         "Projects Path is misconfigured, looking at<p>'" +
+         projectsPath + "'<p>Would you like to specify the MDP "
          "now (just navigate to directory where all local data and " +
          "projects should be kept)? This needs to be done only once.",
          QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
                                                    QMessageBox::Yes)  {
-      browse_master_dir();
-      if (master_path_edt->text()==masterDataPath)
+      browse_projects_dir();
+      if (projects_path_edt->text()==projectsPath)
             done = true;
-      else  masterDataPath = master_path_edt->text();
+      else  projectsPath = projects_path_edt->text();
     } else
       done = true;
   }
@@ -792,10 +797,11 @@ bool  done = false;
 //  if (done)
 //    masterDataPath.clear();
 
-  return masterDataPath;
+  return projectsPath;
 
 }
 
+/*
 QString qtCOFE::Preferences::getBinPath()  {
 bool  done = false;
 
@@ -820,6 +826,7 @@ bool  done = false;
   return binPath;
 
 }
+*/
 
 void qtCOFE::Preferences::launchCoot ( const QStringList & arguments )  {
 

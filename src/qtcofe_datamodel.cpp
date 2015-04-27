@@ -271,7 +271,7 @@ int         retcode = 0;
                  else  delete dtype;
       }
     } else
-      retcode = 2;
+      return 2;
 
     if (dataModel.contains("sections"))  {
       a = dataModel.value("sections").toArray();
@@ -291,7 +291,7 @@ int         retcode = 0;
           delete sec;
       }
     } else
-      retcode = 3;
+      return 3;
 
     if (dataModel.contains("tasks"))  {
       a = dataModel.value("tasks").toArray();
@@ -311,11 +311,11 @@ int         retcode = 0;
           delete task;
       }
     } else
-      retcode = 4;
+      return 4;
 
   }
 
-  return retcode;
+  return 0;
 
 }
 

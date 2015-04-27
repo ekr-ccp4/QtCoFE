@@ -48,9 +48,9 @@ namespace qtCOFE  {
       int      plotHeight;
       int      plotWidth;
 //      int      maxDecorationSize;
-      QString  procPath;         //!< path to local processing scripts
-      QString  masterDataPath;
-      QString  binPath;          //!< path to local executables
+      QString  serverUri;        //!< path to local processing scripts
+      QString  projectsPath;     //!< path to local project directories
+//      QString  binPath;          //!< path to local executables
       QString  ccp4Path;
       QString  cootPath;
       QString  ccp4mgPath;
@@ -85,15 +85,15 @@ namespace qtCOFE  {
       QString ccp4DocIndex();  // Empty if file not found
       QString ccp4Doc ( const QString & pgmName ); // Empty if not found
 
-      void setProcPath   ( const QString & server_uri  );
-      void setMasterPath ( const QString & master_path );
-      void setBinPath    ( const QString & bin_path    );
-      void setCootPath   ( const QString & coot_path   );
-      void setMGPath     ( const QString & ccp4mg_path );
+      void setServerUri    ( const QString & server_uri  );
+      void setProjectsPath ( const QString & projects_path );
+//      void setBinPath    ( const QString & bin_path    );
+      void setCootPath     ( const QString & coot_path   );
+      void setMGPath       ( const QString & ccp4mg_path );
 
       QString getProcessingGate();
-      QString getMasterPath    ();
-      QString getBinPath       ();
+      QString getProjectsPath  ();
+//      QString getBinPath       ();
 
       void readSettings  ( QSettings *settings );
       void writeSettings ( QSettings *settings );
@@ -117,14 +117,14 @@ namespace qtCOFE  {
       QTabWidget    *tabs;
 
       QLineEdit     *server_uri_edt;
-      QLineEdit     *master_path_edt;
-      QLineEdit     *bin_path_edt;
+      QLineEdit     *projects_path_edt;
+//      QLineEdit     *bin_path_edt;
       QLineEdit     *coot_path_edt;
       QLineEdit     *ccp4mg_path_edt;
       QLineEdit     *browser_path_edt;
       QPushButton   *server_uri_btn;
-      QPushButton   *master_path_btn;
-      QPushButton   *bin_path_btn;
+      QPushButton   *projects_path_btn;
+//      QPushButton   *bin_path_btn;
       QPushButton   *coot_path_btn;
       QPushButton   *ccp4mg_path_btn;
       QPushButton   *browser_path_btn;
@@ -151,13 +151,13 @@ namespace qtCOFE  {
       void close();
       void useSystemBrowserClicked();
       void refreshModeChanged     ( int index );
-      void browse_server_dir();
-      void browse_master_dir();
-      void browse_bin_dir   ();
-      void browse_coot      ();
-      void browse_ccp4mg    ();
-      void browse_browser   ();
-      void choose_font      ();
+      void browse_server_dir  ();
+      void browse_projects_dir();
+//      void browse_bin_dir     ();
+      void browse_coot        ();
+      void browse_ccp4mg      ();
+      void browse_browser     ();
+      void choose_font        ();
 
   };
 

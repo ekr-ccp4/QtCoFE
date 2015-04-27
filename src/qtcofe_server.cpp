@@ -46,36 +46,38 @@ qtCOFE::Server::~Server() {
 qtCOFE::SERVER_RC qtCOFE::Server::call ( QString           action,
                                          const QJsonObject  &data,
                                          QJsonObject        &reply )  {
-QString  processor  = preferences->getProcessingGate();
-QString  masterPath = preferences->getMasterPath();
-QString  binPath    = preferences->getBinPath();
+QString  processor    = preferences->getProcessingGate();
+QString  projectsPath = preferences->getProjectsPath();
+//QString  binPath      = preferences->getBinPath();
 
   if (processor.isEmpty())  {
     errorCode = SERVER_RC_Unconfigured;
     return errorCode;
   }
-  if (masterPath.isEmpty())  {
-    errorCode = SERVER_RC_NoMasterPath;
+  if (projectsPath.isEmpty())  {
+    errorCode = SERVER_RC_NoProjectsPath;
     return errorCode;
   }
+  /*
   if (binPath.isEmpty())  {
     errorCode = SERVER_RC_NoBinPath;
     return errorCode;
   }
+  */
 
   errorCode = SERVER_RC_Ok;
   errMsg.clear();
 
   QProcess process;
   QJsonObject jsonObject;
-  jsonObject.insert ( "action"     ,action             );
-  jsonObject.insert ( "login"      ,session->loginName );
-  jsonObject.insert ( "pwd"        ,session->password  );
-  jsonObject.insert ( "master_path",masterPath         );
-  jsonObject.insert ( "bin_path"   ,binPath            );
-  jsonObject.insert ( "session"    ,session->sessionID );
-  jsonObject.insert ( "project"    ,session->projectID );
-  jsonObject.insert ( "job"        ,session->jobID     );
+  jsonObject.insert ( "action"       ,action              );
+  jsonObject.insert ( "login"        ,session->loginName  );
+  jsonObject.insert ( "pwd"          ,session->password   );
+  jsonObject.insert ( "projects_path",projectsPath        );
+//  jsonObject.insert ( "bin_path"     ,binPath             );
+  jsonObject.insert ( "session"      ,session->sessionID  );
+  jsonObject.insert ( "project"      ,session->projectID  );
+  jsonObject.insert ( "job"          ,session->jobID      );
 
   if (!data.empty())
     jsonObject.insert ( "data",data );
@@ -144,14 +146,16 @@ QString message;
             "Server URI is not set. Please open<br>"
             "<i>Preferences</i> and set up server URI." );
           break;
-    case SERVER_RC_NoMasterPath : message = QString(
-            "Master Data Path is not set. Please open<br>"
-            "<i>Preferences</i> and set up Master data path." );
+    case SERVER_RC_NoProjectsPath : message = QString(
+            "Projects Path is not set. Please open<br>"
+            "<i>Preferences</i> and set up Projects data path." );
           break;
+    /*
     case SERVER_RC_NoBinPath : message = QString(
             "Master Path to executables is not set. Please open<br>"
             "<i>Preferences</i> and set up Path to executables." );
           break;
+    */
     default : message = QString(
             "Unknown error code at server call (%1).<p>"
             "This is a program error, please report "

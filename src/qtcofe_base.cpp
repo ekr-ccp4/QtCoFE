@@ -101,11 +101,12 @@ qtCOFE::Base::~Base() {
 }
 
 void qtCOFE::Base::readModel() {
+int rc = dataModel->readModel();
 
-  if (dataModel->readModel())  {
+  if (rc)  {
     QMessageBox::critical ( this,"No data model",
-               "Data Model could not be retrieved<p>"
-               "<b><i>-- STOP</i></b>" );
+               QString("Data Model could not be retrieved (%1)<p>"
+                       "<b><i>-- STOP</i></b>").arg(rc) );
     QTimer::singleShot ( 100,this,SLOT(close()) );
   }
 

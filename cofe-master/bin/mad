@@ -1,0 +1,29 @@
+#!/usr/bin/python
+
+#  Dummy for Auto-MAD module
+
+import sys
+import time
+
+print ( " This is Auto-MAD Dummy\n" )
+
+print ( sys.argv[0] )
+
+for i in range(1,len(sys.argv)):
+    if i < len(sys.argv)-1:
+        print ( "      " + sys.argv[i] + "    \\" )
+    else:
+        print ( "      " + sys.argv[i] )
+
+time.sleep ( 10 )
+
+for i in range(1,4):
+    file_out = open ( "structure_" + str(i) + ".mtz",'w' )
+    file_out.write ( "Rubbish" )
+    file_out.close()
+    file_out = open ( "structure_" + str(i) + ".pdb",'w' )
+    file_out.write ( "Rubbish" )
+    file_out.close()
+
+sys.exit(0)
+
