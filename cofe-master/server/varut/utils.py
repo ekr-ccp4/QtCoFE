@@ -31,7 +31,7 @@ def get_job_dir ( project_repo_path,job_id ):
     return os.path.join ( project_repo_path,"job." + str(job_id) )
 
 
-def set_pythonpath():
+#def set_pythonpath():
 
 
 def make_return ( action,result,message ):
