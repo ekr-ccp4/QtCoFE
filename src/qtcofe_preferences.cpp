@@ -131,25 +131,24 @@ QChar    dirsep = QDir::separator();
   cootPath   = "coot";
   ccp4mgPath = "ccp4mg";
 
-  if (!masterDataPath.isEmpty())  {
+  if (!projectsPath.isEmpty())  {
     QStringList lst;
     if (QFileInfo(ccp4Path+"/restore").exists())
       cootPath = ccp4Path + "bin/coot";
     else  {
-      lst = QDir(masterDataPath).entryList ( QStringList() << "coot*" );
+      lst = QDir(projectsPath).entryList ( QStringList() << "coot*" );
       if (lst.count()>0)
-        cootPath = masterDataPath + lst.at(lst.count()-1) + dirsep +
+        cootPath = projectsPath + lst.at(lst.count()-1) + dirsep +
                                             "bin" + dirsep + "coot";
     }
-    lst = QDir(masterDataPath).entryList ( QStringList() << "ccp4mg*" );
+    lst = QDir(projectsPath).entryList ( QStringList() << "ccp4mg*" );
     if (lst.count()>0)
-      ccp4mgPath = masterDataPath + lst.at(lst.count()-1) + dirsep +
+      ccp4mgPath = projectsPath + lst.at(lst.count()-1) + dirsep +
                                           "bin" + dirsep + "ccp4mg";
   }
-  if (!ccp4Path.isEmpty())  {
-    binPath     = ccp4Path + "bin" +  dirsep;
-    viewhklPath = binPath  + "viewhkl";
-  } else
+  if (!ccp4Path.isEmpty())
+    viewhklPath = ccp4Path + "bin" +  dirsep  + "viewhkl";
+  else
     viewhklPath = "viewhkl";
   browserPath = "firefox";
   oldMac      = false;
