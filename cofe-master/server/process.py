@@ -11,22 +11,25 @@
 #     5. Sets job status to "finished"
 #     6. Returns
 #
-#  process.py project_repo_dir bin_dir jobId
+#  process.py project_repo_dir master_dir jobId
 #
 #  ------------------------------------------------------------------
 
 import os
 import sys
 import subprocess
+import pyrvapi
 from varut   import gitut, utils, defs
 from project import job, datamodel, jobs
 
 
 #  Read input parameters
 project_repo_dir = sys.argv[1]
-bin_dir          = sys.argv[2]
-jobID            = int(sys.argv[3])
-job_dir          = utils.get_job_dir ( project_repo_dir,jobID )
+defs.set_master_path ( sys.argv[2] )
+jobID   = int(sys.argv[3])
+
+bin_dir = defs.bin_path()
+job_dir = utils.get_job_dir ( project_repo_dir,jobID )
 
 #  Read job data
 result = gitut.lock ( project_repo_dir )
@@ -76,6 +79,16 @@ file_stdout_path = os.path.join ( job_dir,"_stdout.log" )
 file_stderr_path = os.path.join ( job_dir,"_stderr.log" )
 file_stdout = open ( file_stdout_path,'w' )
 file_stderr = open ( file_stderr_path,'w' )
+
+#  initiate report document
+pyrvapi.rvapi_init_document ( "report",os.path.join(job_dir,"html"),
+                              job_data.desc,1,7,
+                              defs.jsrview_path(),None,None,None )
+pyrvapi.rvapi_add_tab ( "logfile","Log file",True );
+pyrvapi.rvapi_append_content ( file_stdout_path,True,"logfile" );
+pyrvapi.rvapi_flush();
+
+
 os.chdir ( job_dir )
 p = subprocess.call ( cmd,stdout=file_stdout,stderr=file_stderr )
 file_stdout.close()

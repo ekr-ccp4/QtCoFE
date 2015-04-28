@@ -100,7 +100,7 @@ OTHER_FILES += \
     cofe-master/server/tasks/__init__.py \
     cofe-master/server/tasks/disambiguator.py \
     cofe-master/server/process.py \
-    cofe-bin/mad
+    cofe-master/bin/mad
 
 HEADERS += \
     qjson/QJsonArray.h \

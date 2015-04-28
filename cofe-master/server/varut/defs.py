@@ -57,8 +57,10 @@ def set_master_path(mpath):
     __master_path__ = mpath
     return
 
-def bin_path():  return __master_path__ + "/bin/"
-def lib_path():  return __master_path__ + "/lib/"
+def master_path ():  return __master_path__
+def bin_path    ():  return __master_path__ + "/bin/"
+def lib_path    ():  return __master_path__ + "/lib/"
+def jsrview_path():  return __master_path__ + "/jsrview/"
 
 
 def user_data_name      ():  return "user.data"
