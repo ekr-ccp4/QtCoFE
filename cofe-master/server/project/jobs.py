@@ -367,8 +367,17 @@ def run(inp):
                     os.path.abspath(__file__ + "/../")),"process.py" )
 
     cmd = ["python",proc_path,project_repo_dir,
-           defs.bin_path(),str(job_data.id)]
-    subprocess.Popen ( cmd,creationflags=0 )
+           defs.master_path(),str(job_data.id)]
+
+    environ = os.environ
+    if 'PYTHONPATH' in environ:
+        environ['PYTHONPATH'] = defs.lib_path() + "/py2:" + environ['PYTHONPATH']
+    else:
+        environ['PYTHONPATH'] = defs.lib_path() + "/py2"
+
+    subprocess.Popen ( cmd,
+                       env=environ,
+                       creationflags=0 )
 
     return project_data
 

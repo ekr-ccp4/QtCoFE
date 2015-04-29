@@ -54,8 +54,8 @@ if not os.path.isdir(defs.projects_path()):
     sys.exit(0)
 
 
-if not defs.is_bin_path():
-    defs.set_bin_path ( os.path.dirname(os.path.abspath(__file__+"/../")) + "/bin/" )
+if not defs.is_master_path():
+   defs.set_master_path ( os.path.dirname(os.path.abspath(__file__+"/../")) )
 
 #print defs.bin_path()
 
