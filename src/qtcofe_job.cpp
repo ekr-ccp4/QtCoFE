@@ -38,9 +38,10 @@ qtCOFE::JobData::JobData() : TaskData()  {
 
 qtCOFE::JobData::JobData ( TaskData *taskData )  {
   disambiguated = false;
-  type  = taskData->type;  // "dtype_xxx"
-  mode  = taskData->mode;  // modificator of data entity number (E,U,G)
-  nmode = taskData->nmode; // data entity number
+  type    = taskData->type;  // "dtype_xxx"
+  subtype = taskData->subtype;
+  mode    = taskData->mode;  // modificator of data entity number (E,U,G)
+  nmode   = taskData->nmode; // data entity number
 }
 
 qtCOFE::JobData::~JobData() { clear(); }
@@ -52,6 +53,23 @@ void qtCOFE::JobData::clear()  {
   components.clear();
 }
 
+int qtCOFE::JobData::n_suitable ( JobData *jobData )  {
+int nm = 0;
+
+  if (subtype=="*")
+    return jobData->components.count();
+
+  if (jobData->type==type)
+    for (int i=0;i<jobData->components.count();i++)
+      if (subtype.contains(jobData->components[i]->subtype) ||
+          jobData->components[i]->subtype.contains('*'))
+        nm++;
+
+  return nm;
+
+}
+
+/*
 qtCOFE::JobData::SUITABILITY qtCOFE::JobData::E_Suitable (
                                     const QList<JobData *> jobData )  {
 int nm;
@@ -105,6 +123,59 @@ int nm;
   return Unsuitable;
 
 }
+*/
+
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::E_Suitable (
+                                    const QList<JobData *> jobData )  {
+int nm = n_suitable(jobData[0]);
+
+  if (nm==nmode)
+    return Suitable;
+
+  for (int i=1;i<jobData.count();i++)
+    nm += n_suitable(jobData[i]);
+  if (nmode<=nm)  return Ambiguous;
+
+  return Unsuitable;
+
+}
+
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::G_Suitable (
+                                    const QList<JobData *> jobData )  {
+int nm = n_suitable(jobData[0]);
+
+  if (nm==nmode+1)
+    return Suitable;
+
+  if ((nm>nmode) && jobData[0]->disambiguated)
+    return Suitable;
+
+  for (int i=1;i<jobData.count();i++)
+    nm += n_suitable(jobData[i]);
+  if (nm>nmode)  return Ambiguous;
+
+  return Unsuitable;
+
+}
+
+qtCOFE::JobData::SUITABILITY qtCOFE::JobData::U_Suitable (
+                                    const QList<JobData *> jobData )  {
+int nm = n_suitable(jobData[0]);
+
+  if (nm==nmode)
+    return Suitable;
+
+  if ((nm<nmode) && jobData[0]->disambiguated)
+    return Suitable;
+
+  for (int i=1;i<jobData.count();i++)
+    nm += n_suitable(jobData[i]);
+  if (nm<nmode)  return Ambiguous;
+
+  return Unsuitable;
+
+}
+
 
 qtCOFE::JobData::SUITABILITY qtCOFE::JobData::isSuitable (
                                     const QList<JobData *> jobData )  {
@@ -239,15 +310,23 @@ const Task *task = NULL;
         Component *c = new Component();
 
         QJsonObject jobj = dlist[j].toObject();
-        c->jobId = jobj.value("jobId").toDouble();
-        c->dname = jobj.value("dname").toString();
-        c->desc  = jobj.value("desc" ).toString();
+        c->jobId   = jobj.value("jobId"  ).toDouble();
+        c->subtype = jobj.value("subtype").toString();
+        c->dname   = jobj.value("dname"  ).toString();
+        c->desc    = jobj.value("desc"   ).toString();
 
+//printf ( " p1\n"); fflush(stdout);
         QJsonArray flist = jobj.value("files").toArray();
         for (int k=0;k<flist.count();k++)
           c->fnames.append ( flist[k].toString() );
 
         QJsonArray mlist = jobj.value("metadata").toArray();
+        for (int k=0;k<mlist.count();k++)  {
+          QJsonObject meta = mlist[k].toObject();
+          c->metadata[meta.value("key").toString()] =
+                                       meta.value("value").toString();
+        }
+        /*
         for (int k=0;k<mlist.count();k++)  {
           QJsonArray  meta = mlist[k].toArray();
           QStringList metadata;
@@ -255,6 +334,7 @@ const Task *task = NULL;
             metadata.append ( meta[m].toString() );
           c->metadata.append ( metadata );
         }
+        */
 
         jd->components.append ( c );
 
@@ -321,6 +401,7 @@ bool                 ambiguous = false;
 }
 
 void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
+                                       QString   subtype,
                                        QString & jobName,
                                        QString & dataName,
                                        QString & desc,
@@ -333,47 +414,21 @@ void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
     nSets = 1;
   } else  {
     dataName.clear();
+    nSets = 0;
     for (int i=0;i<outData[outNo]->components.count();i++)  {
       Component *c = outData[outNo]->components[i];
-      if (!dataName.isEmpty())  {
-        dataName.append ( "\n" );
-        desc    .append ( "\n" );
-      }
-      dataName.append ( c->dname );
-      desc.append     ( c->desc  );
-    }
-    nSets = outData[outNo]->components.count();
-  }
-  /*
-  } else  {
-    fileName.clear();
-    for (int i=0;i<outData[outNo]->components.count();i++)  {
-      Component *c = outData[outNo]->components[i];
-      if (!fileName.isEmpty())  {
-        fileName.append ( "\n" );
-        desc    .append ( "\n" );
-      }
-      desc.append ( c->desc  );
-      nFiles = c->fnames.count();
-      if (nFiles>1)
-        fileName.append ( "[" );
-      for (int j=0;j<nFiles;j++)  {
-        fileName.append ( c->fnames[j] );
-        if (c->metadata[j].count()>0)  {
-          fileName.append ( "/" );
-          foreach (QString S,c->metadata[j])
-            fileName.append ( S + ":" );
-          fileName.resize ( fileName.size()-1 );
+//      if ((c->subtype=="*") || (subtype=="*") || (c->subtype==subtype)) {
+        if (!dataName.isEmpty())  {
+          dataName.append ( "\n" );
+          desc    .append ( "\n" );
         }
-        if (j<nFiles-1)
-          fileName.append ( "\n" );
-      }
-      if (nFiles>1)
-        fileName.append ( "]" );
+        dataName.append ( c->dname + "/" + c->subtype + "//" + subtype );
+        desc.append     ( c->desc  );
+        nSets++;
+//      }
     }
-    nSets = outData[outNo]->components.count();
+//    nSets = outData[outNo]->components.count();
   }
-  */
 
 }
 

@@ -19,10 +19,10 @@ class Task(task.Task):
         self.icon    = "task_dataprocessing.png"
 
         self.inp_data = [
-                         [images.DType(-1).type,"G",0]
+                         [images.DType(-1).type,"G",0,"*"]
                         ]
         self.out_data = [
-                         [hkl   .DType(-1).type,"E",1]
+                         [hkl   .DType(-1).type,"E",1,"*"]
                         ]
 
         self.executable = ""      # program to run

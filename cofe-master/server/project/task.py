@@ -101,11 +101,17 @@ class Task(jsonut.jObject):
         #      data entities (inclusive of N)
         #  G : the corresponding data list must contain more than N
         #      data entities (N exclusive)
+        #   Fourth parameter represents data subtyping. Asterisks "*"
+        # means that all data subtypes are allowed. Subtyping may
+        # refer to particular data properties, such as anomalous
+        # reflections or protein/nucleic acid chains. All subtypes
+        # go into one comma-separated list. Missing subtype is
+        # equivalent to "*".
         self.inp_data = [
-                         [dummy.DType().type,"G",-1]
+                         [dummy.DType().type,"G",-1,"*"]
                         ]
         self.out_data = [
-                         [any  .DType().type,"G",-1]
+                         [any  .DType().type,"G",-1,"*"]
                         ]
 
         self.executable = "taskpgm"      # program to run

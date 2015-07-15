@@ -20,12 +20,12 @@ class Task(task.Task):
         self.icon    = "task_building.png"
 
         self.inp_data = [
-                         [sequence.DType(-1).type ,"E",1],
-                         [hkl.DType(-1).type      ,"E",1],
-                         [structure.DType(-1).type,"E",1]
+                         [sequence.DType(-1).type ,"E",1,"*"],
+                         [hkl.DType(-1).type      ,"E",1,"*"],
+                         [structure.DType(-1).type,"E",1,"*"]
                         ]
         self.out_data = [
-                         [structure.DType(-1).type,"E",1]
+                         [structure.DType(-1).type,"E",1,"*"]
                         ]
 
         self.executable = ""      # program to run

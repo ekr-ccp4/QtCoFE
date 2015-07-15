@@ -20,7 +20,7 @@ class Task(task.Task):
 
         self.inp_data = []
         self.out_data = [
-                         [dummy.DType(-1).type,"E",0]
+                         [dummy.DType(-1).type,"E",0,"*"]
                         ]
 
         self.executable = ""      # program to run

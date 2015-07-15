@@ -55,7 +55,7 @@ qtCOFE::TaskSection::TaskSection ( QObject *parent ) : QObject(parent) {
 qtCOFE::TaskSection::~TaskSection() {
 }
 
-int qtCOFE::TaskSection::readData ( const QJsonObject & obj )  {
+int qtCOFE::TaskSection::readSectionData ( const QJsonObject & obj )  {
   id    = obj.value("id"   ).toString();
   name  = obj.value("name" ).toString();
   desc  = obj.value("desc" ).toString();
@@ -66,8 +66,9 @@ int qtCOFE::TaskSection::readData ( const QJsonObject & obj )  {
 // =================================================================
 
 qtCOFE::TaskData::TaskData () {
-  mode  = 'E';
-  nmode = 1;
+  subtype = "*";
+  mode    = 'E';
+  nmode   = 1;
 }
 
 qtCOFE::TaskData::~TaskData() {}
@@ -75,9 +76,10 @@ qtCOFE::TaskData::~TaskData() {}
 void qtCOFE::TaskData::copy ( const TaskData * taskData )  {
 // from taskData to "this"
   if (taskData)  {
-    type  = taskData->type;  // "dtype_xxx"
-    mode  = taskData->mode;  // modificator of data entity number (E,G,U)
-    nmode = taskData->nmode; // data entity number
+    type    = taskData->type;  // "dtype_xxx"
+    subtype = taskData->subtype; // data-dependent; list of comma-separated ids
+    mode    = taskData->mode;  // modificator of data entity number (E,G,U)
+    nmode   = taskData->nmode; // data entity number
   }
 }
 
@@ -94,12 +96,18 @@ int qtCOFE::TaskData::guessNData ( int nData )  {
 }
 
 
-int qtCOFE::indexOf ( const QString & dtype,
+int qtCOFE::indexOf ( const QString & dtype, QString & subtype,
                       const QList<TaskData *> & taskData )  {
-int k = -1;
+QString stype = subtype;
+int     k = -1;
+  if (stype.isEmpty() || stype.contains("*"))
+    stype = "*";
   for (int i=0;(i<taskData.count()) && (k<0);i++)
-    if (taskData.at(i)->type==dtype)
-      k = i;
+    if (taskData[i]->type==dtype)  {
+      if ((stype=="*") || (taskData[i]->subtype.contains("*")) ||
+                          (taskData[i]->subtype.contains(stype)))
+        k = i;
+    }
   return k;
 }
 
@@ -122,9 +130,8 @@ void qtCOFE::Task::clear()  {
   outData.clear();
 }
 
-int qtCOFE::Task::readData ( const QJsonObject & obj )  {
+int qtCOFE::Task::readTaskDesc ( const QJsonObject & obj )  {
 QJsonArray a,ai;
-QString    mode;
 
   clear();
 
@@ -142,6 +149,13 @@ QString    mode;
     td->type  = ai[0].toString();
     td->mode  = ai[1].toString()[0];
     td->nmode = ai[2].toDouble();
+    if (ai.count()<4)
+      td->subtype = "*";
+    else {
+      td->subtype = ai[3].toString().remove(' ');
+      if (td->subtype.contains("*"))
+        td->subtype = "*";
+    }
     inpData.append ( td );
   }
 
@@ -198,16 +212,20 @@ void qtCOFE::Task::printTask()  {
   printf ( "   Order  : %i\n",order );
   printf ( "\n   Input Data:\n" );
   for (int i=0;i<inpData.count();i++)
-    printf ( "      %3i ['%s','%c',%i]\n",i+1,
+    printf ( "      %3i ['%s','%c',%i,'%s']\n",i+1,
              inpData.at(i)->type.toAscii().data(),
              inpData.at(i)->mode.toAscii(),
-             inpData.at(i)->nmode );
+             inpData.at(i)->nmode,
+             inpData.at(i)->subtype.toAscii().data()
+           );
   printf ( "\n   Output Data:\n" );
   for (int i=0;i<outData.count();i++)
-    printf ( "      %3i ['%s','%c',%i]\n",i+1,
+    printf ( "      %3i ['%s','%c',%i,'%s']\n",i+1,
              outData.at(i)->type.toAscii().data(),
              outData.at(i)->mode.toAscii(),
-             outData.at(i)->nmode );
+             outData.at(i)->nmode,
+             outData.at(i)->subtype.toAscii().data()
+           );
 }
 
 
@@ -278,7 +296,7 @@ int         retcode = 0;
       n = a.count();
       for (i=0;(i<n) && (!retcode);i++)  {
         TaskSection *sec = new TaskSection();
-        retcode = sec->readData ( a[i].toObject() );
+        retcode = sec->readSectionData ( a[i].toObject() );
         if (!retcode)  {
           sections.append ( sec );
           for (j=0;j<i;j++)
@@ -298,7 +316,7 @@ int         retcode = 0;
       n = a.count();
       for (i=0;(i<n) && (!retcode);i++)  {
         Task *task = new Task();
-        retcode = task->readData ( a[i].toObject() );
+        retcode = task->readTaskDesc ( a[i].toObject() );
         if (!retcode)  {
           tasks.append ( task );
           for (j=0;j<i;j++)

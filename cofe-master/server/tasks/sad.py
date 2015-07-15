@@ -20,11 +20,11 @@ class Task(task.Task):
         self.icon    = "task_sad.png"
 
         self.inp_data = [
-                         [sequence.DType(-1).type ,"E",1],
-                         [hkl.DType(-1).type      ,"E",1]
+                         [sequence.DType(-1).type ,"E",1,"*"],
+                         [hkl.DType(-1).type      ,"E",1,hkl.subtypeAnomalous()]
                         ]
         self.out_data = [
-                         [structure.DType(-1).type,"G",0]
+                         [structure.DType(-1).type,"G",0,"*"]
                         ]
 
         self.executable = ""      # program to run

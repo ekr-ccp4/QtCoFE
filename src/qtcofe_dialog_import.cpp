@@ -171,7 +171,7 @@ int               row0 = qMax(data.count(),10);
       QJsonObject jd = dlist[j].toObject();
       if (row>=row0)  importTable->setRowCount ( row+1 );
       importTable->setVertHeader ( row,QString("%1").arg(row+1) );
-
+      /*
       QJsonArray flist = jd.value("files").toArray();
       QJsonArray mlist = jd.value("metadata").toArray();
       files.clear();
@@ -187,6 +187,10 @@ int               row0 = qMax(data.count(),10);
         }
       }
       item = importTable->setTableItem  ( row,0,files,
+                                    Qt::AlignLeft | Qt::AlignVCenter );
+      */
+      item = importTable->setTableItem  ( row,0,
+                                    jd.value("dname").toString(),
                                     Qt::AlignLeft | Qt::AlignVCenter );
       iconPath = jd.value("icon").toString();
       if (!iconPath.isEmpty())

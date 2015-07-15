@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QMap>
 
 #include "qtcofe_datamodel.h"
 
@@ -41,11 +42,12 @@ namespace qtCOFE  {
 
   class Component {
     public:
-      int                jobId;  // job where file is kept
-      QString            dname;  // display name
-      QString            desc;
-      QStringList        fnames;
-      QList<QStringList> metadata;
+      int                   jobId;   // job where file is kept
+      QString               subtype; // data subtype
+      QString               dname;   // display name
+      QString               desc;
+      QStringList           fnames;
+      QMap<QString,QString> metadata;
 
       Component () {}
       ~Component() {}
@@ -77,6 +79,7 @@ namespace qtCOFE  {
       SUITABILITY E_Suitable ( const QList<JobData *> jobData );
       SUITABILITY G_Suitable ( const QList<JobData *> jobData );
       SUITABILITY U_Suitable ( const QList<JobData *> jobData );
+      int n_suitable ( JobData *jobData );
 
   };
 
@@ -126,6 +129,7 @@ namespace qtCOFE  {
                             const QList<QList<JobData *> > & jobData );
 
       void getOutputDataSpecs ( int       outNo,
+                                QString   subtype,
                                 QString & jobName,
                                 QString & dataName,
                                 QString & desc,

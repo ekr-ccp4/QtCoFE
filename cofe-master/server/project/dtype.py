@@ -12,24 +12,38 @@ class DType(jsonut.jObject):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(json_str)
-        self.type  = "dtype_dtype"  # has to be "dtype_" + filename
-        self.name  = "Template"
-        self.dname = "template"
-        self.desc  = "Data type template"
-        self.icon  = "dtype_template.png"
-        self.jobId = job_id;
-        self.files = []  # may be a multiple-file data type
+        self.type     = "dtype_dtype"  # has to be "dtype_" + filename
+        self.subtype  = "."            # default 'basic' subtype
+        self.name     = "Template"
+        self.dname    = "template"
+        self.desc     = "Data type template"
+        self.icon     = "dtype_template.png"
+        self.jobId    = job_id;
+        self.files    = []  # may be a multiple-file data type
         self.metadata = [] # list of lists per file item
         return
 
-    def setFile ( self,fname,meta ):
-        self.files    = [fname]
+    def setFile ( self,fname ):
+        self.files = [fname]
+        return
+
+    def setMeta ( self,key,value ):
+        meta = jsonut.jObject()
+        meta.key      = key;
+        meta.value    = value
         self.metadata = [meta]
         return
 
-    def addFile ( self,fname,meta ):
+    def addFile ( self,fname ):
         self.files   .append ( fname )
         self.metadata.append ( meta  )
+        return
+
+    def addMeta ( self,key,value ):
+        meta = jsonut.jObject()
+        meta.key      = key;
+        meta.value    = value
+        self.metadata.append ( meta )
         return
 
 #

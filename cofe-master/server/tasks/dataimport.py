@@ -38,7 +38,7 @@
 import os
 import shutil
 from project import task,  job, jobs
-from varut   import gitut, jsonut, utils, defs
+from varut   import gitut, jsonut, utils, defs, mtz
 from dtypes  import dummy, any, sequence, hkl
 
 class Task(task.Task):
@@ -66,8 +66,8 @@ class Task(task.Task):
                          # This task is interactive and takes no data
                          # from its parent job; other jobs use data
                          # stored in Job classes and are run in the
-                         # background. Another exception is
-                         # Disambiguator.
+                         # background. Another exception of this type
+                         # is the Disambiguator.
 
         if inp.action != "import_file":
             return utils.make_return ( inp.action,
@@ -108,27 +108,25 @@ class Task(task.Task):
             result.job = job_data
             return utils.pass_return ( inp.action,job_data )
 
+        cnt = len(job_data.data) + 1
         if file_ext == ".seq":
             seq = sequence.DType(inp.data.job_id)
-            seq.setFile ( os.path.basename(inp.data.file_path),[] )
-            seq.dname = seq.files[0];
-            job_data.set_data ( [seq] )
+            seq.setFile ( os.path.basename(inp.data.file_path) )
+            seq.makeDName     ( cnt )
+            job_data.add_data ( seq )
+            cnt += 1
+
         elif file_ext == ".mtz":
-            hkl_data = hkl.DType(inp.data.job_id)
-            hkl_data.setFile    ( os.path.basename(inp.data.file_path),
-                                  ["F(+)","F(-)"] )
-            hkl_data.makeDName  ( 1 )
-            job_data.add_data   ( hkl_data )
-            hkl_data = hkl.DType(inp.data.job_id)
-            hkl_data.setFile    ( os.path.basename(inp.data.file_path),
-                                  ["F_peak(+)","F_peak(-)"] )
-            hkl_data.makeDName  ( 2 )
-            job_data.add_data   ( hkl_data )
-            hkl_data = hkl.DType(inp.data.job_id)
-            hkl_data.setFile    ( os.path.basename(inp.data.file_path),
-                                  ["F_ref(+)","F_ref(-)"] )
-            hkl_data.makeDName  ( 3 )
-            job_data.add_data   ( hkl_data )
+            mf  = mtz.mtz_file(inp.data.file_path)
+            for ds in mf:
+                ds.MTZ = os.path.basename(inp.data.file_path)
+                hkl_data = hkl.DType(inp.data.job_id)
+                hkl_data.importMTZDataset ( ds )
+                if cnt != 3:
+                    hkl_data.subtype = hkl.subtypeAnomalous()
+                hkl_data.makeDName  ( cnt )
+                job_data.add_data   ( hkl_data )
+                cnt += 1
 
         job_data.status = defs.job_done()
         job_data.write ( project_repo_dir )

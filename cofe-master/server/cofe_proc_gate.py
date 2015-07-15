@@ -92,7 +92,19 @@ action = {
 }
 
 
-print ( action.get ( inpdata.action,unknown_action )(inpdata).to_JSON() )
+ret_string = action.get ( inpdata.action,unknown_action )(inpdata).to_JSON();
+
+# write return to file in master directory to aid debugging
+file = open ( os.path.join(defs.master_path(),"__last_in__.txt"),"w" )
+file.write ( sys.argv[1] )
+file.close ()
+
+file = open ( os.path.join(defs.master_path(),"__last_out__.txt"),"w" )
+file.write ( ret_string )
+file.close ()
+
+#print ( action.get ( inpdata.action,unknown_action )(inpdata).to_JSON() )
+print ret_string
 
 sys.exit(0)
 

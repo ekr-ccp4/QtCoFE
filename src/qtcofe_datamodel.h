@@ -61,22 +61,26 @@ namespace qtCOFE  {
       TaskSection ( QObject * parent = 0 );
       virtual ~TaskSection();
 
-      int readData ( const QJsonObject & obj );
+      int readSectionData ( const QJsonObject & obj );
 
   };
 
   class TaskData  {
     public:
-      QString type;  // "dtype_xxx"
-      QChar   mode;  // modificator of data entity number (E,G,U)
-      int     nmode; // data entity number
+      QString type;    // "dtype_xxx"
+      QString subtype; // data-dependent; list of comma-separated ids
+      QChar   mode;    // modificator of data entity number (E,G,U)
+      int     nmode;   // data entity number
+
       TaskData ();
       ~TaskData();
+      bool checkType ( QString & dtype, QString & dsubtype  );
       void copy ( const TaskData * taskData ); // from taskData to "this"
-      int guessNData ( int nData );
+      int  guessNData ( int nData );
+
   };
 
-  extern int indexOf ( const QString & dtype,
+  extern int indexOf ( const QString & dtype, QString & subtype,
                        const QList<TaskData *> & taskData );
 
   /// Task description class
@@ -97,7 +101,7 @@ namespace qtCOFE  {
       Task ( QObject * parent = 0 );
       virtual ~Task();
 
-      int readData ( const QJsonObject & obj );
+      int readTaskDesc ( const QJsonObject & obj );
 
 //      int  hasInput ( const QStringList & dtypes );
 //      bool hasInput ( const QString     & dtype  );

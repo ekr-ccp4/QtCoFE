@@ -70,9 +70,10 @@ struct DataSelection  {
 
 class qtCOFE::DataChoice  {
   public:
-    QString  type;  // data type
-    char     mode;  // modificator of data entity number (E,G,U)
-    int     nmode;  // data entity number
+    QString    type;  // data type
+    QString subtype;  // data subtype
+    char       mode;  // modificator of data entity number (E,G,U)
+    int       nmode;  // data entity number
     QList<DataSelection *> selections;
     DataChoice() {}
     ~DataChoice()  {
@@ -279,7 +280,7 @@ bool                             missing = false;
         if (nodeJob)  {
           k = nodeJob->indexOf ( projData[i][0]->type );
           if (k>=0)  {
-            nodeJob->getOutputDataSpecs ( k,jname,fname,desc,nData );
+            nodeJob->getOutputDataSpecs ( k,"*",jname,fname,desc,nData );
             if (desc.isEmpty())
               desc = dataType->desc;
             item = makeRow ( item,
@@ -314,15 +315,18 @@ bool                             missing = false;
 
     for (int i=0;i<job.inpData.count();i++)  {
       suitable = job.isInputSuitable(i,projData);
-      if (suitable!=JobData::Unsuitable)  {
+      if (suitable!=JobData::Unsuitable)  {  // select only suitable
+                                             // project data
         idata = indexOf ( job.inpData[i]->type,projData );
-        if (idata>=0)  {
+        if (idata>=0)  {  // given input data type is present in
+                          // project data in position idata
           dataType = dataModel->getDataType ( projData[idata][0]->type );
           if ((!missing) && (suitable==JobData::Ambiguous))  {
             dataChoice = new DataChoice();
-            dataChoice->type  = job.inpData[i]->type;
-            dataChoice->mode  = job.inpData[i]->mode.toAscii();
-            dataChoice->nmode = job.inpData[i]->nmode;
+            dataChoice->type    = job.inpData[i]->type;
+            dataChoice->subtype = job.inpData[i]->subtype;
+            dataChoice->mode    = job.inpData[i]->mode.toAscii();
+            dataChoice->nmode   = job.inpData[i]->nmode;
             choices.append ( dataChoice );
           } else
             dataChoice = NULL;
@@ -349,7 +353,8 @@ bool                             missing = false;
             if (nodeJob)  {
               k = nodeJob->indexOf ( projData[idata][0]->type );
               if (k>=0)  {
-                nodeJob->getOutputDataSpecs ( k,jname,fname,desc,nData );
+                nodeJob->getOutputDataSpecs ( k,job.inpData[i]->subtype,
+                                              jname,fname,desc,nData );
                 if (desc.isEmpty())
                   desc = dataType->desc;
                 nChecked = job.inpData[i]->guessNData ( nData );
@@ -377,8 +382,8 @@ bool                             missing = false;
               }
             }
           }
-        }
-      }
+        }  // no input data type found in project data
+      } // project data is unsuitable for ith input data
     }
 
     if (missing)

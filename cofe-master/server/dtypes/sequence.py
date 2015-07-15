@@ -19,6 +19,13 @@ class DType(dtype.DType):
         self.icon  = "data_sequence.png"
         return
 
+
+    def makeDName ( self,serialNo ):
+        if len(self.files) > 0:
+            self.dname = "[" + str(self.jobId) + "-" + str(serialNo) + \
+                         "] " + self.files[0]
+        return
+
 #
 #  ------------------------------------------------------------------
 #   Tests
