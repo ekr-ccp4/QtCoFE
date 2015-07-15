@@ -167,6 +167,94 @@ QLabel          *lbl;
 
 QTreeWidgetItem * qtCOFE::DataDialog::makeRow (
                                            QTreeWidgetItem * item,
+                                           QStringList     & fnames,
+                                           QStringList     & desc,
+                                           QList<int>      & key,
+                                           QString           jname,
+                                           QString           jobType,
+                                           bool              checked,
+                                           DataChoice      * dataChoice,
+                                           int               nChecked
+                                              )  {
+QTreeWidgetItem *item1;
+QVBoxLayout     *vbox;
+QCheckBox       *cbx;
+QWidget         *w;
+QString          fnameStr,descStr;
+const Task      *task;
+DataSelection   *ds;
+int              i0;
+int              fsize = preferences->getFontPixelSize();
+
+  for (int i=0;i<fnames.count();i++)
+    if (dataChoice || (key[i]>0))  {
+      if (i>0)  {
+        fnameStr.append ( "\n" );
+        descStr .append ( "\n" );
+      }
+      fnameStr.append ( fnames[i] );
+      descStr .append ( desc  [i] );
+    }
+
+  item1 = new QTreeWidgetItem ( item,QStringList()
+                                         << fnameStr << " "
+                                         <<  descStr << jname );
+
+  if (key[0]==2)  {
+    QFont font = item1->font(0);
+    font.setItalic ( true );
+    item1->setFont ( 0,font );
+  }
+
+  if (dataChoice)  {
+    vbox = new QVBoxLayout();
+    i0   = dataChoice->selections.count()-1;
+    for (int i=0;i<fnames.count();i++)  {
+      cbx = new QCheckBox();
+      vbox->addWidget  ( cbx,0 );
+      if (key[i])
+            cbx->setChecked ( checked && (i<nChecked) );
+      else  cbx->setEnabled ( false );
+      if (i==0)
+        ds = dataChoice->selections[i0];
+      else  {
+        ds = new DataSelection;
+        ds->jobId = dataChoice->selections[i0]->jobId;
+        ds->outNo = dataChoice->selections[i0]->outNo;
+        dataChoice->selections.append ( ds );
+      }
+      ds->setNo = i;
+      ds->cbx   = cbx;
+      connect ( cbx,SIGNAL(clicked()), this,SLOT(checkBoxClicked()) );
+    }
+    vbox->setContentsMargins ( fsize/2,0,0,0 );
+    vbox->setSpacing         ( fsize/2.5 );
+    w = new QWidget();
+    w->setLayout ( vbox );
+    dataTree->setItemWidget ( item1,1,w );
+    item1->parent()->setExpanded ( true );
+  } else if (checked)  {
+    if ((key[0]==2) || (nChecked!=fnames.count()))
+          item1->setIcon ( 1,QIcon(qtCOFE_Ok_Amber_icon) );
+    else  item1->setIcon ( 1,QIcon(qtCOFE_Ok_icon)       );
+    item1->parent()->setExpanded ( true );
+  }
+
+  for (int i=0;i<item1->columnCount();i++)
+    item1->setTextAlignment ( i,_align_left );
+
+  task = dataModel->getTask ( jobType );
+  item1->setIcon ( item1->columnCount()-1,
+                   QIcon(QString(qtCOFE_icon_base) + task->icon) );
+
+  return item1;
+
+}
+
+
+/*
+QTreeWidgetItem * qtCOFE::DataDialog::makeRow (
+                                           QTreeWidgetItem * item,
                                            QStringList     & fields,
                                            QString           jobType,
                                            bool              checked,
@@ -212,7 +300,7 @@ int              fsize = preferences->getFontPixelSize();
       connect ( cbx,SIGNAL(clicked()), this,SLOT(checkBoxClicked()) );
     }
     vbox->setContentsMargins ( fsize/2,0,0,0 );
-    vbox->setSpacing         ( fsize/3 );
+    vbox->setSpacing         ( fsize/2.5 );
     w = new QWidget();
     w->setLayout ( vbox );
     dataTree->setItemWidget ( item1,1,w );
@@ -234,6 +322,7 @@ int              fsize = preferences->getFontPixelSize();
   return item1;
 
 }
+*/
 
 Q_DECLARE_METATYPE ( qtCOFE::Job* )
 
@@ -249,8 +338,10 @@ Job                              job;
 JobData::SUITABILITY             suitable;
 DataChoice                      *dataChoice;
 DataSelection                   *dataSelection;
-QString                          fname,desc,jname;
-int                              k,idata,nData,nChecked;
+QStringList                      fname,desc;
+QString                          jname,prompt;
+QList<int>                       key;
+int                              k,idata,nChecked;
 bool                             missing = false;
 
   clear();
@@ -280,21 +371,11 @@ bool                             missing = false;
         if (nodeJob)  {
           k = nodeJob->indexOf ( projData[i][0]->type );
           if (k>=0)  {
-            nodeJob->getOutputDataSpecs ( k,"*",jname,fname,desc,nData );
-            if (desc.isEmpty())
-              desc = dataType->desc;
-            item = makeRow ( item,
-                             QStringList() <<
-                               fname       <<
-                               " "         <<
-                               desc        <<
-                               jname,
-                             nodeJob->type,
-                             (j==0),
-                             NULL,
-                             nData,
-                             nData
-                           );
+            nodeJob->getOutputDataSpecs ( k,"*",jname,fname,desc,key );
+            if (desc[0].isEmpty())
+              desc[0] = dataType->desc;
+            item = makeRow ( item,fname,desc,key,jname,nodeJob->type,
+                             (j==0),NULL,fname.count() );
           }
         }
       }
@@ -330,23 +411,25 @@ bool                             missing = false;
             choices.append ( dataChoice );
           } else
             dataChoice = NULL;
+
           if (dataChoice)  {
             switch (job.inpData[i]->mode.toAscii())  {
               default:
-              case 'A':  desc = QString("Select %1 data item(s)")
+              case 'A':  prompt = QString("Select %1 data item(s)")
                                            .arg(job.inpData[i]->nmode);
                        break;
-              case 'G':  desc = QString("Select %1 or more data item(s)")
+              case 'G':  prompt = QString("Select %1 or more data item(s)")
                                          .arg(job.inpData[i]->nmode+1);
                        break;
-              case 'U':  desc = QString("Select up to %1 data item(s)")
+              case 'U':  prompt = QString("Select up to %1 data item(s)")
                                            .arg(job.inpData[i]->nmode);
             }
           } else if (suitable==JobData::Ambiguous)
-            desc = "ambiguous";
+            prompt = "ambiguous";
           else
-            desc.clear();
-          item = makeSection ( dataType->name,dataType->icon,"",desc );
+            prompt.clear();
+          item = makeSection ( dataType->name,dataType->icon,"",prompt );
+
           for (int j=0;j<projData[idata].count();j++)  {
             nodeJob = nodes[idata][j]->data ( 0,Qt::UserRole )
                                                         .value<Job*>();
@@ -354,10 +437,10 @@ bool                             missing = false;
               k = nodeJob->indexOf ( projData[idata][0]->type );
               if (k>=0)  {
                 nodeJob->getOutputDataSpecs ( k,job.inpData[i]->subtype,
-                                              jname,fname,desc,nData );
-                if (desc.isEmpty())
-                  desc = dataType->desc;
-                nChecked = job.inpData[i]->guessNData ( nData );
+                                              jname,fname,desc,key );
+                if (desc[0].isEmpty())
+                  desc[0] = dataType->desc;
+                nChecked = job.inpData[i]->guessNData ( fname.count() );
                 if (suitable==JobData::Ambiguous)  {
                   if (missing)  nChecked = -1;
                 }
@@ -367,6 +450,9 @@ bool                             missing = false;
                   dataSelection->outNo = k;
                   dataChoice->selections.append ( dataSelection );
                 }
+                item = makeRow ( item,fname,desc,key,jname,nodeJob->type,
+                                 (j==0),dataChoice,nChecked );
+                /*
                 item = makeRow ( item,
                                  QStringList() <<
                                    fname       <<
@@ -379,6 +465,7 @@ bool                             missing = false;
                                  nData,
                                  nChecked
                                );
+                */
               }
             }
           }
@@ -418,7 +505,7 @@ bool ok = true;
     switch (choices[i]->mode)  {
       default :
       case 'E': ok = (nSel==choices[i]->nmode);  break;
-      case 'G': ok = (nSel>choices[i]->nmode);  break;
+      case 'G': ok = (nSel> choices[i]->nmode);  break;
       case 'U': ok = (nSel<=choices[i]->nmode);  break;
     }
   }

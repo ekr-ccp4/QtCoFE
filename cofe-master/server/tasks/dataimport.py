@@ -122,8 +122,6 @@ class Task(task.Task):
                 ds.MTZ = os.path.basename(inp.data.file_path)
                 hkl_data = hkl.DType(inp.data.job_id)
                 hkl_data.importMTZDataset ( ds )
-                if cnt != 3:
-                    hkl_data.subtype = hkl.subtypeAnomalous()
                 hkl_data.makeDName  ( cnt )
                 job_data.add_data   ( hkl_data )
                 cnt += 1

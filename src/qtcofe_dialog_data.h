@@ -80,6 +80,7 @@ namespace qtCOFE  {
                                       const QString statusIcon,
                                       const QString prompt
                                     );
+      /*
       QTreeWidgetItem * makeRow     ( QTreeWidgetItem * item,
                                       QStringList     & fields,
                                       QString           jobType,
@@ -88,6 +89,18 @@ namespace qtCOFE  {
                                       int               nData,
                                       int               nChecked
                                     );
+      */
+      QTreeWidgetItem * makeRow     ( QTreeWidgetItem * item,
+                                      QStringList     & fnames,
+                                      QStringList     & desc,
+                                      QList<int>      & key,
+                                      QString           jname,
+                                      QString           jobType,
+                                      bool              checked,
+                                      DataChoice      * dataChoice,
+                                      int               nChecked
+                                    );
+
       void makeDataTree ( ProjectTree     * projectTree,
                           QTreeWidgetItem * jobNode,
                           QString           taskType );

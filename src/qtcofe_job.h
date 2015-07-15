@@ -88,8 +88,6 @@ namespace qtCOFE  {
   extern int indexOf ( const QString & dtype,
                        const QList<QList<JobData *> > & jobData );
 
-
-
   class Job : public QObject  {
   Q_OBJECT
 
@@ -128,12 +126,13 @@ namespace qtCOFE  {
                             int inpNo, // index in inpData
                             const QList<QList<JobData *> > & jobData );
 
-      void getOutputDataSpecs ( int       outNo,
-                                QString   subtype,
-                                QString & jobName,
-                                QString & dataName,
-                                QString & desc,
-                                int     & nSets);
+      void getOutputDataSpecs ( int           outNo,
+                                QString       subtype,
+                                QString     & jobName,
+                                QStringList & dataName,
+                                QStringList & desc,
+                                QList<int>  & key
+                              );
 
       void copy ( const Task *task );
 

@@ -400,34 +400,32 @@ bool                 ambiguous = false;
 
 }
 
-void qtCOFE::Job::getOutputDataSpecs ( int       outNo,
-                                       QString   subtype,
-                                       QString & jobName,
-                                       QString & dataName,
-                                       QString & desc,
-                                       int     & nSets)  {
+void qtCOFE::Job::getOutputDataSpecs ( int           outNo,
+                                       QString       subtype,
+                                       QString     & jobName,
+                                       QStringList & dataName,
+                                       QStringList & desc,
+                                       QList<int>  & key )  {
 
   jobName = name;
-  desc.clear();
+
+  dataName.clear();
+  desc    .clear();
+  key     .clear();
+
   if (outData[outNo]->components.isEmpty())  {
-    dataName = "<< in promise >>";
-    nSets = 1;
+    dataName.append ( "<< in promise >>" );
+    desc    .append ( " " );
+    key     .append ( 2   );
   } else  {
-    dataName.clear();
-    nSets = 0;
     for (int i=0;i<outData[outNo]->components.count();i++)  {
       Component *c = outData[outNo]->components[i];
-//      if ((c->subtype=="*") || (subtype=="*") || (c->subtype==subtype)) {
-        if (!dataName.isEmpty())  {
-          dataName.append ( "\n" );
-          desc    .append ( "\n" );
-        }
-        dataName.append ( c->dname + "/" + c->subtype + "//" + subtype );
-        desc.append     ( c->desc  );
-        nSets++;
-//      }
+      if ((c->subtype=="*") || (subtype=="*") || (c->subtype==subtype))
+            key.append ( 1 );
+      else  key.append ( 0 );
+      dataName.append ( c->dname );
+      desc.append     ( c->desc  );
     }
-//    nSets = outData[outNo]->components.count();
   }
 
 }
