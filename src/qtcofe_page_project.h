@@ -22,9 +22,9 @@
 
 #include "qtcofe_page.h"
 
-//QT_BEGIN_NAMESPACE
-//class QSplitter;
-//QT_END_NAMESPACE
+QT_BEGIN_NAMESPACE
+class QTimer;
+QT_END_NAMESPACE
 
 //namespace qtx  {
 //  class LineEdit;
@@ -55,6 +55,7 @@ namespace qtCOFE  {
     protected:
 //      QSplitter   *hsplitter;
       ProjectTree *jobTree;
+      QTimer      *timer;
       QString      currentProject;
 
       void project_query ( QJsonObject & jsonData, QString action );

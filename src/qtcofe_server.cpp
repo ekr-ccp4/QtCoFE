@@ -38,6 +38,7 @@ qtCOFE::Server::Server ( Preferences *prefs, Session *ssn,
   preferences = prefs;
   session     = ssn;
   errorCode   = SERVER_RC_Ok;
+  running     = false;
 }
 
 qtCOFE::Server::~Server() {
@@ -86,11 +87,21 @@ QString  projectsPath = preferences->getProjectsPath();
 //  QMessageBox::information ( NULL,"",
 //                             jsonDoc.toJson(QJsonDocument::Indented) );
 
+  connect ( &process,SIGNAL(finished(int)),this,SLOT(callFinished(int)) );
+
   process.start ( "python",QStringList() << processor <<
-                    QString(jsonDoc.toJson(QJsonDocument::Compact)) );
+                   QString(jsonDoc.toJson(QJsonDocument::Compact)) );
+//  process.start ( preferences->serverUri + "../bin/start.sh",QStringList() << processor <<
+//                    QString(jsonDoc.toJson(QJsonDocument::Compact)) );
 //  process.waitForStarted();
+
+  running = true;
+  do {
+    QApplication::processEvents();
+  } while (running);
   process.waitForFinished();
   process.waitForReadyRead();
+
   QJsonParseError e;
   QString         answer = process.readAllStandardOutput().trimmed();
   if (answer.startsWith('{') || answer.startsWith('['))  {
@@ -113,6 +124,10 @@ QString  projectsPath = preferences->getProjectsPath();
 
   return errorCode;
 
+}
+
+void qtCOFE::Server::callFinished ( int exitCode )  {
+  running = false;
 }
 
 void qtCOFE::Server::makeErrorMessage ( QWidget *parent )  {

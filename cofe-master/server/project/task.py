@@ -129,11 +129,12 @@ class Task(jsonut.jObject):
         return
 
 
-    def make_output_data ( self,job_dir ):
-        #  This function should return data array for the corresponding
+    def make_output_data ( self,job_dir,job_data ):
+        #  This function should produce data array for given
         # Job class with references to task output data in job_dir
         # after the corresponding job completes
-        return [[any.DType()]]
+        job_data.data = [[any.DType()]]
+        return
 
 
     def write_arguments ( self,job_dir,executable,arguments ):
@@ -158,7 +159,7 @@ class Task(jsonut.jObject):
         return
 
 
-    def get_command ( self,proj_data ):
+    def get_command ( self,projected_data ):
 
         cmd = []
 
@@ -171,8 +172,55 @@ class Task(jsonut.jObject):
         return cmd
 
 
-#    def run(self,inp):
-#        return utils.make_return ( inp.action,"OK","OK" )
+    def run(self,projected_data,job_data,job_dir,file_stdout,file_stderr):
+        return
+
+
+
+    def call(self,executable,command_line,job_dir,file_stdout,file_stderr):
+
+        import sys
+        import subprocess
+
+        file_stdout.write ( "\n\n" + "="*80 + "\n\n EXECUTING COMMAND:\n" )
+
+        msg    = " " + executable + " "
+        indent = " " * len(msg)
+        for c in command_line:
+            if (len(msg)+len(c) > 76) and (msg != indent):
+                file_stdout.write ( msg + " "*max(0,78-len(msg)) + " \\\n" )
+                msg = indent
+            msg = msg + "'" + c + "' "
+        file_stdout.write ( msg + "\n\n" )
+        file_stdout.flush()
+
+        msg = ""
+        try:
+            p = subprocess.call ( [executable] + command_line,
+                                  stdout=file_stdout,stderr=file_stderr )
+        except OSError as e:
+            msg = "OSError > " + str(e.errno) + "\n" + \
+                  "OSError > " + e.strerror   + "\n" + \
+                  "OSError > " + e.filename   + "\n"
+        except:
+            msg = "Error > " + sys.exc_info()[0] + "\n"
+
+        file_stdout.flush()
+        file_stderr.flush()
+
+        return msg
+
+
+
+def select_projected_data ( projected_data,type,subtype ):
+
+    for d in projected_data:
+        if d[0].type == type:
+           if (not subtype) or (subtype==d[0].subtype):
+               return d
+
+    return None
+
 
 
 

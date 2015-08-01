@@ -55,7 +55,7 @@
 import os
 import glob
 from   varut   import jsonut, utils
-from   project import task
+from   project import task, dtype
 import dtypes
 
 def dtype_list():
@@ -88,6 +88,14 @@ def tasktype_list():
 def get_task ( type ):
     tsk = __import__("tasks."+type[len("task_"):] )
     return getattr(tsk,type[len("task_"):]).Task()
+
+
+def get_data ( type,json_str ):
+    if type == dtype.type():
+        return dtype.DType(-1,json_str)
+    else:
+        dt = __import__("dtypes."+type[len("dtype_"):] )
+        return getattr(dt,type[len("dtype_"):]).DType(-1,json_str)
 
 
 def section_list():

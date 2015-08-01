@@ -58,10 +58,14 @@ def set_master_path(mpath):
     return
 
 def master_path ():  return __master_path__
-def bin_path    ():  return __master_path__ + "/bin/"
-def lib_path    ():  return __master_path__ + "/lib/"
-def jsrview_path():  return __master_path__ + "/jsrview/"
+def bin_path    ():  return __master_path__   + "/bin/"
+def lib_path    ():  return __master_path__   + "/lib/"
+def jsrview_path():  return __master_path__   + "/jsrview/"
+def server_path ():  return __master_path__   + "/server/"
+def debug_path  ():  return __projects_path__ + "/debug/"
 
+
+#  main file and directory names
 
 def user_data_name      ():  return "user.data"
 def project_data_name   ():  return "project.data"
@@ -72,16 +76,29 @@ def report_dir_name     ():  return "html"
 def report_file_name    ():  return "index.html"
 
 
+#  job status codes
+
 def job_idle    (): return 0
 def job_starting(): return 100
 def job_running (): return 1000
 def job_done    (): return 2000
 
-def process_ok                ():  return 0;
-def process_cant_get_lock_1   ():  return 1;
-def process_cant_read_job     ():  return 2;
-def process_cant_update_tree_1():  return 3;
-def process_cant_commit_1     ():  return 4;
-def process_cant_get_lock_2   ():  return 5;
-def process_cant_update_tree_2():  return 6;
-def process_cant_commit_2     ():  return 7;
+
+#  return codes for module 'process'
+
+def process_ok                ():  return 0
+def process_cant_get_lock_1   ():  return 1
+def process_cant_read_job     ():  return 2
+def process_cant_read_task    ():  return 3
+def process_cant_update_tree_1():  return 4
+def process_cant_commit_1     ():  return 5
+def process_cant_get_lock_2   ():  return 6
+def process_cant_update_tree_2():  return 7
+def process_cant_commit_2     ():  return 8
+
+
+#  pyrvapi report definitions
+
+def report_page_id():  return "report_page"
+def log_page_id   ():  return "log_page"
+def err_page_id   ():  return "err_page"

@@ -150,12 +150,12 @@ void qtCOFE::DataImportDialog::makeEmptyTable()  {
 
 void qtCOFE::DataImportDialog::makeImportTable (
                                      const QJsonObject & jobData )  {
-QJsonArray        data = jobData.value("data").toArray();
+QJsonArray        input = jobData.value("input").toArray();
 QTableWidgetItem *item;
 QString           iconPath;
-QString           files;
+//QString           files;
 int               row  = 0;
-int               row0 = qMax(data.count(),10);
+int               row0 = qMax(input.count(),10);
 
   importTable->setRowCount ( row0 );
 
@@ -165,30 +165,12 @@ int               row0 = qMax(data.count(),10);
       importTable->setTableItem  ( i,j," " );
   }
 
-  for (int i=0;i<data.count();i++)  {
-    QJsonArray dlist = data[data.count()-i-1].toArray();
+  for (int i=0;i<input.count();i++)  {
+    QJsonArray dlist = input[input.count()-i-1].toArray();
     for (int j=0;j<dlist.count();j++)  {
       QJsonObject jd = dlist[j].toObject();
       if (row>=row0)  importTable->setRowCount ( row+1 );
       importTable->setVertHeader ( row,QString("%1").arg(row+1) );
-      /*
-      QJsonArray flist = jd.value("files").toArray();
-      QJsonArray mlist = jd.value("metadata").toArray();
-      files.clear();
-      for (int j=0;j<flist.count();j++)  {
-        if (j>0)  files.append ( "\n" );
-        files.append ( flist[j].toString() );
-        QJsonArray meta = mlist[j].toArray();
-        if (meta.count()>0)
-          files.append ( "/" );
-        for (int k=0;k<meta.count();k++)  {
-          if (k>1)  files.append ( ":" );
-          files.append ( meta[k].toString() );
-        }
-      }
-      item = importTable->setTableItem  ( row,0,files,
-                                    Qt::AlignLeft | Qt::AlignVCenter );
-      */
       item = importTable->setTableItem  ( row,0,
                                     jd.value("dname").toString(),
                                     Qt::AlignLeft | Qt::AlignVCenter );

@@ -37,6 +37,7 @@
 
 #define qtCOFE_prjlist_icon          ":/images/list.png"
 #define qtCOFE_account_icon          ":/images/account.png"
+#define qtCOFE_unlock_icon           ":/images/unlock.png"
 #define qtCOFE_configure_icon        ":/images/configure.png"
 #define qtCOFE_help_icon             ":/images/help.png"
 #define qtCOFE_logout_icon           ":/images/logout.png"

@@ -49,6 +49,7 @@ namespace qtCOFE  {
 
       virtual void makeLayout();
       void  fillProjectList();
+      void  unlockCurrentProject();
 
       QString getCrProjectPath();
 

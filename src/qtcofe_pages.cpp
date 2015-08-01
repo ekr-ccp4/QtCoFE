@@ -107,6 +107,12 @@ void qtCOFE::Pages::account()  {
   pages->setCurrentWidget ( accountPage );
 }
 
+
+void qtCOFE::Pages::unlock()  {
+  if (projectListPage)
+     projectListPage->unlockCurrentProject();
+}
+
 void qtCOFE::Pages::projectList()  {
   if (!projectListPage)  {
     projectListPage = new ProjectListPage ( dataModel,settings );
@@ -144,26 +150,31 @@ Page  *crPage = qobject_cast<Page*>(pages->currentWidget());
     case PAGE_NewUser:
     case PAGE_Login  :     prjListAct->setVisible ( false );
                            accountAct->setVisible ( false );
+                           unlockAct ->setVisible ( false );
                            logoutAct ->setVisible ( false );
                          break;
 
     case PAGE_Account:     prjListAct->setVisible ( true  );
                            accountAct->setVisible ( false );
+                           unlockAct ->setVisible ( false );
                            logoutAct ->setVisible ( true  );
                          break;
 
     case PAGE_ProjectList: prjListAct->setVisible ( false );
                            accountAct->setVisible ( true  );
+                           unlockAct ->setVisible ( true  );
                            logoutAct ->setVisible ( true  );
                          break;
 
     case PAGE_Project:     prjListAct->setVisible ( true  );
                            accountAct->setVisible ( true  );
+                           unlockAct ->setVisible ( true  );
                            logoutAct ->setVisible ( true  );
                          break;
 
     default:               prjListAct->setVisible ( false );
                            accountAct->setVisible ( false );
+                           unlockAct ->setVisible ( false );
                            logoutAct ->setVisible ( true  );
 
   }

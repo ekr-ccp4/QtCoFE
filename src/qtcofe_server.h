@@ -53,7 +53,7 @@ namespace qtCOFE  {
                QObject     *parent = 0 );
       virtual ~Server();
 
-      SERVER_RC call ( QString          action,
+      SERVER_RC call ( QString            action,
                        const QJsonObject &data,
                        QJsonObject       &reply );
 
@@ -64,6 +64,10 @@ namespace qtCOFE  {
       Session     *session;
       SERVER_RC    errorCode;
       QString      errMsg;
+      bool         running;
+
+    protected slots:
+      void callFinished ( int exitCode );
 
   };
 

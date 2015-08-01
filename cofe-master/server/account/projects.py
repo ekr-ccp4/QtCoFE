@@ -8,6 +8,7 @@
 #              projects.add      ( inp )
 #              projects.set_desc ( inp )
 #              projects.delete   ( inp )
+#              projects.unlock   ( inp )
 #
 #
 #  Input 'inp' is JSON string in sys.argv[1]:
@@ -42,7 +43,9 @@
 #                             to 'project_desc'
 #                               Function: set_desc ( inp )
 #
-#    "delete_project"       : deletes project "nnnnnn" in given path
+#    "delete_project"       : deletes project "project_name" in given path
+#    "unlock_project"       : unlocks user data and project "project_name"
+#                             in given path
 #
 #  "project_path" is unix-style path, made of slash-separated project
 #  names.
@@ -355,6 +358,28 @@ def delete(inp):
         user_data.message = "Project deleted successfully"
 
     gitut.unlock(user_repo_dir)
+
+    return user_data
+
+
+def unlock(inp):
+
+    user_repo_dir = utils.get_user_repo_path ( defs.projects_path(),inp.login )
+    gitut.unlock ( user_repo_dir )
+    project_repo_dir = utils.get_project_repo_path (
+                            defs.projects_path(),inp.login,inp.data.name )
+    gitut.unlock ( project_repo_dir )
+
+    user_data = user.User()
+    result = user_data.read ( user_repo_dir )
+
+    if result.result != "OK":
+        return utils.add_return ( inp.action,result,user_data )
+
+    user_data.action          = inp.action
+    user_data.current_project = inp.data.name
+    user_data.result          = "OK"
+    user_data.message         = "Project unlocked successfully"
 
     return user_data
 

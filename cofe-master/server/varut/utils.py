@@ -26,9 +26,11 @@ def get_job_dir_path ( projects_path,login,project,job_id ):
     return os.path.join ( get_project_repo_path(projects_path,login,project),
                           "job." + str(job_id) )
 
-
 def get_job_dir ( project_repo_path,job_id ):
     return os.path.join ( project_repo_path,"job." + str(job_id) )
+
+def get_data_file ( any_job_dir,job_id,filename ):
+    return os.path.join ( any_job_dir,"../job." + str(job_id),filename )
 
 
 #def set_pythonpath():

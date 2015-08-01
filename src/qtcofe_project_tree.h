@@ -114,6 +114,9 @@ namespace qtCOFE  {
       void crJobChanged  ( QTreeWidgetItem * current,
                            QTreeWidgetItem * previous );
 
+    private:
+      double tree_version;
+
   };
 
 }

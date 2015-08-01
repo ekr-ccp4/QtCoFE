@@ -17,6 +17,7 @@ class Tree(jsonut.jObject):
         self.name        = name   # project name
         self.desc        = desc   # project description
         self.job_count   = 0
+        self.write_count = 0      # update indicator
         self.current_job = 0;
         job_data = job.Job();
         job_data.set_minimal_data ( name,"Project root","task_root",
@@ -49,6 +50,7 @@ class Tree(jsonut.jObject):
     def write ( self,project_repo_dir ):
         file = open ( os.path.join(project_repo_dir,
                       defs.project_data_name()),"w" )
+        self.write_count += 1  # indicates a difference
         file.write ( self.to_JSON() )
         file.close ()
         return

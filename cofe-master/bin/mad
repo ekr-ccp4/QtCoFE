@@ -2,12 +2,21 @@
 
 #  Dummy for Auto-MAD module
 
+import os
 import sys
 import time
+from   varut import mtz
 
 print ( " This is Auto-MAD Dummy\n" )
 
-print ( sys.argv[0] )
+if 'PYTHONPATH' in os.environ:
+    print ( "PYTHONPATH = " + os.environ['PYTHONPATH'] + "\n" )
+else:
+    print ( "PYTHONPATH not found\n" );
+
+print ( sys.argv[0] + "\n" )
+
+print dir(mtz)
 
 for i in range(1,len(sys.argv)):
     if i < len(sys.argv)-1:

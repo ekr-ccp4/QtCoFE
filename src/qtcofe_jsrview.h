@@ -38,6 +38,9 @@ namespace qtCOFE  {
   class JSRView : public QMainWindow  {
   Q_OBJECT
   Q_PROPERTY(int gwPlotWidth READ getGwPlotWidth)
+  Q_PROPERTY(int gwTreeWidth READ getGwTreeWidth)
+  Q_PROPERTY(int gwHeight    READ getGwHeight)
+  Q_PROPERTY(int ioresult    READ ioresult)
 
     public:
       JSRView ( Preferences    *pref,
@@ -49,6 +52,11 @@ namespace qtCOFE  {
       void loadPage ( const QUrl uri );
 
       int getGwPlotWidth();
+      int getGwTreeWidth();
+      int getGwHeight   ();
+
+      Q_INVOKABLE QString readFile ( QString fname );
+      int ioresult () { return iores; }
 
     public slots:
       void closeWindow     ();
@@ -62,6 +70,7 @@ namespace qtCOFE  {
       QWebView    *webView;
       QSettings   *settings;
       Preferences *preferences;
+      int          iores;
 
       void readSettings ();
       void writeSettings();

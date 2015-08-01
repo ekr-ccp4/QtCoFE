@@ -7,16 +7,19 @@
 
 from project import dtype
 
+def type(): return "dtype_xyz"       # has to be "dtype_" + filename
 
 class DType(dtype.DType):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(job_id,json_str)
-        self.type  = "dtype_xyz"       # has to be "dtype_" + filename
-        self.name  = "XYZ"
-        self.dname = "xyz"
-        self.desc  = "XYZ Coordinates"
-        self.icon  = "data_xyz.png"
+        if not json_str:
+            self.type  = type()     # has to be "dtype_" + filename
+            self.order = 4          # 4th in output data lists
+            self.name  = "XYZ"
+            self.dname = "xyz"
+            self.desc  = "XYZ Coordinates"
+            self.icon  = "data_xyz.png"
         return
 
 

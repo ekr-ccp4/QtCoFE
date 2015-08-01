@@ -27,6 +27,7 @@
 #define qtCOFE_SERVER_ACT_AddProject          "add_project"
 #define qtCOFE_SERVER_ACT_SetProjectDesc      "set_project_desc"
 #define qtCOFE_SERVER_ACT_DeleteProject       "delete_project"
+#define qtCOFE_SERVER_ACT_UnlockProject       "unlock_project"
 #define qtCOFE_SERVER_ACT_GetUserData         "get_user_data"
 #define qtCOFE_SERVER_ACT_SetUserData         "set_user_data"
 #define qtCOFE_SERVER_ACT_GetListOfJobs       "get_list_of_jobs"

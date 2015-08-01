@@ -7,20 +7,28 @@
 
 from varut import jsonut
 
+def type():  return "dtype_dtype"    # has to be "dtype_" + filename
 
 class DType(jsonut.jObject):
 
     def __init__(self,job_id,json_str=""):
         super(DType,self).__init__(json_str)
-        self.type     = "dtype_dtype"  # has to be "dtype_" + filename
-        self.subtype  = "."            # default 'basic' subtype
-        self.name     = "Template"
-        self.dname    = "template"
-        self.desc     = "Data type template"
-        self.icon     = "dtype_template.png"
-        self.jobId    = job_id;
-        self.files    = []  # may be a multiple-file data type
-        self.metadata = [] # list of lists per file item
+        if not json_str:
+            self.type     = type()    # has to be "dtype_" + filename
+            self.subtype  = "."       # default 'basic' subtype
+            self.order    = 0         # for ordered output
+            self.name     = "Template"
+            self.dname    = "template"
+            self.desc     = "Data type template"
+            self.icon     = "dtype_template.png"
+            self.jobId    = job_id;
+            self.dataId   = "0-0"
+            self.files    = []  # may be a multiple-file data type
+            self.metadata = [] # list of lists per file item
+        return
+
+    def makeDataId ( self,serialNo ):
+        self.dataId = str(self.jobId) + "-" + str(serialNo)
         return
 
     def setFile ( self,fname ):
@@ -35,8 +43,7 @@ class DType(jsonut.jObject):
         return
 
     def addFile ( self,fname ):
-        self.files   .append ( fname )
-        self.metadata.append ( meta  )
+        self.files.append ( fname )
         return
 
     def addMeta ( self,key,value ):
@@ -44,6 +51,18 @@ class DType(jsonut.jObject):
         meta.key      = key;
         meta.value    = value
         self.metadata.append ( meta )
+        return
+
+    def getMeta ( self,key,default_value=None ):
+        for m in self.metadata:
+            if m.key == key:
+                if m.value == None:
+                    return default_value
+                else:
+                    return m.value
+        return default_value
+
+    def makeDName ( self,serialNo ):
         return
 
 #

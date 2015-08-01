@@ -37,6 +37,8 @@ qtCOFE::JSRView::JSRView ( Preferences    *pref,
                            Qt::WindowFlags flags )
                 : QMainWindow ( parent,flags )  {
 
+  iores = 0;  // Ok
+
   webView = new QWebView(this);
   setCentralWidget ( webView );
 
@@ -66,26 +68,25 @@ void qtCOFE::JSRView::closeEvent ( QCloseEvent *event )  {
 
 
 void qtCOFE::JSRView::readSettings()  {
-
   restoreState ( settings->value(qtCOFE_SET_JSRV_WinState).toByteArray() );
   resize ( settings->value(qtCOFE_SET_JSRV_WinSize,QSize(700,800)).toSize() );
   move   ( settings->value(qtCOFE_SET_JSRV_WinPos,QPoint(100,50)).toPoint() );
   qtx::exportImageFile = settings->value ( qtCOFE_SET_JSRV_ImageFile,
                                            "Untitled.pdf" ).toString();
-
 }
 
 void qtCOFE::JSRView::writeSettings()  {
-
   settings->setValue ( qtCOFE_SET_JSRV_WinState ,saveState()   );
   settings->setValue ( qtCOFE_SET_JSRV_WinSize  ,size     ()   );
   settings->setValue ( qtCOFE_SET_JSRV_WinPos   ,pos      ()   );
   settings->setValue ( qtCOFE_SET_JSRV_ImageFile,qtx::exportImageFile );
-
+  settings->sync();
 }
 
 
-void qtCOFE::JSRView::preferencesChanged()  {}
+void qtCOFE::JSRView::preferencesChanged()  {
+  webView->reload();
+}
 
 void qtCOFE::JSRView::prefDialog()  {
   preferences->actualize();
@@ -116,11 +117,13 @@ QString fileName = QFileDialog::getSaveFileName ( this,"Export As",
 
 }
 
+
 void qtCOFE::JSRView::buttonClicked ( QString command, QString data ) {
 
   if (command==qtCOFE_JSRV_COMMAND_Coot)
-    preferences->launchCoot ( data.split ( qtCOFE_JSRV_par_del,
-                         QString::SkipEmptyParts,Qt::CaseSensitive) );
+    preferences->launchCoot ( data.replace('\\','/').split (
+                         qtCOFE_JSRV_par_del,QString::SkipEmptyParts,
+                         Qt::CaseSensitive) );
   else if (command==qtCOFE_JSRV_COMMAND_CCP4MG)
     preferences->launchMG ( data.split ( qtCOFE_JSRV_par_del,
                          QString::SkipEmptyParts,Qt::CaseSensitive) );
@@ -139,13 +142,23 @@ void qtCOFE::JSRView::buttonClicked ( QString command, QString data ) {
 
 
 void qtCOFE::JSRView::loadPage ( const QUrl url )  {
+QString uri = url.toString();
+  if (uri.size()>3)  {
+    if ((uri.at(1)==':') && ((uri.at(2)=='\\') || (uri.at(2)=='/')))  {
+      uri = "file:///" + uri;
+      webView->load ( QUrl(uri) );
+      return;
+    }
+  }
   webView->load ( url );
 }
+
 
 void qtCOFE::JSRView::jsWindowObjectCleared()  {
   webView->page()->mainFrame()->addToJavaScriptWindowObject (
                                         qtCOFE_JSRV_rvGateName,this );
 }
+
 
 void qtCOFE::JSRView::loadHasFinished ( bool ok )  {
 UNUSED_ARGUMENT(ok);
@@ -155,6 +168,7 @@ UNUSED_ARGUMENT(ok);
 void qtCOFE::JSRView::closeWindow()  {
   close();
 }
+
 
 void qtCOFE::JSRView::printWindow()  {
 QPrinter *printer;
@@ -174,12 +188,75 @@ int qtCOFE::JSRView::getGwPlotWidth()  {
   return preferences->plotWidth;
 }
 
+int qtCOFE::JSRView::getGwTreeWidth()  {
+  return preferences->treeWidth;
+}
+
+int qtCOFE::JSRView::getGwHeight()  {
+  return preferences->plotHeight;
+}
+
+
+#ifdef Q_OS_WIN32
+
+QString qtCOFE::JSRView::readFile ( QString fname )  {
+QString base = webView->url().toString();
+  if ((!base.startsWith("http:",Qt::CaseInsensitive)) &&
+      (!base.startsWith("https:",Qt::CaseInsensitive)))  {
+    QFile file;
+    if (QFileInfo(fname).isAbsolute())
+         file.setFileName ( fname );
+    else {
+      if (base.startsWith("file:"))
+        base = base.remove(0,8);
+      file.setFileName ( QFileInfo(base)
+                          .absoluteDir().filePath(fname) );
+    }
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  {
+      iores = 2;  // cannot open file
+      return file.fileName();
+    }
+    QString S = file.readAll();
+    file.close();
+    iores = 0;
+    return S;
+  } else  {
+    iores = 1;  // not a local file
+    return QString();
+  }
+}
+
+#else
+
+QString qtCOFE::JSRView::readFile ( QString fname )  {
+  if (webView->url().isLocalFile())  {
+    QFile file;
+    if (QFileInfo(fname).isAbsolute())
+         file.setFileName ( fname );
+    else file.setFileName ( QFileInfo(webView->url().path())
+                                   .absoluteDir().filePath(fname) );
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  {
+      iores = 2;  // cannot open file
+      return QString();
+    }
+    QString S = file.readAll();
+    file.close();
+    iores = 0;
+    return S;
+  } else  {
+    iores = 1;  // not a local file
+    return QString();
+  }
+}
+
+#endif
 
 void qtCOFE::JSRView::graphWidgetSize ( int & gwHeight,
-                                         int & gwTreeWidth,
-                                         int & gwGraphWidth )  {
+                                        int & gwTreeWidth,
+                                        int & gwGraphWidth )  {
   gwHeight     = preferences->plotHeight;
   gwTreeWidth  = preferences->treeWidth;
   gwGraphWidth = preferences->plotWidth;
 }
+
 

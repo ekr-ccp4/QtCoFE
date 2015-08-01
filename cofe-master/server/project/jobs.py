@@ -1,4 +1,4 @@
-#!/usr/bin/python
+##!/usr/bin/python
 
 #  ------------------------------------------------------------------
 #   Serving job list queries
@@ -93,10 +93,12 @@
 #
 
 import os
+import sys
 import shutil
 import subprocess
-from varut   import jsonut, gitut, utils, defs
-from project import job, tree, datamodel
+import time
+from   varut   import jsonut, gitut, utils, defs
+from   project import job, tree, datamodel
 
 
 def get_list(inp):
@@ -359,25 +361,66 @@ def run(inp):
     project_data.action = inp.action
     project_data.result = result.result
     if result.result == "OK":
-        project_data.message = "Job added successfully"
+        project_data.message = "Job started successfully"
     else:
         project_data.message = result.message
 
-    proc_path =  os.path.join ( os.path.dirname (
+    proc_path = os.path.join ( os.path.dirname (
                     os.path.abspath(__file__ + "/../")),"process.py" )
 
-    cmd = ["python",proc_path,project_repo_dir,
+    cmd = [defs.bin_path() + "start.sh",proc_path,project_repo_dir,
            defs.master_path(),str(job_data.id)]
 
-    environ = os.environ
-    if 'PYTHONPATH' in environ:
-        environ['PYTHONPATH'] = defs.lib_path() + "/py2:" + environ['PYTHONPATH']
-    else:
-        environ['PYTHONPATH'] = defs.lib_path() + "/py2"
+#    environ = os.environ
+#    if 'PYTHONPATH' in environ:
+#        environ['PYTHONPATH'] = defs.lib_path() + "py2:" + environ['PYTHONPATH']
+#    else:
+#        environ['PYTHONPATH'] = defs.lib_path() + "py2"
 
-    subprocess.Popen ( cmd,
-                       env=environ,
+    file_deb = open ( os.path.join(defs.debug_path(),"jobs_run.sh"),'w' )
+    file_deb.write ( "#!/bin/bash\n\n" )
+    for s in cmd:
+        file_deb.write ( s + " " )
+    file_deb.write ( "\n" )
+    file_deb.close()
+
+    file_deb = open ( os.path.join(defs.debug_path(),"jobs_run.log"),'w' )
+#    file_deb.write ( "PYTHONPATH = " + environ['PYTHONPATH'] )
+    file_deb.write ( " python = " + sys.executable + "\n" )
+    file_deb.write ( "\n" )
+
+    msg = ""
+    try:
+        p = subprocess.Popen ( cmd,
+                       shell=False,
+#                       env=environ,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
                        creationflags=0 )
+        time.sleep ( 1 )
+        if p.poll() != None:
+            output,error = p.communicate()
+            if output:
+                msg += "ret> " + str(p.returncode) + "\n" + \
+                       "OK> output " + output
+            if error:
+                msg += "ret> " + str(p.returncode) + "\n" + \
+                       "Error> error " + error.strip()
+    except OSError as e:
+        msg = "OSError > " + str(e.errno) + "\n" + \
+              "OSError > " + e.strerror   + "\n" + \
+              "OSError > " + e.filename   + "\n"
+    except:
+        msg = "Error > process does not start\n" # + sys.exc_info()[0] + "\n"
+
+    if msg:
+        file_deb.write ( msg )
+        file_deb.close ()
+        return utils.make_return ( inp.action,"process_exception",msg )
+
+    file_deb.write ( "finish\n" )
+
+    file_deb.close()
 
     return project_data
 

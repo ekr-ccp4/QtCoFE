@@ -26,12 +26,12 @@ class dataset(jsonut.jObject):
    MTZ = PROJECT = CRYSTAL = DATASET = DCELL = DWAVEL = None
 
    def __init__(self, columns, header):
-      self.MTZ = header.MTZ
-      self.H = header.H
-      self.K = header.K
-      self.L = header.L
+      self.MTZ  = header.MTZ
+      self.H    = header.H
+      self.K    = header.K
+      self.L    = header.L
       self.FREE = header.FREE
-      self.HM = header.HM
+      self.HM   = header.HM
 
       for type in 'K', 'M', 'G', 'L':
          labs = columns.pop(type, None)

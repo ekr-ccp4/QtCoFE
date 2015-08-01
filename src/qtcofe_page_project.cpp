@@ -44,6 +44,9 @@ qtCOFE::ProjectPage::ProjectPage ( DataModel      *dm,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
                    : Page(dm,stn,parent,flags)  {
+  timer = new QTimer(this);
+  timer->setSingleShot ( true );
+  connect ( timer,SIGNAL(timeout()),this,SLOT(refreshProject()) );
 }
 
 
@@ -81,20 +84,22 @@ QVBoxLayout *vbox = new QVBoxLayout();
 
 }
 
-
 void qtCOFE::ProjectPage::loadProject()  {
 QJsonObject jsonData;
+  timer->stop();
   if ((!currentProject.isEmpty()) &&
       (session->projectPath!=currentProject))
     save_project_state();
   currentProject = session->projectPath;
   jobTree->clearTree();
   project_query ( jsonData,qtCOFE_SERVER_ACT_GetListOfJobs );
+  timer->start ( preferences->refreshPeriod );
 }
 
 void qtCOFE::ProjectPage::refreshProject()  {
 QJsonObject jsonData;
   project_query ( jsonData,qtCOFE_SERVER_ACT_GetListOfJobs );
+  timer->start ( preferences->refreshPeriod );
 }
 
 
@@ -125,14 +130,12 @@ void qtCOFE::ProjectPage::project_query ( QJsonObject & jsonData,
     if (action==qtCOFE_SERVER_ACT_GetReportURI)  {
       jsonData.insert ( "report_uri",jsonReply.value("report_uri") );
     } else if (action!=qtCOFE_SERVER_ACT_SetData)  {
-      if (action==qtCOFE_SERVER_ACT_GetListOfJobs)
+      if ((action==qtCOFE_SERVER_ACT_GetListOfJobs) ||
+          (action==qtCOFE_SERVER_ACT_RunJob))
             jobTree->updateTree ( jsonReply );
       else  jobTree->makeTree   ( jsonReply );
     }
   }
-
-  QTimer::singleShot ( preferences->refreshPeriod,
-                       this,SLOT(refreshProject()) );
 
 }
 
@@ -144,6 +147,8 @@ QList<QList<QTreeWidgetItem *> > nodes;
 QString                          taskType;
 int                              job_id    = jobID;
 bool                             createJob = true;
+
+  timer->stop();  // prevent interference
 
   jobTree->getProjectedData ( jobData,nodes );
   tdlg = new TaskDialog ( this,dataModel,jobData,jobTree );
@@ -202,38 +207,48 @@ bool                             createJob = true;
 
   delete tdlg;
 
+  timer->start ( preferences->refreshPeriod );
+
 }
 
 
 void qtCOFE::ProjectPage::delJob ( int jobID, int nextCrJobID )  {
+  timer->stop();  // prevent interference
   QJsonObject *jsonData = jobTree->getTreeData();
   jsonData->insert ( "job" ,jobID );
   jsonData->insert ( "next",nextCrJobID );
   project_query    ( *jsonData,qtCOFE_SERVER_ACT_DelJob );
   delete jsonData;
+  timer->start ( preferences->refreshPeriod );
 }
 
 void qtCOFE::ProjectPage::runJob ( int jobID )  {
-QJsonObject *jsonData = new QJsonObject(); // = jobTree->getTreeData();
+  timer->stop();  // prevent interference
+  QJsonObject *jsonData = new QJsonObject(); // = jobTree->getTreeData();
   jsonData->insert ( "job" ,jobID );
   jsonData->insert ( "next",jobID );
   project_query    ( *jsonData,qtCOFE_SERVER_ACT_RunJob );
   delete jsonData;
+  timer->start ( preferences->refreshPeriod );
 }
 
 void qtCOFE::ProjectPage::viewReport ( int jobID )  {
 QJsonObject *jsonData = new QJsonObject(); // = jobTree->getTreeData();
 JSRView     *jsrview;
 
+  timer->stop();  // prevent interference
+
   jsonData->insert ( "job" ,jobID );
   jsonData->insert ( "next",jobID );
   project_query    ( *jsonData,qtCOFE_SERVER_ACT_GetReportURI );
 
   jsrview = new JSRView ( preferences,settings,this );
-  jsrview->show();
   jsrview->loadPage ( QUrl(jsonData->value("report_uri").toString()) );
+  jsrview->show();
 
   delete jsonData;
+
+  timer->start ( preferences->refreshPeriod );
 
 }
 
@@ -244,9 +259,13 @@ void qtCOFE::ProjectPage::save_project_state()  {
 }
 
 void qtCOFE::ProjectPage::dataInspector ( int jobID )  {
-DataDialog *ddlg = new DataDialog ( this,jobTree,jobTree->currentNode(),
-                                    "",dataModel,"Data Inspector",
-                                    "Data Inspector" );
+  timer->stop();  // prevent interference
+  DataDialog *ddlg = new DataDialog ( this,jobTree,
+                                      jobTree->currentNode(),
+                                      "",dataModel,"Data Inspector",
+                                      "Data Inspector" );
   ddlg->resizeToData();
   ddlg->exec();
+  delete ddlg;
+  timer->start ( preferences->refreshPeriod );
 }

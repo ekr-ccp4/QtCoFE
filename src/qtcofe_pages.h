@@ -53,6 +53,7 @@ namespace qtCOFE  {
       void login       ();
       void newAccount  ();
       void account     ();
+      void unlock      ();
       void projectList ();
       void project     ();
       void pageChanged ( int index );

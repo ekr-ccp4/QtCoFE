@@ -52,6 +52,7 @@ namespace qtCOFE  {
       // Toolbar elements
       QAction     *prjListAct;
       QAction     *accountAct;
+      QAction     *unlockAct;
       QAction     *preferencesAct;
       QAction     *helpAct;
 
@@ -108,6 +109,7 @@ namespace qtCOFE  {
       void logout   ();
       void readModel();
       virtual void account() {}
+      virtual void unlock()  {}
       virtual void login  () {}
       virtual void projectList() {}
       virtual void actionAvailChanged() {}

@@ -31,5 +31,6 @@
         <file>images/task_sad.png</file>
         <file>images/view.png</file>
         <file>images/data_image.png</file>
+        <file>images/unlock.png</file>
     </qresource>
 </RCC>

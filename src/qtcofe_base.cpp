@@ -26,21 +26,6 @@
 #include <QMessageBox>
 #include <QTimer>
 
-/*
-#include <QToolButton>
-#include <QPainter>
-#include <QFileInfo>
-#include <QPrinter>
-
-#include "qtrv_mainbase.h"
-#include "qtrv_preferences.h"
-#include "qtrv_defs.h"
-#include "qtrv_logpage.h"
-#include "qtrv_html5page.h"
-#include "qtx/qtx_utils.h"
-#include "qtx/qtx_printutils.h"
-*/
-
 #include "qtcofe_base.h"
 #include "qtcofe_preferences.h"
 #include "qtcofe_session.h"
@@ -61,6 +46,7 @@ qtCOFE::Base::Base ( QWidget *parent, Qt::WindowFlags flags )
 
   prjListAct     = NULL;
   accountAct     = NULL;
+  unlockAct      = NULL;
   preferencesAct = NULL;
   helpAct        = NULL;
   exitAct        = NULL;
@@ -222,6 +208,11 @@ void qtCOFE::Base::createActions()  {
                  "Edit user data",
                  this,SLOT(account()) );
 
+  createAction ( unlockAct,qtCOFE_unlock_icon,"&Unlock",
+                 "Unlock","Shift+Alt+U",
+                 "Unlock project when it is locked in error",
+                 this,SLOT(unlock()) );
+
   createAction ( preferencesAct,qtCOFE_configure_icon,"&Preferences",
                  "Preferences",QKeySequence::Preferences,
                  "Edit the application's configuration",
@@ -255,6 +246,7 @@ void qtCOFE::Base::createMenus()  {
   fileMenu = menuBar()->addMenu(tr("&File"));
   fileMenu->addAction    ( prjListAct     );
   fileMenu->addAction    ( accountAct     );
+  fileMenu->addAction    ( unlockAct      );
   fileMenu->addAction    ( preferencesAct );
   fileMenu->addSeparator ();
   fileMenu->addAction    ( logoutAct );
@@ -277,6 +269,7 @@ QWidget *w;
 
   toolBar->addAction ( prjListAct     );
   toolBar->addAction ( accountAct     );
+  toolBar->addAction ( unlockAct      );
   toolBar->addAction ( preferencesAct );
   toolBar->addAction ( helpAct        );
 

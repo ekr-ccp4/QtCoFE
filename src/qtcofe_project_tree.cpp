@@ -46,9 +46,10 @@ qtCOFE::ProjectTree::ProjectTree ( DataModel      *dm,
                                    QWidget        *parent,
                                    Qt::WindowFlags flags )
                    : QWidget(parent,flags)  {
-  dataModel   = dm;
-  preferences = dataModel->getPreferences();
-  session     = dataModel->getSession    ();
+  dataModel    = dm;
+  preferences  = dataModel->getPreferences();
+  session      = dataModel->getSession    ();
+  tree_version = -1.0;
   makeLayout();
 }
 
@@ -272,8 +273,17 @@ QTreeWidgetItemIterator    it(jobTree);
 QVector<QTreeWidgetItem *> items;
 QVector<int>               job_ids;
 Job                       *job;
+double                     t_version;
 int                        njobs;
 bool                       updated;
+
+  t_version = prjData.value("write_count").toDouble();
+  if (t_version==tree_version)
+    return;
+
+  tree_version = t_version;
+
+//  printf ( " update %li\n",time(NULL) );  fflush ( stdout );
 
   if (prjData.keys().contains("jobs",Qt::CaseInsensitive))  {
 
@@ -301,6 +311,7 @@ bool                       updated;
 }
 
 void qtCOFE::ProjectTree::clearTree()  {
+  tree_version = -1;
   jobTree->clear();
 }
 
@@ -431,6 +442,7 @@ void qtCOFE::ProjectTree::prmBtnClicked()  {
 }
 
 void qtCOFE::ProjectTree::runBtnClicked()  {
+  run_btn->setEnabled ( false );
   emit run_job ( currentJobId() );
 //  QMessageBox::information ( this,"Not implemented","Not implemented" );
 }
@@ -454,8 +466,9 @@ bool runnable,running,done,root,children;
                (job->status<qtCOFE_JOB_Done);
     root     = (job->id<=0);
     children = (jobTree->currentItem()->childCount()>0);
-    runnable = (!root) && (job->type!=qtCOFE_TASK_DataImport) &&
-               (job->type!=qtCOFE_TASK_Disambiguator);
+//    runnable = (!root) && (job->type!=qtCOFE_TASK_DataImport) &&
+//               (job->type!=qtCOFE_TASK_Disambiguator);
+    runnable = (!root) && (job->type!=qtCOFE_TASK_Disambiguator);
 
     add_btn ->setEnabled ( done || root );
     del_btn ->setEnabled ( (!root) && (!running) );

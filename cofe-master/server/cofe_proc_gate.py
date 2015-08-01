@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 
 #  ------------------------------------------------------------------
 #   COFE processing gate (request dispatcher)
@@ -81,13 +81,14 @@ action = {
     "add_project"            : projects.add,
     "set_project_desc"       : projects.set_desc,
     "delete_project"         : projects.delete,
+    "unlock_project"         : projects.unlock,
     "get_list_of_jobs"       : jobs.get_list,
     "add_job"                : jobs.add,
     "del_job"                : jobs.delete,
     "run_job"                : jobs.run,
     "get_report_uri"         : jobs.get_report_uri,
     "get_data_model"         : datamodel.get_data_model,
-    "import_file"            : dataimport.run,
+    "import_file"            : dataimport.import_file,
     "set_data"               : disambiguator.run
 }
 
@@ -95,11 +96,11 @@ action = {
 ret_string = action.get ( inpdata.action,unknown_action )(inpdata).to_JSON();
 
 # write return to file in master directory to aid debugging
-file = open ( os.path.join(defs.master_path(),"__last_in__.txt"),"w" )
+file = open ( os.path.join(defs.master_path(),"requests/_" + inpdata.action + "_last_in.txt"),"w" )
 file.write ( sys.argv[1] )
 file.close ()
 
-file = open ( os.path.join(defs.master_path(),"__last_out__.txt"),"w" )
+file = open ( os.path.join(defs.master_path(),"requests/_" + inpdata.action + "_last_out.txt"),"w" )
 file.write ( ret_string )
 file.close ()
 

@@ -430,6 +430,36 @@ QString          name,desc,prompt;
 
 }
 
+void qtCOFE::ProjectListPage::unlockCurrentProject()  {
+QTreeWidgetItem *item = projectTree->currentItem();
+QString          name,desc,prompt,prjname;
+
+  if (!item)  {
+    QMessageBox::information ( this,"No Selection",
+                      "Please first select a project in the list." );
+  } else  {
+
+    prjname = item->text(0);
+    prompt = "<div align='right'><i>Please confirm unlocking "
+             "current project '" + prjname + "':</i></div>";
+
+    if (getNewProjectSpecs ( "Unlock Project",prompt,
+                             "#","#","Unlock","Cancel",name,desc ))  {
+      QJsonObject jsonData;
+      jsonData.insert ( "name",prjname );
+      jsonData.insert ( "next",prjname );
+      project_query   ( jsonData,qtCOFE_SERVER_ACT_UnlockProject );
+      prompt = "<div align='right'><i>Project '" + prjname +
+               "' is now unlocked.</i></div>";
+      getNewProjectSpecs ( "Project unlocked",prompt,
+                           "#","#","","Ok",name,desc );
+    }
+
+  }
+
+}
+
+
 void qtCOFE::ProjectListPage::editDescBtnClicked()  {
 QTreeWidgetItem *item = projectTree->currentItem();
 QString          name,desc;

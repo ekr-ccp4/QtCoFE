@@ -79,18 +79,26 @@ void qtCOFE::Text2Dialog::setInput2 ( const QString label,
 void qtCOFE::Text2Dialog::setOkButton ( const QString text,
                                         const QString iconPath )  {
   if (ok_btn)  {
-    ok_btn->setText ( text );
-    if (!iconPath.isEmpty())
-      ok_btn->setIcon ( QIcon(iconPath) );
+    if (text.isEmpty())
+      ok_btn->setVisible ( false );
+    else  {
+      ok_btn->setText ( text );
+      if (!iconPath.isEmpty())
+        ok_btn->setIcon ( QIcon(iconPath) );
+    }
   }
 }
 
 void qtCOFE::Text2Dialog::setCancelButton ( const QString text,
                                             const QString iconPath )  {
   if (cancel_btn)  {
-    cancel_btn->setText ( text );
-    if (!iconPath.isEmpty())
-      cancel_btn->setIcon ( QIcon(iconPath) );
+    if (text.isEmpty())
+      cancel_btn->setVisible ( false );
+    else  {
+      cancel_btn->setText ( text );
+      if (!iconPath.isEmpty())
+        cancel_btn->setIcon ( QIcon(iconPath) );
+    }
   }
 }
 
