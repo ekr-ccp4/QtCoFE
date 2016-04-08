@@ -452,20 +452,6 @@ bool                             missing = false;
                 }
                 item = makeRow ( item,fname,desc,key,jname,nodeJob->type,
                                  (j==0),dataChoice,nChecked );
-                /*
-                item = makeRow ( item,
-                                 QStringList() <<
-                                   fname       <<
-                                   " "         <<
-                                   desc        <<
-                                   jname,
-                                 nodeJob->type,
-                                 (j==0),
-                                 dataChoice,
-                                 nData,
-                                 nChecked
-                               );
-                */
               }
             }
           }

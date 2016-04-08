@@ -39,7 +39,7 @@ import os
 import shutil
 from   project import task,  job,    jobs
 from   varut   import gitut, jsonut, utils,    defs, mtz
-from   dtypes  import dummy, any,    sequence, hkl
+from   dtypes  import dummy, any,    sequence, hkl,  xyz
 
 class Task(task.Task):
 
@@ -74,7 +74,7 @@ class Task(task.Task):
                           "wrong_action_code","Wrong action code" )
 
         file_ext = os.path.splitext(inp.data.file_path)[-1].lower()
-        if not file_ext in [".seq",".mtz"]:
+        if not file_ext in [".seq",".mtz",".pdb",".ent",".cif"]:
             return utils.make_return ( inp.action,
                           "unknown_file_type","Unknown File Type" )
 
@@ -117,6 +117,12 @@ class Task(task.Task):
             seq.setFile ( os.path.basename(inp.data.file_path) )
             seq.makeDName      ( -1  )
             job_data.add_input ( seq )
+
+        elif file_ext == ".pdb" or file_ext == ".ent" or file_ext == ".cif":
+            coors = xyz.DType(inp.data.job_id)
+            coors.setFile ( os.path.basename(inp.data.file_path) )
+            coors.makeDName    ( -1    )
+            job_data.add_input ( coors )
  #           datacnt += 1
 
         elif file_ext == ".mtz":
@@ -147,11 +153,11 @@ class Task(task.Task):
     #  This function process imported data, stored in 'input' array,
     #  and places them in the output array 'data'.
 
-        import subprocess
+#        import subprocess
         import pyrvapi
 
         def addTable ( tableId,holderId,row ):
-            pyrvapi.rvapi_add_table ( tableId,"",holderId,row,0,1,1, 0 )
+            pyrvapi.rvapi_add_table ( tableId,"",holderId,row,0,1,1, 100 )
             pyrvapi.rvapi_set_table_style ( tableId,
                                        "table-blue","text-align:left;" )
             return
@@ -161,8 +167,9 @@ class Task(task.Task):
             pyrvapi.rvapi_put_vert_theader ( tableId,header,tooltip,row )
             pyrvapi.rvapi_put_table_string ( tableId,line,row,0 )
             pyrvapi.rvapi_shape_table_cell ( tableId,row,0,"",
-                "text-align:left;" + \
-                "font-family:\"Courier\";text-decoration:none;font-weight:normal;font-style:normal;",
+                "text-align:left;width:100%;" + \
+                "font-family:\"Courier\";text-decoration:none;" + \
+                "font-weight:normal;font-style:normal;",
                 "",1,1 );
             return row+1
 
@@ -296,6 +303,39 @@ class Task(task.Task):
                     job_data.add_data ( d )
 
 
+                elif d.type == xyz.type():
+                    # simply copy over
+
+                    file_stdout.write ( "\n XYZ COORDINATES (" + d.files[0]+"):\n" )
+                    file_stdout.write ( "="*80 + "\n" )
+
+                    pyrvapi.rvapi_add_section ( rvsecId,
+                        "Atomic coordinates",defs.report_page_id(),
+                        rvrow,0,1,1,True )
+
+                    addTable     ( rvtableId,rvsecId,rvrow )
+                    addTableLine ( rvtableId,"File name",
+                                   "Imported file name",d.files[0],0 )
+                    addTableLine ( rvtableId,"Assigned name",
+                                   "Assigned data name",d.dname,1 )
+
+                    """ =======================================================================
+                    lines = filter ( None,
+                        (line.rstrip() for line in open(os.path.join(job_dir,d.files[0]),"r")))
+
+                    htmlLine = ""
+                    for i in range(0,len(lines)):
+                        file_stdout.write ( lines[i] + "\n" )
+                        if i>0:  htmlLine += "<br>"
+                        htmlLine += lines[i]
+
+                    addTableLine ( rvtableId,"Contents",
+                                   "Data contents",htmlLine,2 )
+                    ======================================================================== """
+
+                    job_data.add_data ( d )
+
+
                 elif d.type == hkl.type():
                     # process with ctruncate
 
@@ -331,9 +371,9 @@ class Task(task.Task):
                         cmd = cmd + [amplitudes]
                     cmd = cmd + ["-freein"]
 
-                    msg = self.call ( "ctruncate",cmd,job_dir,
+                    msg = self.call ( "ctruncate",cmd,job_dir,None,
                                       file_stdout,file_stderr )
-                    file_stdout.write ( " p0 msg='" + msg + "'\n" )
+#                    file_stdout.write ( " p0 msg='" + msg + "'\n" )
                     file_stdout.flush()
 
                     pyrvapi.rvapi_add_section ( rvsecId,
@@ -394,7 +434,8 @@ class Task(task.Task):
 
         return
 
-    """
+    """ ================================================================================
+    
     file_stdout.write ( " projected_data.length = " + str(len(projected_data)) + "\n\n" )
 
     seq_data = task.select_projected_data ( projected_data,
@@ -442,7 +483,8 @@ class Task(task.Task):
         file_out = open ( "structure_" + str(i) + ".pdb",'w' )
         file_out.write ( "Rubbish" )
         file_out.close()
-    """
+        
+    ===============================================================   """
 
 
     def get_command ( self,projected_data ):

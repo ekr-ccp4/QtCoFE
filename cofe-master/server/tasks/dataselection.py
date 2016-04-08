@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
 #  ------------------------------------------------------------------
-#  Data disambiguator task
+#  Data selection task
 #  ------------------------------------------------------------------
 
-#  Functions:  data_disambiguator.Task.run ( inp )
+#  Functions:  dataselection.Task.run ( inp )
 #
 #  Input 'inp' is JSON object:
 #
@@ -55,12 +55,12 @@ class Task(task.Task):
 
     def __init__(self):
 
-        self.type    = "task_disambiguator"  # must be "task_" + filename
-        self.name    = "Disambiguation"
-        self.desc    = "Data disambiguator"
+        self.type    = "task_dataselection"  # must be "task_" + filename
+        self.name    = "Data Selection"
+        self.desc    = "Data Selection"
         self.section = -1  # does not appear in task dialog
         self.order   = -2  # position within section for GUI
-        self.icon    = "task_disambiguator.png"
+        self.icon    = "task_dataselection.png"
 
         self.inp_data = []
         self.out_data = []
@@ -71,8 +71,8 @@ class Task(task.Task):
         return
 
 
-    def run(self,inp):   # This function substitutes the disambiguator
-                         # job and is specific to disambiguator task.
+    def run(self,inp):   # This function substitutes the data selection
+                         # job and is specific to this task.
                          # This task is interactive; other jobs are run
                          # in the background. Another exception is
                          # Data Import.
@@ -95,7 +95,7 @@ class Task(task.Task):
         if result.result != "OK":
             return utils.pass_return ( inp.action,result )
 
-        # Read (disambiguator) job metadata
+        # Read (data selection) job metadata
         job_data = job.Job()
         job_data.read ( project_repo_dir,inp.data.job_id )
         if hasattr(job_data,"result"):
@@ -158,6 +158,6 @@ if __name__ == "__main__":
 
     T = Task()
 
-    print "\nData disambiguator task:\n\n" + T.to_JSON()
+    print "\nData selection task:\n\n" + T.to_JSON()
 
     sys.exit(0)

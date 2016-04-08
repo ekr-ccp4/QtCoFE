@@ -46,6 +46,24 @@ QDir     dir ( QApplication::applicationDirPath() );
 QString  ccp4MasterPath;
 QChar    dirsep = QDir::separator();
 
+  tabs                   = NULL;
+  server_uri_edt         = NULL;
+  projects_path_edt      = NULL;
+  ccp4_path_edt          = NULL;
+  browser_path_edt       = NULL;
+  server_uri_btn         = NULL;
+  projects_path_btn      = NULL;
+  ccp4_path_btn          = NULL;
+  browser_path_btn       = NULL;
+  tree_width_sbx         = NULL;
+  plot_width_sbx         = NULL;
+  plot_height_sbx        = NULL;
+  font_edt               = NULL;
+  refresh_mode_cmb       = NULL;
+  refresh_lbl            = NULL;
+  refresh_period_sbx     = NULL;
+  use_system_browser_chk = NULL;
+
   fontChanged = false;
 
   treeWidth  = 300;
@@ -82,20 +100,20 @@ QChar    dirsep = QDir::separator();
   if ((!ccp4MasterPath.isEmpty()) && (!ccp4MasterPath.endsWith(dirsep)))
     ccp4MasterPath.append ( dirsep );
 
-
   serverUri    = "";
   projectsPath = "";
 //  binPath      = "";
 
 #ifdef Q_OS_MAC
 //  binPath     = ccp4Path + "bin/";
-  cootPath    = ccp4Path + "coot.app";
-  ccp4mgPath  = ccp4Path + "QtMG.app";
-  viewhklPath = ccp4Path + "ViewHKL.app";
+//  cootPath    = ccp4Path + "coot.app";
+//  ccp4mgPath  = ccp4Path + "QtMG.app";
+//  viewhklPath = ccp4Path + "ViewHKL.app";
   browserPath = "/Applications/Safari.app";
   checkMacVersion();
 #elif defined(Q_OS_WIN)
 
+/*
   cootPath   = "runwincoot.bat";
   ccp4mgPath = "winccp4mg.exe";
 
@@ -123,11 +141,15 @@ QChar    dirsep = QDir::separator();
     viewhklPath = binPath  + "viewhkl.exe";
   } else
     viewhklPath = "viewhkl.exe";
+    
+*/
+    
   browserPath = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
   oldMac      = false;
 
 #else
 
+/*
   cootPath   = "coot";
   ccp4mgPath = "ccp4mg";
 
@@ -150,6 +172,8 @@ QChar    dirsep = QDir::separator();
     viewhklPath = ccp4Path + "bin" +  dirsep  + "viewhkl";
   else
     viewhklPath = "viewhkl";
+*/    
+    
   browserPath = "firefox";
   oldMac      = false;
 
@@ -228,21 +252,12 @@ int          row;
 
   gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
 
-  gbox->addWidget ( new QLabel("Path to Coot:"),row++,0,1,2 );
-  coot_path_edt = new QLineEdit ( cootPath );
-  coot_path_btn = new QPushButton ( "browse" );
-  connect ( coot_path_btn,SIGNAL(clicked()),this,SLOT(browse_coot()) );
-  gbox->addWidget ( coot_path_edt,row,0,1,1 );
-  gbox->addWidget ( coot_path_btn,row++,1,1,1 );
-
-  gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
-
-  gbox->addWidget ( new QLabel("Path to ccp4mg:"),row++,0,1,2 );
-  ccp4mg_path_edt = new QLineEdit ( ccp4mgPath );
-  ccp4mg_path_btn = new QPushButton ( "browse" );
-  connect ( ccp4mg_path_btn,SIGNAL(clicked()),this,SLOT(browse_ccp4mg()) );
-  gbox->addWidget ( ccp4mg_path_edt,row,0,1,1 );
-  gbox->addWidget ( ccp4mg_path_btn,row++,1,1,1 );
+  gbox->addWidget ( new QLabel("Path to CCP4:"),row++,0,1,2 );
+  ccp4_path_edt = new QLineEdit ( ccp4Path );
+  ccp4_path_btn = new QPushButton ( "browse" );
+  connect ( ccp4_path_btn,SIGNAL(clicked()),this,SLOT(browse_ccp4()) );
+  gbox->addWidget ( ccp4_path_edt,row,0,1,1 );
+  gbox->addWidget ( ccp4_path_btn,row++,1,1,1 );
 
   gbox->addWidget ( new QLabel(" "),row++,0,1,2 );
 
@@ -411,9 +426,7 @@ void qtCOFE::Preferences::actualize()  {
 
   server_uri_edt      -> setText    ( serverUri    );
   projects_path_edt   -> setText    ( projectsPath );
-//  bin_path_edt        -> setText    ( binPath      );
-  coot_path_edt       -> setText    ( cootPath     );
-  ccp4mg_path_edt     -> setText    ( ccp4mgPath   );
+  ccp4_path_edt       -> setText    ( ccp4Path     );
 
   plot_height_sbx     -> setValue   ( plotHeight );
   plot_width_sbx      -> setValue   ( plotWidth  );
@@ -434,43 +447,21 @@ void qtCOFE::Preferences::actualize()  {
 void qtCOFE::Preferences::setServerUri ( const QString & server_uri )  {
   serverUri = server_uri;
   server_uri_edt->setText    ( serverUri );
-//  server_uri_edt->setEnabled ( !cfgFromCCP4gui );
-//  server_uri_btn->setEnabled ( !cfgFromCCP4gui );
 }
 
 void qtCOFE::Preferences::setProjectsPath (
                                      const QString & projects_path )  {
   projectsPath = projects_path;
   projects_path_edt->setText    ( projectsPath );
-//  server_uri_edt->setEnabled ( !cfgFromCCP4gui );
-//  server_uri_btn->setEnabled ( !cfgFromCCP4gui );
 }
 
-/*
-void qtCOFE::Preferences::setBinPath ( const QString & bin_path )  {
-  binPath = bin_path;
-  bin_path_edt->setText    ( binPath );
-//  server_uri_edt->setEnabled ( !cfgFromCCP4gui );
-//  server_uri_btn->setEnabled ( !cfgFromCCP4gui );
-}
-*/
-
-void qtCOFE::Preferences::setCootPath ( const QString & coot_path )  {
-  cootPath = coot_path;
-  coot_path_edt->setText    ( cootPath        );
-//  coot_path_edt->setEnabled ( !cfgFromCCP4gui );
-//  coot_path_btn->setEnabled ( !cfgFromCCP4gui );
+void qtCOFE::Preferences::setCCP4Path ( const QString & ccp4_path )  {
+  ccp4Path = ccp4_path;
+  ccp4_path_edt->setText ( ccp4Path );
 }
 
-void qtCOFE::Preferences::setMGPath ( const QString & ccp4mg_path )  {
-  ccp4mgPath = ccp4mg_path;
-  ccp4mg_path_edt->setText    ( ccp4mgPath      );
-//  ccp4mg_path_edt->setEnabled ( !cfgFromCCP4gui );
-//  ccp4mg_path_btn->setEnabled ( !cfgFromCCP4gui );
-}
-
-QString readPGMPath ( QString & old_path, const char *tag,
-                      QSettings *settings )  {
+QString readPath ( QString & old_path, const char *tag,
+                   QSettings *settings )  {
 QString new_path = settings->value(tag,old_path).toString();
   if (QFileInfo(old_path).exists() && (!QFileInfo(new_path).exists()))
     return old_path;
@@ -487,43 +478,26 @@ void qtCOFE::Preferences::readSettings  ( QSettings *settings )  {
   treeWidth     = settings->value ( qtCOFE_SET_TreeWidth ,300 ).toInt();
   plotWidth     = settings->value ( qtCOFE_SET_PlotWidth ,505 ).toInt();
   plotHeight    = settings->value ( qtCOFE_SET_PlotHeight,400 ).toInt();
-//  maxDecorationSize = settings->value(qtCOFE_SET_MaxDecorSize,
-//                                           maxDecorationSize ).toInt();
   refreshPeriod    = settings->value(qtCOFE_SET_RefreshPeriod,
                                    qtCOFE_DefaultRefreshPeriod).toInt();
   useSystemBrowser = settings->value(qtCOFE_SET_UseSystemBrowser,
                                              useSystemBrowser).toBool();
   refreshMode      = settings->value(qtCOFE_SET_RefreshMode,
                                                    refreshMode).toInt();
-//  gdExtSelection   = settings->value(qtCOFE_SET_gdExtSelection,
-//                                               gdExtSelection).toBool();
-
 
   projectsPath = settings->value(qtCOFE_SET_ProjectsPath,
                                             projectsPath).toString();
-//  binPath = settings->value(qtCOFE_SET_BinPath,binPath).toString();
 
   if (settings->value(qtCOFE_SET_AppDir,"*").toString()
       .compare(QApplication::applicationFilePath()) == 0)  {
     // CCP4 directory has not moved, assume no new release, so coot
     // and mg paths should be read
     serverUri = settings->value(qtCOFE_SET_ServerUri,"").toString();
-    cootPath  = readPGMPath ( cootPath ,qtCOFE_SET_CootPath ,settings );
-#ifdef Q_OS_WIN32
-    if (!cootPath.endsWith(".bat",Qt::CaseInsensitive))
-      cootPath = "C:\\Wincoot\\runwincoot.bat";
-#endif
-    ccp4mgPath  = readPGMPath ( ccp4mgPath,qtCOFE_SET_MGPath  ,settings );
-    viewhklPath = readPGMPath ( viewhklPath,qtCOFE_SET_ViewHKLPath,settings);
+    ccp4Path  = readPath ( ccp4Path,qtCOFE_SET_CCP4Path,settings );
   }
 
-  browserPath   = readPGMPath ( browserPath,qtCOFE_SET_BrowserPath,settings);
-  exportDir     = settings->value(qtCOFE_SET_ExportDir,""      ).toString();
-//  logFind       = settings->value(qtCOFE_SET_LogFind  ,""      ).toString();
-//  logFindCaseSensitive = settings->value(qtCOFE_SET_LogFindCase ,false)
-//                                                              .toBool();
-//  logFindWholeWords    = settings->value(qtCOFE_SET_LogFindWords,false)
-//                                                              .toBool();
+  browserPath = readPath ( browserPath,qtCOFE_SET_BrowserPath,settings);
+  exportDir   = settings->value(qtCOFE_SET_ExportDir,""      ).toString();
 
   logFont.fromString ( settings->value(qtCOFE_SET_LogFont,
                                        logFont.toString()).toString() );
@@ -545,24 +519,16 @@ void qtCOFE::Preferences::writeSettings ( QSettings *settings )  {
   settings->setValue ( qtCOFE_SET_TreeWidth       ,treeWidth         );
   settings->setValue ( qtCOFE_SET_PlotWidth       ,plotWidth         );
   settings->setValue ( qtCOFE_SET_PlotHeight      ,plotHeight        );
-//  settings->setValue ( qtCOFE_SET_MaxDecorSize    ,maxDecorationSize );
   settings->setValue ( qtCOFE_SET_RefreshPeriod   ,refreshPeriod     );
   settings->setValue ( qtCOFE_SET_UseSystemBrowser,useSystemBrowser  );
   settings->setValue ( qtCOFE_SET_RefreshMode     ,refreshMode       );
-//  settings->setValue ( qtCOFE_SET_gdExtSelection  ,gdExtSelection    );
   settings->setValue ( qtCOFE_SET_AppDir,
                                 QApplication::applicationFilePath()  );
   settings->setValue ( qtCOFE_SET_ServerUri       ,serverUri         );
   settings->setValue ( qtCOFE_SET_ProjectsPath    ,projectsPath      );
-//  settings->setValue ( qtCOFE_SET_BinPath         ,binPath           );
-  settings->setValue ( qtCOFE_SET_CootPath        ,cootPath          );
-  settings->setValue ( qtCOFE_SET_MGPath          ,ccp4mgPath        );
-  settings->setValue ( qtCOFE_SET_ViewHKLPath     ,viewhklPath       );
+  settings->setValue ( qtCOFE_SET_CCP4Path        ,ccp4Path          );
   settings->setValue ( qtCOFE_SET_BrowserPath     ,browserPath       );
   settings->setValue ( qtCOFE_SET_ExportDir       ,exportDir         );
-//  settings->setValue ( qtCOFE_SET_LogFind         ,logFind           );
-//  settings->setValue ( qtCOFE_SET_LogFindCase     ,logFindCaseSensitive );
-//  settings->setValue ( qtCOFE_SET_LogFindWords    ,logFindWholeWords    );
 
   settings->setValue ( qtCOFE_SET_LogFont         ,logFont.toString() );
 
@@ -573,18 +539,14 @@ void qtCOFE::Preferences::apply()  {
 
   serverUri         = server_uri_edt    ->text();
   projectsPath      = projects_path_edt ->text();
-//  binPath           = bin_path_edt      ->text();
-  cootPath          = coot_path_edt     ->text();
-  ccp4mgPath        = ccp4mg_path_edt   ->text();
+  ccp4Path          = ccp4_path_edt     ->text();
   browserPath       = browser_path_edt  ->text();
 
   plotHeight        = plot_height_sbx->value();
   plotWidth         = plot_width_sbx ->value();
   treeWidth         = tree_width_sbx ->value();
-//  maxDecorationSize = max_decor_size_sbx ->value();
   refreshPeriod     = refresh_period_sbx -> value()*1000;
   refreshMode       = refresh_mode_cmb   -> currentIndex();
-//  gdExtSelection    = gd_ext_browsing_chk->isChecked();
 
 //  accept();
 
@@ -595,18 +557,14 @@ void qtCOFE::Preferences::apply()  {
 void qtCOFE::Preferences::close()  {
 
   if (
-      (serverUri         != server_uri_edt   ->text())  ||
-      (projectsPath      != projects_path_edt->text())  ||
-//      (binPath           != bin_path_edt     ->text())  ||
-      (cootPath          != coot_path_edt    ->text())  ||
-      (ccp4mgPath        != ccp4mg_path_edt  ->text())  ||
-      (plotHeight        != plot_height_sbx  ->value()) ||
-      (plotWidth         != plot_width_sbx   ->value()) ||
-      (treeWidth         != tree_width_sbx   ->value()) ||
-//      (maxDecorationSize != max_decor_size_sbx ->value()) ||
-      (refreshPeriod     != refresh_period_sbx->value()*1000)  ||
-      (refreshMode       != refresh_mode_cmb ->currentIndex())
-//      (gdExtSelection ^ gd_ext_browsing_chk->isChecked())
+      (serverUri     != server_uri_edt   ->text())  ||
+      (projectsPath  != projects_path_edt->text())  ||
+      (ccp4Path      != ccp4_path_edt    ->text())  ||
+      (plotHeight    != plot_height_sbx  ->value()) ||
+      (plotWidth     != plot_width_sbx   ->value()) ||
+      (treeWidth     != tree_width_sbx   ->value()) ||
+      (refreshPeriod != refresh_period_sbx->value()*1000)  ||
+      (refreshMode   != refresh_mode_cmb ->currentIndex())
      )  {
     if (QMessageBox::question(this,tr("Apply changes?"),
          tr("Changes have been made. Do you wish to apply them?"),
@@ -633,14 +591,18 @@ void qtCOFE::Preferences::useSystemBrowserClicked()  {
 }
 
 
-QString qtCOFE::Preferences::browse ( const QString title,
+QString qtCOFE::Preferences::browse ( const QString & title,
                                       const QString & suggestion )  {
 QString fileName;
   if (!suggestion.isEmpty())
-    fileName = QFileInfo(suggestion).absolutePath();
+        fileName = QFileInfo(suggestion).absolutePath();
+  else  fileName = QString();
+QMessageBox::information(this,"p1","p1" );
 #ifdef Q_OS_MAC
+  fileName = "/Applications";
   fileName = QFileDialog::getOpenFileName ( this,title,fileName,
                                             tr("Applications (*.app)"));
+QMessageBox::information(this,"p2","p2" );
 #endif
 #ifdef Q_OS_LINUX
   fileName = QFileDialog::getOpenFileName ( this,title,fileName,
@@ -694,16 +656,19 @@ QString dirName;
 }
 */
 
-void qtCOFE::Preferences::browse_coot()  {
-QString fileName = browse ( "Locate Coot",coot_path_edt->text() );
-  if (!fileName.isEmpty())
-    coot_path_edt->setText ( fileName );
-}
-
-void qtCOFE::Preferences::browse_ccp4mg()  {
-QString fileName = browse ( "Locate ccp4mg",ccp4mg_path_edt->text() );
-  if (!fileName.isEmpty())
-    ccp4mg_path_edt->setText ( fileName );
+void qtCOFE::Preferences::browse_ccp4()  {
+QString dirName;
+  if (!dirName.isEmpty())
+    dirName = QFileInfo(ccp4_path_edt->text()).absolutePath();
+  dirName = QFileDialog::getExistingDirectory ( this,
+                         "Locate CCP4 Setup Directory",dirName,
+                         QFileDialog::ShowDirsOnly |
+                         QFileDialog::DontUseNativeDialog );
+  if (!dirName.isEmpty())  {
+    if (!dirName.endsWith('/'))
+      dirName.append ( "/" );
+    ccp4_path_edt->setText ( dirName );
+  }
 }
 
 void qtCOFE::Preferences::browse_browser()  {
@@ -800,155 +765,70 @@ bool  done = false;
 
 }
 
-/*
-QString qtCOFE::Preferences::getBinPath()  {
-bool  done = false;
+
+void qtCOFE::Preferences::launchApp ( const QString     & relPath,
+                                      const QStringList & arguments,
+                                      const QString     & msgTitle,
+                                      const QString     & msgBody )  {
+QDir    ccp4Dir(ccp4Path);
+QString appPath;
+bool    exists,done;
 
   QApplication::processEvents();
 
-  while ((!QFileInfo(binPath).exists()) && (!done))  {
-    if (QMessageBox::question ( this,"Path to executables misconfigured",
-         "Path to executables is misconfigured, looking at<p>'" +
-         binPath + "'<p>Would you like to specify the path "
-         "now (just navigate to directory where all executables " +
-         "should be found)? This needs to be done only once.",
-         QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
-                                                   QMessageBox::Yes)  {
-      browse_bin_dir();
-      if (bin_path_edt->text()==binPath)
-            done = true;
-      else  binPath = bin_path_edt->text();
+  done   = false;
+  while (!done)  {
+  
+    appPath = ccp4Dir.absoluteFilePath ( relPath );
+    exists  = QFileInfo(appPath).exists();
+
+    if (!exists)  {
+      QString msgName = appPath;
+      if (msgName.isEmpty())
+        msgName = "Empty";
+      if (QMessageBox::question ( this,msgTitle,msgBody + 
+           "<p><i>" + msgName + "</i>"
+           "<p>Would you like to locate CCP4 "
+           "directory now (this needs to be done only once)?",
+           QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
+             QMessageBox::Yes)  {
+        browse_ccp4();
+        if (ccp4_path_edt->text()==ccp4Path)
+          done = true;
+        ccp4Path = ccp4_path_edt->text();
+        ccp4Dir.setPath ( ccp4Path );
+      } else
+        done = true;
     } else
       done = true;
+
   }
-
-  return binPath;
-
-}
-*/
-
-void qtCOFE::Preferences::launchCoot ( const QStringList & arguments )  {
 
   QApplication::processEvents();
 
-  if (!QFileInfo(cootPath).exists())  {
-    if (QMessageBox::question ( this,"Coot not found",
-         "Coot is not found, looking at<p>'" +
-         cootPath + "'<p>Would you like to locate Coot "
-         "executable now (this needs to be done only once)?",
-         QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
-           QMessageBox::Yes)  {
-      browse_coot();
-      if (coot_path_edt->text()==cootPath)
-        return;
-      cootPath = coot_path_edt->text();
-    } else
-      return;
-  }
+  if (exists)
+    QProcess::startDetached ( appPath,arguments,workingDir );
 
-#ifdef Q_OS_MAC
-  QString coot_path = cootPath;
-  if (coot_path.endsWith(".app"))
-    coot_path.append ( "/Contents/MacOS/applet" );
-      //    coot_path.append ( "/Contents/coot/bin/coot" );
-  QProcess::startDetached ( coot_path,
-                            QStringList() << arguments <<
-                            "--no-state-script" <<
-                            "-c" << "(no-coot-tips)" <<
-                            "--no-guano",
-                            workingDir );
+}
 
-/*  -- old version in which current directory is not sensed by Coot
-  if (oldMac)
-    QProcess::startDetached ( cootPath+"/Contents/MacOS/coot",
-                              QStringList() << arguments <<
-                              "--no-state-script" <<
-                              "-c" << "(no-coot-tips)" <<
-                              "--no-guano",
-                              workingDir );
-  else
-    QProcess::startDetached ( "open",QStringList() << "-n" << "-a" <<
-                              cootPath << "--args" <<
-                              "-c" << "(no-coot-tips)" <<
-                              arguments <<
-                              "--no-state-script" <<
-                              "--no-guano",
-                              workingDir );
-*/
-#else
-  QProcess::startDetached ( cootPath,QStringList() << arguments <<
-                              "--no-state-script" <<
-                              "-c" << "(no-coot-tips)" <<
-                              "--no-guano",
-                              workingDir );
-#endif
+void qtCOFE::Preferences::launchCoot ( const QStringList & arguments )  {
+  launchApp ( "bin/coot",
+              QStringList() << arguments <<
+                        "--no-state-script" <<
+                        "-c" << "(no-coot-tips)" <<
+                        "--no-guano",
+              "Coot not found","Coot is not found, looking at" );
 
 }
 
 void qtCOFE::Preferences::launchMG ( const QStringList & arguments )  {
-
-  QApplication::processEvents();
-
-  if (!QFileInfo(ccp4mgPath).exists())  {
-    if (QMessageBox::question ( this,"CCP4MG not found",
-         "CCP4MG is not found, looking at<p>'" +
-         ccp4mgPath + "'<p>Would you like to locate CCP4MG "
-         "(or QtMG) executable now (this needs to be done only once)?",
-         QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
-           QMessageBox::Yes)  {
-      browse_ccp4mg();
-      if (ccp4mg_path_edt->text()==ccp4mgPath)
-        return;
-      ccp4mgPath = ccp4mg_path_edt->text();
-    } else
-      return;
-  }
-
-#ifdef Q_OS_MAC
-  if (oldMac)
-    QProcess::startDetached ( ccp4mgPath+"/Contents/MacOS/QtMG",
-                              arguments,workingDir );
-  else
-    QProcess::startDetached ( "open",QStringList() << "-n" << "-a" <<
-                              ccp4mgPath << "--args" << arguments,
-                              workingDir );
-#else
-  QProcess::startDetached ( ccp4mgPath,arguments,workingDir );
-#endif
-
+  launchApp ( "bin/ccp4mg",arguments,"CCP4 MG not found",
+              "CCP4 MG is not found, looking at" );
 }
 
 void qtCOFE::Preferences::launchViewHKL ( const QStringList & arguments )  {
-
-  QApplication::processEvents();
-
-  if (!QFileInfo(viewhklPath).exists())  {
-    if (QMessageBox::question ( this,"ViewHKL not found",
-         "ViewHKL is not found, looking at<p>'" +
-         viewhklPath + "'<p>Would you like to locate ViewHKL "
-         "executable now (this needs to be done only once)?",
-         QMessageBox::Yes | QMessageBox::No,QMessageBox::Yes ) ==
-           QMessageBox::Yes)  {
-      QString fileName = browse ( "Locate viewhkl",viewhklPath );
-      if (fileName.isEmpty())
-        return;
-      viewhklPath = fileName;
-    } else
-      return;
-  }
-
-#ifdef Q_OS_MAC
-  if (oldMac)
-    QProcess::startDetached ( viewhklPath+"/Contents/MacOS/viewhkl",
-                              arguments,workingDir );
-  else
-    QProcess::startDetached ( "open",QStringList() << "-n" << "-a" <<
-                              viewhklPath << "--args" << arguments,
-                              workingDir );
-#else
-  QProcess::startDetached ( viewhklPath,arguments,workingDir );
-#endif
-
+  launchApp ( "bin/viewhkl",arguments,"ViewHKL not found",
+              "ViewHKL is not found, looking at" );
 }
 
 

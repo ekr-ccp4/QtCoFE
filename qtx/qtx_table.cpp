@@ -8,7 +8,7 @@
 //  http://www.ccp4.ac.uk/ccp4license.php.
 // =================================================================
 //
-//    09.08.13   <--  Date of Last Modification.
+//    26.11.15   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //  **** Classes :  qtx::Table
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2012-2013
+//  (C) E. Krissinel 2012-2015
 //
 // =================================================================
 //
@@ -98,11 +98,11 @@ QTableWidgetItem *item;
 }
 
 QTableWidgetItem *qtx::Table::setTableItem ( int row, int col,
-                                             qreal q,
-                                             char * const format )  {
+                                             double q,
+                                             const QString & format )  {
 QTableWidgetItem *item;
 char              S[100];
-  sprintf ( S,format,q );
+  sprintf ( S,format.toLatin1().constData(),q );
   item = new QTableWidgetItem ( S );
   setItem ( row,col,item );
   item->setTextAlignment ( Qt::AlignRight );
@@ -217,6 +217,29 @@ int             i;
 
 }
 
+void qtx::Table::setTableFont ( QFont & font )  {
+int  n = columnCount();
+  for (int i=0;i<rowCount();i++)
+    for (int j=0;j<n;j++)
+      if (item(i,j))
+        item(i,j)->setFont ( font );
+}
+
+void qtx::Table::setTableFixedFont()  {
+QFont fixed_font;
+  fixed_font.setFamily ( "Courier" );
+  setTableFont ( fixed_font );
+}
+
+void qtx::Table::setTableAlignment ( int Alignment )  {
+int  n = columnCount();
+  for (int i=0;i<rowCount();i++)
+    for (int j=0;j<n;j++)
+      if (item(i,j))
+        item(i,j)->setTextAlignment ( Alignment );
+}
+
+
 void qtx::Table::alignCells ( int flag, bool hideshow )  {
 int i,j;
   if (hideshow)
@@ -284,28 +307,27 @@ int i,w,count;
 }
 */
 
-void qtx::Table::setFullSize ( bool limitWidthOnly,
-                               bool limitHeightOnly )  {
+void qtx::Table::setFullSize ( bool limitWidth, bool limitHeight )  {
 int i,h,w,count;
 
   w = 0;
   h = 0;
 
-  if (limitWidthOnly)  {
-    setHorizontalScrollBarPolicy ( Qt::ScrollBarAsNeeded  );
+  if (limitWidth)  {
+    setHorizontalScrollBarPolicy ( Qt::ScrollBarAsNeeded );
     h = horizontalScrollBar()->height();
   } else
     setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
-  if (limitHeightOnly)  {
+  if (limitHeight)  {
     setVerticalScrollBarPolicy ( Qt::ScrollBarAsNeeded  );
     w = verticalScrollBar()->width();
   } else
     setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
   count = columnCount();
-  for (i=0;i<count;i++)
-   w += columnWidth ( i );
+  for (i=0;i<count;i++) 
+    w += columnWidth ( i );
   w += 2;
 
   count = rowCount();
@@ -319,13 +341,15 @@ int i,h,w,count;
 //  if (horizontalHeader()->isVisible())
     h += horizontalHeader()->height();
 
-  setMaximumWidth ( w );
-  if (!limitWidthOnly)
+  if (!limitWidth)  {
+    setMaximumWidth ( w );
     setMinimumWidth ( w );
+  }
 
-  setMaximumHeight ( h );
-  if (!limitHeightOnly)
+  if (!limitHeight)  {
+    setMaximumHeight ( h );
     setMinimumHeight ( h );
+  }
 
 }
 

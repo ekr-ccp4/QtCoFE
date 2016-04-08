@@ -87,24 +87,7 @@ if result.result != "OK":
     sys.exit(defs.process_cant_read_job())
 
 
-#  5. Initiate report document
-
-file_deb.write ( " rvapi_init_document\n" )
-
-pyrvapi.rvapi_init_document ( "report",os.path.join(job_dir,"html"),
-                              job_data.desc,1,7,
-                              defs.jsrview_path(),None,None,"task.tsk",
-                              "i2.xml" )
-
-pyrvapi.rvapi_add_tab     ( defs.report_page_id(),"Report",True         );
-pyrvapi.rvapi_add_tab     ( defs.log_page_id(),"Log file" ,False        );
-pyrvapi.rvapi_append_content ( file_stdout_path,True,defs.log_page_id() );
-pyrvapi.rvapi_add_tab     ( defs.err_page_id(),"Errors"   ,False        );
-pyrvapi.rvapi_append_content ( file_stderr_path,True,defs.err_page_id() );
-pyrvapi.rvapi_flush();
-
-
-#  6. Get task description and run data
+#  5. Get task description and run data
 
 projected_data = []
 job.get_projected_data    ( projected_data,project_repo_dir,jobID )
@@ -116,19 +99,25 @@ if task == None:
     sys.exit(defs.process_cant_read_task())
 task.read_arguments ( job_dir )
 
-"""
-cmd = [os.path.join(bin_dir,task.executable)] + task.get_command(projected_data)
 
-# save command in job directory for reference
-file_cmd_path = os.path.join ( job_dir,"_command.sh" )
-file_cmd = open ( file_cmd_path,'w' )
-for i in range(len(cmd)):
-    if i > 0:
-        file_cmd.write ( "    \\ \n      " )
-    file_cmd.write ( cmd[i] )
-file_cmd.write ( "\n" )
-file_cmd.close()
-"""
+#  6. Initiate report document
+
+file_deb.write ( " rvapi_init_document\n" )
+
+pyrvapi.rvapi_init_document ( "report",os.path.join(job_dir,"html"),
+                              job_data.desc,1,12,
+                              defs.jsrview_path(),None,None,"task.tsk",
+                              "i2.xml" )
+
+pyrvapi.rvapi_add_header ( "<b>Job " + str(job_data.id).zfill(3) +
+                           ": " + task.desc + "</b>" );
+
+pyrvapi.rvapi_add_tab        ( defs.report_page_id(),"Report",True      );
+pyrvapi.rvapi_add_tab        ( defs.log_page_id(),"Log file" ,False     );
+pyrvapi.rvapi_append_content ( file_stdout_path,True,defs.log_page_id() );
+pyrvapi.rvapi_add_tab        ( defs.err_page_id(),"Errors"   ,False     );
+pyrvapi.rvapi_append_content ( file_stderr_path,True,defs.err_page_id() );
+pyrvapi.rvapi_flush();
 
 
 #  7. Set job status to "running"
@@ -170,21 +159,6 @@ else:
         msg = "Error > " + str(sys.exc_info()[0]) + "\n"
     if msg:
         message ( msg )
-
-"""
-msg = ""
-try:
-    p = subprocess.call ( cmd,stdout=file_stdout,stderr=file_stderr )
-except OSError as e:
-    msg = "OSError > " + str(e.errno) + "\n" + \
-          "OSError > " + e.strerror   + "\n" + \
-          "OSError > " + e.filename   + "\n"
-except:
-    msg = "Error > " + sys.exc_info()[0] + "\n"
-
-if msg:
-    file_deb.write ( msg )
-"""
 
 file_deb.write ( " finish job\n" )
 

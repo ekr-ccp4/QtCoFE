@@ -43,7 +43,7 @@ class Task(task.Task):
         file_stdout.write ( " projected_data.length = " + str(len(projected_data)) + "\n\n" )
 
         seq_data = task.select_projected_data ( projected_data,
-                                                 sequence.type(),"" );
+                                                sequence.type(),"" );
         hkl_data = task.select_projected_data ( projected_data,
                                    hkl.type(),hkl.subtypeAnomalous() );
 

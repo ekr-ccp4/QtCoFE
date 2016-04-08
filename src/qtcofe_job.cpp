@@ -33,11 +33,11 @@
 // =================================================================
 
 qtCOFE::JobData::JobData() : TaskData()  {
-  disambiguated = false;
+  data_selected = false;
 }
 
 qtCOFE::JobData::JobData ( TaskData *taskData )  {
-  disambiguated = false;
+  data_selected = false;
   type    = taskData->type;  // "dtype_xxx"
   subtype = taskData->subtype;
   mode    = taskData->mode;  // modificator of data entity number (E,U,G)
@@ -47,7 +47,7 @@ qtCOFE::JobData::JobData ( TaskData *taskData )  {
 qtCOFE::JobData::~JobData() { clear(); }
 
 void qtCOFE::JobData::clear()  {
-  disambiguated = false;
+  data_selected = false;
   foreach (Component *c,components)
     if (c)  delete c;
   components.clear();
@@ -147,7 +147,7 @@ int nm = n_suitable(jobData[0]);
   if (nm==nmode+1)
     return Suitable;
 
-  if ((nm>nmode) && jobData[0]->disambiguated)
+  if ((nm>nmode) && jobData[0]->data_selected)
     return Suitable;
 
   for (int i=1;i<jobData.count();i++)
@@ -165,7 +165,7 @@ int nm = n_suitable(jobData[0]);
   if (nm==nmode)
     return Suitable;
 
-  if ((nm<nmode) && jobData[0]->disambiguated)
+  if ((nm<nmode) && jobData[0]->data_selected)
     return Suitable;
 
   for (int i=1;i<jobData.count();i++)
@@ -301,7 +301,7 @@ const Task *task = NULL;
     if (dlist.count()>0)  {
 
       JobData *jd =new JobData();
-      jd->disambiguated = (type==qtCOFE_TASK_Disambiguator);
+      jd->data_selected = (type==qtCOFE_TASK_DataSelection);
       jd->type = dlist[0].toObject().value("type").toString();
       jd->copy ( dataModel->getTaskDataOut(type,jd->type) );
 
@@ -445,7 +445,8 @@ void qtCOFE::Job::showStatus()  {
   if (progressBar)  {
 
     if (status==qtCOFE_JOB_Starting)  {
-      progressBar->setRange   ( 1,10 );
+//      progressBar->setRange   ( 1,10 );
+      progressBar->setRange   ( 0,0  );
       progressBar->setVisible ( true );
     } else if ((qtCOFE_JOB_Running<=status) && (status<qtCOFE_JOB_Done)) {
       if (progressBar->maximum()!=0)

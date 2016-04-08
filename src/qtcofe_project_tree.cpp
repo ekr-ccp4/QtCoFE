@@ -149,7 +149,8 @@ int              charHeight;
     hbox->addWidget ( lbl,0 );
     item1->setData ( 0,Qt::UserRole+1,QVariant::fromValue<QLabel*>(lbl) );
   }
-  lbl = new QLabel(" " + job->name + " " );
+  lbl = new QLabel( QString("%1 ").arg(job->id,3,10,QChar('0')) +
+                    job->name + " " );
   lbl->setStyleSheet("QLabel{background-color: transparent; color: back;}");
   hbox->addWidget ( lbl,0 );
   item1->setData ( 0,Qt::UserRole+2,QVariant::fromValue<QLabel*>(lbl) );
@@ -468,7 +469,7 @@ bool runnable,running,done,root,children;
     children = (jobTree->currentItem()->childCount()>0);
 //    runnable = (!root) && (job->type!=qtCOFE_TASK_DataImport) &&
 //               (job->type!=qtCOFE_TASK_Disambiguator);
-    runnable = (!root) && (job->type!=qtCOFE_TASK_Disambiguator);
+    runnable = (!root) && (job->type!=qtCOFE_TASK_DataSelection);
 
     add_btn ->setEnabled ( done || root );
     del_btn ->setEnabled ( (!root) && (!running) );

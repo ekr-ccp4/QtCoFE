@@ -63,7 +63,7 @@ namespace qtCOFE  {
         Ambiguous
       };
 
-      bool            disambiguated;
+      bool            data_selected;
       QList<Component *> components;  // list on data sets/items
 
       JobData ();

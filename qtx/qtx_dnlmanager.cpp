@@ -82,7 +82,7 @@ void qtx::DownloadData::makeErrorMessage ( QWidget *parent,
        "Connection error",makeErrorMessage(pgmName) );
   else
     printf ( " +++ Connection error: %s\n",
-             makeErrorMessage(pgmName).toAscii().constData() );
+             makeErrorMessage(pgmName).toLatin1().constData() );
 }
 
 

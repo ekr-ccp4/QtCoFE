@@ -39,7 +39,7 @@ def lock ( repo_dir ):
         return result
 
     n  = 0;
-    while rc != "OK" and n < 2:
+    while rc != "OK" and n < 10:
         time.sleep ( 1 )
         rc = git ( repo_dir,['branch','__lock__'] )
         n += 1

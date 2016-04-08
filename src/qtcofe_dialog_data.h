@@ -63,14 +63,14 @@ namespace qtCOFE  {
       QJsonArray *getSelections(); // after "done" in disambiguator
 
     protected:
-      Preferences  *preferences;
-      Session      *session;
-      DataModel    *dataModel;
-      qtx::Tree    *dataTree;
-      QLabel       *prompt_lbl;
-      QPushButton  *close_btn;
-      QPushButton  *cancel_btn;
-      QPushButton  *accept_btn;
+      Preferences   *preferences;
+      Session       *session;
+      DataModel     *dataModel;
+      qtx::Tree     *dataTree;
+      QLabel        *prompt_lbl;
+      QPushButton   *close_btn;
+      QPushButton   *cancel_btn;
+      QPushButton   *accept_btn;
       QList<DataChoice *> choices;
 
       void clear();
@@ -80,16 +80,6 @@ namespace qtCOFE  {
                                       const QString statusIcon,
                                       const QString prompt
                                     );
-      /*
-      QTreeWidgetItem * makeRow     ( QTreeWidgetItem * item,
-                                      QStringList     & fields,
-                                      QString           jobType,
-                                      bool              checked,
-                                      DataChoice      * dataChoice,
-                                      int               nData,
-                                      int               nChecked
-                                    );
-      */
       QTreeWidgetItem * makeRow     ( QTreeWidgetItem * item,
                                       QStringList     & fnames,
                                       QStringList     & desc,

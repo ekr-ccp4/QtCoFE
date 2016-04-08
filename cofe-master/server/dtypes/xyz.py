@@ -22,6 +22,17 @@ class DType(dtype.DType):
             self.icon  = "data_xyz.png"
         return
 
+    def makeDName ( self,serialNo ):
+        if serialNo > 0:
+            self.makeDataId ( serialNo )
+        if len(self.files) > 0:
+            if serialNo > 0:
+                self.dname = "[" + self.dataId + "] " + self.files[0]
+            else:
+                self.dname = self.files[0]
+        return
+
+
 
 #
 #  ------------------------------------------------------------------

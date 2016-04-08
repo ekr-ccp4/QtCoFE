@@ -8,7 +8,7 @@
 //  http://www.ccp4.ac.uk/ccp4license.php.
 // =================================================================
 //
-//    09.01.13   <--  Date of Last Modification.
+//    04.02.16   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //  **** Classes :  qtx::LineEdit
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2012-2013
+//  (C) E. Krissinel 2012-2016
 //
 // =================================================================
 //
@@ -38,17 +38,18 @@ namespace qtx  {
       LineEdit ( QString S, int nchars, QWidget *parent=0 );
 
       inline void setFieldSize  ( int  nchars ) { field_len   = nchars; }
-      inline void setSampleChar ( char sample ) { sample_char = sample; }
+//      inline void setSampleChar ( char sample ) { sample_char = sample; }
       void setDrag ( Qt::DropAction dropAction,
                      QString dragIcon, QString tool_tip );
 
     protected:
       int            field_len;
-      char           sample_char;
+//      char           sample_char;
       Qt::DropAction drop_action;
       QString        drag_image;
       virtual QSize	minimumSizeHint () const;
       virtual QSize	maximumSizeHint () const;
+      virtual QSize	sizeHint        () const;
 
       void mousePressEvent ( QMouseEvent *event );
 

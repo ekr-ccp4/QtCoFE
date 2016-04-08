@@ -177,7 +177,8 @@ class Task(jsonut.jObject):
 
 
 
-    def call(self,executable,command_line,job_dir,file_stdout,file_stderr):
+    def call(self,executable,command_line,job_dir,file_stdin,file_stdout,
+             file_stderr,log_parser=None):
 
         import sys
         import subprocess
@@ -196,8 +197,31 @@ class Task(jsonut.jObject):
 
         msg = ""
         try:
-            p = subprocess.call ( [executable] + command_line,
-                                  stdout=file_stdout,stderr=file_stderr )
+#            p = subprocess.call ( [executable] + command_line,
+#                                  stdin=file_stdin,stdout=file_stdout,
+#                                  stderr=file_stderr )
+
+#            p = subprocess.Popen ( [executable] + command_line,
+#                                  stdin=file_stdin,
+#                                  stdout=subprocess.PIPE,
+#                                  stderr=file_stderr )
+#            line = p.stdout.readline()
+#            if log_parser != None:
+#                log_parser.parse_line ( line,False,0.0 )
+#            while line:
+#                file_stdout.write ( line )
+#                file_stdout.flush()
+#                if log_parser != None:
+#                    log_parser.parse_line ( line,False,0.0 )
+#                line = p.stdout.readline()
+
+            p = subprocess.Popen ( [executable] + command_line,
+                  stdin=file_stdin,
+                  stdout=subprocess.PIPE if log_parser else file_stdout,
+                  stderr=file_stderr )
+            if log_parser:
+                log_parser.parse_stream ( p.stdout,file_stdout )
+
         except OSError as e:
             msg = "OSError > " + str(e.errno) + "\n" + \
                   "OSError > " + e.strerror   + "\n" + \
@@ -210,6 +234,11 @@ class Task(jsonut.jObject):
 
         return msg
 
+
+    def make_job_filename ( self,job_data,basename ):
+        return str(job_data.id).zfill(3) + "_" + basename
+        
+        return
 
 
 def select_projected_data ( projected_data,type,subtype ):

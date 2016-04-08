@@ -70,6 +70,7 @@ namespace qtCOFE  {
       QWebView    *webView;
       QSettings   *settings;
       Preferences *preferences;
+      QString      jobDir;
       int          iores;
 
       void readSettings ();

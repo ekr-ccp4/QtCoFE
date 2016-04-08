@@ -47,28 +47,18 @@ namespace qtCOFE  {
       int      treeWidth;
       int      plotHeight;
       int      plotWidth;
-//      int      maxDecorationSize;
       QString  serverUri;        //!< path to local processing scripts
       QString  projectsPath;     //!< path to local project directories
-//      QString  binPath;          //!< path to local executables
       QString  ccp4Path;
-      QString  cootPath;
-      QString  ccp4mgPath;
-      QString  viewhklPath;
       QString  browserPath;
       QString  exportDir;
       QString  workingDir;       //!< not stored in preferences
-//      QString  logFind;
       QString  macVersion;
       QFont    logFont;
       int      refreshPeriod;
       int      refreshMode;
       bool     useSystemBrowser;
-//      bool     gdExtSelection;   //!< graph data extended selection
-//      bool     logFindCaseSensitive;
-//      bool     logFindWholeWords;
       bool     oldMac;
-//      bool     cfgFromCCP4gui;
 
       Preferences ( QWidget *parent = 0 );
       ~Preferences();
@@ -87,13 +77,10 @@ namespace qtCOFE  {
 
       void setServerUri    ( const QString & server_uri  );
       void setProjectsPath ( const QString & projects_path );
-//      void setBinPath    ( const QString & bin_path    );
-      void setCootPath     ( const QString & coot_path   );
-      void setMGPath       ( const QString & ccp4mg_path );
+      void setCCP4Path     ( const QString & ccp4_path   );
 
       QString getProcessingGate();
       QString getProjectsPath  ();
-//      QString getBinPath       ();
 
       void readSettings  ( QSettings *settings );
       void writeSettings ( QSettings *settings );
@@ -111,40 +98,36 @@ namespace qtCOFE  {
     signals:
       void applyPreferences();
 
-//    public slots:
-
     protected:
       QTabWidget    *tabs;
 
       QLineEdit     *server_uri_edt;
       QLineEdit     *projects_path_edt;
-//      QLineEdit     *bin_path_edt;
-      QLineEdit     *coot_path_edt;
-      QLineEdit     *ccp4mg_path_edt;
+      QLineEdit     *ccp4_path_edt;
       QLineEdit     *browser_path_edt;
       QPushButton   *server_uri_btn;
       QPushButton   *projects_path_btn;
-//      QPushButton   *bin_path_btn;
-      QPushButton   *coot_path_btn;
-      QPushButton   *ccp4mg_path_btn;
+      QPushButton   *ccp4_path_btn;
       QPushButton   *browser_path_btn;
       QSpinBox      *tree_width_sbx;
       QSpinBox      *plot_width_sbx;
       QSpinBox      *plot_height_sbx;
-//      QSpinBox      *max_decor_size_sbx;
       qtx::LineEdit *font_edt;
       QComboBox     *refresh_mode_cmb;
       QLabel        *refresh_lbl;
       QSpinBox      *refresh_period_sbx;
       QCheckBox     *use_system_browser_chk;
-//      QCheckBox     *refresh_enabled_chk;
-//      QCheckBox     *gd_ext_browsing_chk;
       bool           fontChanged;
 
       void    checkMacVersion();
       void    makeLayout     ();
       void    setFontSpec    ();
-      QString browse ( const QString title, const QString & suggestion );
+      QString browse    ( const QString & title,
+                          const QString & suggestion );
+      void    launchApp ( const QString     & relPath,
+                          const QStringList & arguments,
+                          const QString     & msgTitle,
+                          const QString     & msgBody );
 
     protected slots:
       void apply();
@@ -153,9 +136,7 @@ namespace qtCOFE  {
       void refreshModeChanged     ( int index );
       void browse_server_dir  ();
       void browse_projects_dir();
-//      void browse_bin_dir     ();
-      void browse_coot        ();
-      void browse_ccp4mg      ();
+      void browse_ccp4        ();
       void browse_browser     ();
       void choose_font        ();
 

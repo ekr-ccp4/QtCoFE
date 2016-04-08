@@ -8,7 +8,7 @@
 //  http://www.ccp4.ac.uk/ccp4license.php.
 // =================================================================
 //
-//    23.12.13   <--  Date of Last Modification.
+//    25.11.15   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //  **** Classes :  qtx::Tree
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2012-2013
+//  (C) E. Krissinel 2012-2015
 //
 // =================================================================
 //
@@ -110,7 +110,7 @@ QTreeWidgetItem *item = new QTreeWidgetItem (
 }
 
 QTreeWidgetItem *qtx::Tree::addTreeItem ( QString name,
-                                          qreal   value,
+                                          double  value,
                                           int     prec )  {
 QTreeWidgetItem *item = new QTreeWidgetItem (
       QStringList() << name << QString("%1").arg(value,0,'g',prec) );
@@ -283,8 +283,22 @@ void qtx::Tree::keyPressEvent ( QKeyEvent *event )  {
 void qtx::Tree::setFullWidth()  {
 
   for (int i=0;i<columnCount();i++)  {
+#if QT_VERSION < 0x050000
     header()->setResizeMode ( i,QHeaderView::ResizeToContents	);
+#else
+    header()->setSectionResizeMode ( i,QHeaderView::ResizeToContents	);
+#endif
     resizeColumnToContents ( i );
   }
+
+  /*
+  int w = 0;
+  for (int i=0;i<columnCount();i++)
+    w += columnWidth ( i );
+  w += 2;
+
+  setMaximumWidth ( w );
+  setMinimumWidth ( w );
+  */
 
 }

@@ -11,7 +11,7 @@
 
 # CCP4_MASTER is the location of the top-level directory containing ccp4-N.N.
 export CCP4_MASTER=/Users/eugene/Projects/ccp4jh
-export CCP4=$CCP4_MASTER/ccp4-6.5
+export CCP4=$CCP4_MASTER/ccp4-dev
 
 # CCP4_SCR: a per-user directory for run-time-generated scratch files.
 export CCP4_SCR="/tmp/`whoami | tr ' \\\\' _`"
@@ -81,7 +81,7 @@ test -d $CCP4_SCR || echo "Unable to assign CCP4_SCR. This will cause probs."
 # CCP4 programs treat over-writing of existing files as a fatal error.
 export CCP4_OPEN=UNKNOWN
 
-PATH=$CCP4/etc:$CCP4/bin:$CCP4/share/xia2/Applications:$PATH
+PATH=$CCP4/etc:$CCP4/bin:$PATH
 
 if [ -n "$MANPATH" ]; then
   export MANPATH=$CCP4/share/man:$MANPATH

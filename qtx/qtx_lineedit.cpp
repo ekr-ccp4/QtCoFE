@@ -8,7 +8,7 @@
 //  http://www.ccp4.ac.uk/ccp4license.php.
 // =================================================================
 //
-//    09.01.13   <--  Date of Last Modification.
+//    04.02.16   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //  **** Classes :  qtx::LineEdit
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2012-2013
+//  (C) E. Krissinel 2012-2016
 //
 // =================================================================
 //
@@ -33,22 +33,30 @@
 qtx::LineEdit::LineEdit ( QString S, int nchars, QWidget *parent )
              : QLineEdit(S,parent) {
   field_len   = nchars;
-  sample_char = 'W';
+//  sample_char = sample;
   drop_action = Qt::IgnoreAction;
+  this->setSizePolicy ( QSizePolicy::Fixed,QSizePolicy::Fixed );
 }
 
 QSize qtx::LineEdit::minimumSizeHint() const  {
 QSize s = QLineEdit::minimumSizeHint();
-//  s.setWidth ( 20*field_len*s.width()/35 );
   if (field_len>0)
-    s.setWidth ( int(field_len*1.3*
-               fontMetrics().charWidth(QString(QChar(sample_char)),0)) );
+    s.setWidth ( 15*field_len*fontMetrics().averageCharWidth()/10 );
+//    s.setWidth ( int(field_len*1.3*
+//               fontMetrics().charWidth(QString(QChar(sample_char)),0)) );
   return s;
 }
 
 QSize qtx::LineEdit::maximumSizeHint() const  {
   if (field_len>0)  return minimumSizeHint();
               else  return QSize();
+}
+
+QSize qtx::LineEdit::sizeHint() const  {
+QSize s = QLineEdit::sizeHint();
+  if (field_len>0)
+    s.setWidth ( 15*field_len*fontMetrics().averageCharWidth()/10 );
+  return s;
 }
 
 void qtx::LineEdit::setDrag ( Qt::DropAction dropAction,

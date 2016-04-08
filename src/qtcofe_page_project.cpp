@@ -159,14 +159,14 @@ bool                             createJob = true;
     taskType = tdlg->getSelTaskType();
     if (tdlg->getSelTaskKey()==JobData::Ambiguous)  {
       QJsonObject *jsonData = jobTree->getTreeData();
-      jsonData->insert ( "task_type",QString(qtCOFE_TASK_Disambiguator) );
+      jsonData->insert ( "task_type",QString(qtCOFE_TASK_DataSelection) );
       jsonData->insert ( "parent"   ,job_id );
       project_query ( *jsonData,qtCOFE_SERVER_ACT_AddJob );
       delete jsonData;
       DataDialog *ddlg = new DataDialog ( this,
                   jobTree,jobTree->currentNode(),
-                  taskType,dataModel,"Data Disambiguator",
-                  "Disambiguate Data for task '" +
+                  taskType,dataModel,"Data Selection",
+                  "Select Data for task '" +
                       dataModel->taskName(taskType) +
                          "'" );
       ddlg->resizeToData();
@@ -200,6 +200,12 @@ bool                             createJob = true;
         else  {
           QJsonObject jsd;
           project_query ( jsd,qtCOFE_SERVER_ACT_GetListOfJobs );
+          jsonData = jobTree->getTreeData();
+          job_id = jobTree->currentJobId();
+          jsonData->insert ( "job" ,job_id );
+          jsonData->insert ( "next",job_id );
+          project_query ( *jsonData,qtCOFE_SERVER_ACT_RunJob );
+          delete jsonData;
         }
       }
     }

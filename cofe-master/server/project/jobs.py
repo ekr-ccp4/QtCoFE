@@ -321,12 +321,17 @@ def run(inp):
                                  "Project repository '" + inp.project + \
                                  "' does not exist" )
 
+    #  Lock project directory as certain files will be read with
+    #  preliminary check-out
     result = gitut.lock ( project_repo_dir )
     if result.result != "OK":
         return utils.pass_return ( inp.action,result )
 
 
+    #  acquire the actual state of project directory by checking out
+    #  from the repository, and read the data
     project_data = tree.Tree()
+    #  this read function does both checkout and read up
     result = project_data.read ( project_repo_dir )
 
     if result.result != "OK":
@@ -334,6 +339,7 @@ def run(inp):
         return utils.pass_return ( inp.action,result )
 
     job_data = job.Job();
+    #  this read function checks out again (redundant!) and the read up
     result = job_data.read ( project_repo_dir,inp.data.job )
     if result.result != "OK":
         gitut.unlock ( project_repo_dir )
@@ -341,6 +347,7 @@ def run(inp):
 
     #  Set job status to "starting"
     job_data.status = defs.job_starting()  # running
+    #  Just writes the job's JSON
     job_data.write ( project_repo_dir )
 
     #  Update project data accordingly
@@ -353,8 +360,10 @@ def run(inp):
 
     j.v[j.v.index(j.j)] = job_data
     project_data.current_job = inp.data.job
+    #  Just writes the project's JSON
     project_data.write ( project_repo_dir )
 
+    #  Commits and unlocks if there's no errors
     result = gitut.commit ( project_repo_dir,["."],
                             "starting job " + str(inp.data.job)  )
 

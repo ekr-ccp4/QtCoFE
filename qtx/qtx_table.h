@@ -8,7 +8,7 @@
 //  http://www.ccp4.ac.uk/ccp4license.php.
 // =================================================================
 //
-//    09.01.13   <--  Date of Last Modification.
+//    25.11.15   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //  **** Classes :  qtx::Table
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2012-2013
+//  (C) E. Krissinel 2012-2015
 //
 // =================================================================
 //
@@ -51,8 +51,8 @@ namespace qtx  {
                               Qt::Alignment alignment=Qt::AlignLeft  );
       QTableWidgetItem *setTableItem  ( int row, int col, int v,
                               Qt::Alignment alignment=Qt::AlignRight );
-      QTableWidgetItem *setTableItem  ( int row, int col, qreal q,
-                                        char * const format );
+      QTableWidgetItem *setTableItem  ( int row, int col, double q,
+                                        const QString & format );
       QTableWidgetItem *setTableItemCheck ( int row, int col,
                               bool checked,
                               const QString text = QString(),
@@ -61,6 +61,11 @@ namespace qtx  {
                               Qt::CheckState checkState,
                               const QString text = QString(),
                               Qt::Alignment alignment=Qt::AlignRight );
+          
+      void setTableFont      ( QFont & font  );
+      void setTableFixedFont ();
+      void setTableAlignment ( int Alignment );
+ 
     /*
       QToolButton      *setTableItemColor ( int row, int col,
                                             QColor color );
@@ -79,8 +84,8 @@ namespace qtx  {
       void copy    ( Table *t );
 
     public slots:
-      void setFullSize  ( bool limitWidthOnly  = false,
-                          bool limitHeightOnly = false );
+      void setFullSize  ( bool limitWidth  = false,
+                          bool limitHeight = false );
 
     signals:
       void  selection_changed ( bool has_selection );

@@ -8,7 +8,7 @@
 //  http://www.ccp4.ac.uk/ccp4license.php.
 // =================================================================
 //
-//    09.01.13   <--  Date of Last Modification.
+//    25.11.15   <--  Date of Last Modification.
 //                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  ----------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //  **** Classes :  qtx::Tree
 //       ~~~~~~~~~
 //
-//  (C) E. Krissinel 2012-2013
+//  (C) E. Krissinel 2012-2015
 //
 // =================================================================
 //
@@ -54,7 +54,7 @@ namespace qtx  {
 
       QTreeWidgetItem *addTreeItem ( QString name, QString value );
       QTreeWidgetItem *addTreeItem ( QString name, int     value );
-      QTreeWidgetItem *addTreeItem ( QString name, qreal   value,
+      QTreeWidgetItem *addTreeItem ( QString name, double  value,
                                                    int     prec  );
 
       bool  hasSelection   ();  //!< true if tree has selection

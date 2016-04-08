@@ -200,11 +200,18 @@ void qtCOFE::ProjectListPage::project_query ( QJsonObject & jsonData,
         for (int i=0;i<n;i++)
           addProjectName ( prjs[i].toObject(),NULL,
                            session->projectID,crItem );
+        if (!crItem)  {
+          int icount = projectTree->topLevelItemCount();
+          if (icount>=0)
+            crItem = projectTree->topLevelItem(icount);
+        }  
         if (crItem)
-          projectTree->setCurrentItem ( crItem );
+          projectTree->setCurrentItem ( crItem );          
         session->projectPath = getCrProjectPath();
-      }
-    }
+      } else
+        crProjectChanged ( NULL,NULL );
+    } else
+      crProjectChanged ( NULL,NULL );
   }
 
   projectTree->setFullWidth();
@@ -262,13 +269,19 @@ void qtCOFE::ProjectListPage::crProjectChanged (
                                         QTreeWidgetItem * current,
                                         QTreeWidgetItem * previous )  {
 UNUSED_ARGUMENT(previous);
-bool isDefault;
+//bool isDefault;
 
-  if (!current)  return;
+  openBtn     ->setVisible ( current );
+  insertNewBtn->setVisible ( current );
+  editDescBtn ->setVisible ( current );
+  deleteBtn   ->setVisible ( current );
 
-  isDefault = current->text(0) == "default";
-  editDescBtn->setVisible ( !isDefault );
-  deleteBtn  ->setVisible ( !isDefault );
+  if (!current)
+    return;
+
+//  isDefault = current->text(0) == "default";
+//  editDescBtn->setVisible ( !isDefault );
+//  deleteBtn  ->setVisible ( !isDefault );
 
   if (session->projectID!=current->text(0))  {
     session->projectID = current->text(0);
@@ -340,6 +353,7 @@ void qtCOFE::ProjectListPage::addProjectBtnClicked()  {
 QTreeWidgetItem *item = projectTree->currentItem();
 QString          name,desc;
 
+/*
   if (!item)  {
     QMessageBox::information ( this,"No Selection",
           "Please first select a project in the list." );
@@ -353,6 +367,27 @@ QString          name,desc;
           jsonData.insert ( "parent",item->parent()->text(0) );
     else  jsonData.insert ( "parent",QString("") );
     jsonData.insert ( "sibling",item->text(0) );
+    jsonData.insert ( "name"   ,name   );
+    jsonData.insert ( "desc"   ,desc   );
+    project_query   ( jsonData,qtCOFE_SERVER_ACT_AddProject );
+  }
+*/
+
+  if (getNewProjectSpecs ( "Add New Project",
+                  "<i>Please type name and description of "
+                  "new project to be added after the selected one:</i>",
+                  "Project name","Description",
+                  "Add","Cancel",name,desc ))  {
+    QJsonObject jsonData;
+    if (item)  {
+      if (item->parent())
+            jsonData.insert ( "parent",item->parent()->text(0) );
+      else  jsonData.insert ( "parent",QString("") );
+      jsonData.insert ( "sibling",item->text(0) );
+    } else  {
+      jsonData.insert ( "parent" ,QString("") );
+      jsonData.insert ( "sibling",QString("") );
+    }
     jsonData.insert ( "name"   ,name   );
     jsonData.insert ( "desc"   ,desc   );
     project_query   ( jsonData,qtCOFE_SERVER_ACT_AddProject );
@@ -414,15 +449,19 @@ QString          name,desc,prompt;
         if (n<projectTree->topLevelItemCount()-1)
                        next = projectTree->topLevelItem(n+1);
         else if (n>0)  next = projectTree->topLevelItem(n-1);
+                 else  next = NULL;
+        /*
         else  {
           QMessageBox::information ( this,"Can not delete",
                       "It is not possible to delete all projects" );
           return;
         }
+        */
       }
       QJsonObject jsonData;
       jsonData.insert ( "name",item->text(0) );
-      jsonData.insert ( "next",next->text(0) );
+      if (next)  jsonData.insert ( "next",next->text(0) );
+           else  jsonData.insert ( "next",QString("_null_") );
       project_query   ( jsonData,qtCOFE_SERVER_ACT_DeleteProject );
     }
 

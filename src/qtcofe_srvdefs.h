@@ -41,6 +41,6 @@
 
 
 #define  qtCOFE_TASK_DataImport     "task_dataimport"
-#define  qtCOFE_TASK_Disambiguator  "task_disambiguator"
+#define  qtCOFE_TASK_DataSelection  "task_dataselection"
 
 #endif // QTCOFE_SRVDEFS_H

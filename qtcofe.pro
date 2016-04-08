@@ -85,7 +85,7 @@ OTHER_FILES += \
     cofe-master/server/tasks/building.py \
     cofe-master/server/tasks/mad.py \
     cofe-master/server/tasks/sad.py \
-    cofe-master/server/tasks/mr.py \
+    cofe-master/server/tasks/molrep.py \
     cofe-master/server/tasks/refinement.py \
     cofe-master/server/dtypes/dummy.py \
     cofe-master/server/dtypes/any.py \
@@ -98,12 +98,34 @@ OTHER_FILES += \
     cofe-master/server/project/datamodel.py \
     cofe-master/server/dtypes/__init__.py \
     cofe-master/server/tasks/__init__.py \
-    cofe-master/server/tasks/disambiguator.py \
+    cofe-master/server/tasks/dataselection.py \
     cofe-master/server/process.py \
     cofe-master/bin/mad \
     cofe-master/server/varut/mtz.py \
     cofe-master/bin/start.sh \
-    cofe-master/bin/dataimport
+    cofe-master/bin/dataimport \
+    cofe-master/server/reports/pyrvapi_logparse_molrep.py \
+    cofe-master/server/reports/__init__.py \
+    cofe-master/server/varut/__init__.py \
+    cofe-master/jsrview/js/jsrview.window.js \
+    cofe-master/jsrview/js/jsrview.utils.js \
+    cofe-master/jsrview/js/jsrview.tree.js \
+    cofe-master/jsrview/js/jsrview.toolbar.js \
+    cofe-master/jsrview/js/jsrview.tabs.js \
+    cofe-master/jsrview/js/jsrview.section.js \
+    cofe-master/jsrview/js/jsrview.progressbar.js \
+    cofe-master/jsrview/js/jsrview.page.js \
+    cofe-master/jsrview/js/jsrview.js \
+    cofe-master/jsrview/js/jsrview.grid.js \
+    cofe-master/jsrview/js/jsrview.graph.js \
+    cofe-master/jsrview/js/jsrview.global.js \
+    cofe-master/jsrview/js/jsrview.form.js \
+    cofe-master/jsrview/js/jsrview.dropdown.js \
+    cofe-master/jsrview/js/jsrview.content.js \
+    cofe-master/jsrview/js/jsrview.combobox.js \
+    cofe-master/jsrview/js/jsrview.checkbox.js \
+    cofe-master/jsrview/js/jsrview.buttons.js \
+    cofe-master/jsrview/css/jsrview.css
 
 HEADERS += \
     qjson/QJsonArray.h \

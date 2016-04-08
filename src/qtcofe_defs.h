@@ -19,7 +19,7 @@
 #define QTCOFE_DEFS_H
 
 #define qtCOFE_app_title             "qtCoFE 1.00"
-#define qtCOFE_app_date              "06/01/2015"
+#define qtCOFE_app_date              "04/08/2015"
 #define qtCOFE_app_spec              qtCOFE_app_title" "qtCOFE_app_date
 
 #define qtCOFE_Company               "CCP4"
@@ -54,35 +54,6 @@
 #define qtCOFE_View_icon             ":/images/view.png"
 #define qtCOFE_Data_icon             ":/images/data.png"
 
-/*
-#define qtRV_print_icon            ":/images/print.png"
-#define qtRV_refresh_icon          ":/images/refresh.png"
-#define qtRV_refresh_manual_icon   ":/images/refresh_manual.png"
-#define qtRV_exportpdf_icon        ":/images/exportpdf.png"
-#define qtRV_copy_icon             ":/images/copy.png"
-#define qtRV_copy_button_icon      ":/images/copy_button.png"
-#define qtRV_close_icon            ":/images/close.png"
-#define qtRV_close_tab_icon        ":/images/closetab.png"
-#define qtRV_find_icon             ":/images/find.png"
-#define qtRV_find_forward_icon     ":/images/find_forward.png"
-#define qtRV_find_backward_icon    ":/images/find_backward.png"
-#define qtRV_go_forward_icon       ":/images/go_forward.png"
-#define qtRV_go_back_icon          ":/images/go_back.png"
-#define qtRV_help_program_icon     ":/images/help_program.png"
-#define qtRV_help_ccp4_icon        ":/images/help_ccp4.png"
-#define item_expanded_icon         ":/images/item_expanded.png"
-#define item_collapsed_icon        ":/images/item_collapsed.png"
-#define item_inactive_icon         ":/images/item_inactive.png"
-#define item_data_icon             ":/images/data.png"
-
-
-//#ifdef Q_OS_MAC
-//#define  qtRV_Doc_Directory        "docs/"
-//#else
-//#define  qtRV_Doc_Directory        "html/"
-//#endif
-*/
-
 #define  qtCOFE_DefaultRefreshPeriod  6000
 #define  qtCOFE_SmartRefresh          0
 #define  qtCOFE_ConstantRefresh       1
@@ -100,20 +71,14 @@
 #define  qtCOFE_SET_TreeWidth        "tree_width"
 #define  qtCOFE_SET_PlotWidth        "plot_width"
 #define  qtCOFE_SET_PlotHeight       "plot_height"
-//#define  qtCOFE_SET_MaxDecorSize     "max_decor_size"
 #define  qtCOFE_SET_UseSystemBrowser "use_system_browser"
 #define  qtCOFE_SET_RefreshMode      "refresh_mode"
 #define  qtCOFE_SET_gdExtSelection   "gd_ext_selection"
 #define  qtCOFE_SET_AppDir           "app_dir"
 #define  qtCOFE_SET_ServerUri        "server_uri"
-#define  qtCOFE_SET_CootPath         "coot_path"
-#define  qtCOFE_SET_MGPath           "ccp4mg_path"
-#define  qtCOFE_SET_ViewHKLPath      "viewhkl_path"
+#define  qtCOFE_SET_CCP4Path         "ccp4_path"
 #define  qtCOFE_SET_BrowserPath      "browser_path"
 #define  qtCOFE_SET_ExportDir        "export_dir"
-//#define  qtCOFE_SET_LogFind          "log_find"
-//#define  qtCOFE_SET_LogFindCase      "log_find_case"
-//#define  qtCOFE_SET_LogFindWords     "log_find_words"
 #define  qtCOFE_SET_LogFont          "log_font"
 #define  qtCOFE_SET_JSRV_WinState    "jsrv_win_state"
 #define  qtCOFE_SET_JSRV_WinSize     "jsrv_win_size"
@@ -123,7 +88,6 @@
 // session settings
 #define  qtCOFE_SET_LoginName        "login_name"
 #define  qtCOFE_SET_ProjectsPath     "projects_path"
-//#define  qtCOFE_SET_BinPath          "bin_path"
 #define  qtCOFE_SET_ProjectID        "project_id"
 #define  qtCOFE_SET_ProjectPath      "project_path"
 #define  qtCOFE_SET_Password         "magic_key"

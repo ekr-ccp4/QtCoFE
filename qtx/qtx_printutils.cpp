@@ -35,9 +35,6 @@
 #include <QFileInfo>
 #include <QApplication>
 #include <QClipboard>
-//#include <QMimeData>
-//#include <QSvgGenerator>
-//#include <QBuffer>
 
 #include "qtx_printutils.h"
 
@@ -270,9 +267,13 @@ int       pw,ph;
       exportImageFile = fileName;
       printer.setOutputFileName ( fileName     );
       printer.setPageSize       ( QPrinter::A4 );
+#if QT_VERSION >= 0x050000
+      printer.setOutputFormat ( QPrinter::PdfFormat );
+#else
       if (suffix=="pdf")
             printer.setOutputFormat ( QPrinter::PdfFormat );
       else  printer.setOutputFormat ( QPrinter::PostScriptFormat );
+#endif
 
 /*
       QSvgGenerator generator;
@@ -388,9 +389,13 @@ QString   fileName   = fi.path();
       exportImageFile = fileName;
       printer.setOutputFileName ( fileName     );
       printer.setPageSize       ( QPrinter::A4 );
+#if QT_VERSION >= 0x050000
+      printer.setOutputFormat ( QPrinter::PdfFormat );
+#else
       if (suffix=="pdf")
             printer.setOutputFormat ( QPrinter::PdfFormat );
       else  printer.setOutputFormat ( QPrinter::PostScriptFormat );
+#endif
 
       if (painter.begin(&printer))  {
         emit paintPicture ( &painter );

@@ -96,7 +96,8 @@ void qtCOFE::JSRView::prefDialog()  {
 
 void qtCOFE::JSRView::exportFile ( const QString & fname )  {
 QString fileName = QFileDialog::getSaveFileName ( this,"Export As",
-               preferences->exportDir + QFileInfo(fname).fileName() );
+               preferences->exportDir + QFileInfo(fname).fileName(),
+               QString(),NULL,QFileDialog::DontUseNativeDialog );
 
   if (!fileName.isEmpty())  {
     preferences->setExportDir ( fileName );
@@ -119,6 +120,8 @@ QString fileName = QFileDialog::getSaveFileName ( this,"Export As",
 
 
 void qtCOFE::JSRView::buttonClicked ( QString command, QString data ) {
+
+  data.replace ( "..",jobDir );
 
   if (command==qtCOFE_JSRV_COMMAND_Coot)
     preferences->launchCoot ( data.replace('\\','/').split (
@@ -143,6 +146,7 @@ void qtCOFE::JSRView::buttonClicked ( QString command, QString data ) {
 
 void qtCOFE::JSRView::loadPage ( const QUrl url )  {
 QString uri = url.toString();
+
   if (uri.size()>3)  {
     if ((uri.at(1)==':') && ((uri.at(2)=='\\') || (uri.at(2)=='/')))  {
       uri = "file:///" + uri;
@@ -151,6 +155,7 @@ QString uri = url.toString();
     }
   }
   webView->load ( url );
+
 }
 
 
@@ -162,8 +167,14 @@ void qtCOFE::JSRView::jsWindowObjectCleared()  {
 
 void qtCOFE::JSRView::loadHasFinished ( bool ok )  {
 UNUSED_ARGUMENT(ok);
+
   setWindowTitle ( webView->title() );
-}
+
+  QDir jdir = QFileInfo(webView->url().path()).dir();
+  jdir.cdUp();
+  jobDir = jdir.canonicalPath();
+ 
+ }
 
 void qtCOFE::JSRView::closeWindow()  {
   close();

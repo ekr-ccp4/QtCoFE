@@ -119,7 +119,7 @@ char *p1;
 char *p2;
 bool  B = false;
 
-  p1 = node.attribute(attr,"").toAscii().data();
+  p1 = node.attribute(attr,"").toLatin1().data();
   if (p1[0])  {
     value = (int)float(strtod(p1,&p2)+0.49999);
     B     = (p2!=p1);
@@ -159,7 +159,7 @@ char  *p1;
 char  *p2;
 bool   B = false;
 
-  p1 = node.attribute(attr,"").toAscii().data();
+  p1 = node.attribute(attr,"").toLatin1().data();
   if (p1[0])  {
     value = strtod ( p1,&p2 );
     B     = (p2!=p1);
@@ -202,7 +202,7 @@ bool     B = false;
     category = category.firstChild();
     /*
     if ((!category.isNull()) && category.isText())  {
-      p1    = category.nodeValue().trimmed().toAscii().data();
+      p1    = category.nodeValue().trimmed().toLatin1().data();
       value = (int)float(strtod(p1,&p2)+0.49999);
       B     = (p2!=p1);
     }
@@ -224,7 +224,7 @@ bool     B = false;
   if (!category.isNull())  {
     category = category.firstChild();
     if ((!category.isNull()) && category.isText())  {
-      p1    = category.nodeValue().trimmed().toAscii().data();
+      p1    = category.nodeValue().trimmed().toLatin1().data();
       value = strtod ( p1,&p2 );
       B     = (p2!=p1);
     }
@@ -279,7 +279,7 @@ qreal qtx::getReal ( QString S, qreal defValue, bool & ok )  {
 char *p1;
 char *p2;
 qreal v;
-  p1 = S.trimmed().toAscii().data();
+  p1 = S.trimmed().toLatin1().data();
   v  = strtod ( p1,&p2 );
   if (p2==p1)  {
     ok = false;
