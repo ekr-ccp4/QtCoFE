@@ -166,9 +166,6 @@
 #define  COMMAND_ViewHKL           "{viewhkl}"
 #define  COMMAND_Display           "{display}"
 #define  COMMAND_Browser           "{browser}"
-
-
-
 */
 
 #endif // QTCOFE_DEFS_H
